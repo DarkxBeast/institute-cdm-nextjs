@@ -12,14 +12,8 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
-interface Student {
-    id?: string;
-    studentName: string;
-    enrollmentId: string;
-    email: string;
-    phoneNumber: string;
-    gender?: string;
-}
+import { type Student } from "@/lib/validations/batch";
+
 
 interface StudentPerformanceTableProps {
     students: Student[];

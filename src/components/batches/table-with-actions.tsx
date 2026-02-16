@@ -71,7 +71,7 @@ export default function TableWithActions({ data, onEdit, onDelete }: TableWithAc
 
     // Use enrollmentId as fallback key
     const id = studentToDelete.id || studentToDelete.enrollmentId;
-    setBusyId(id);
+    setBusyId(id ?? null);
     setStudentToDelete(null); // Close dialog immediately
 
     // Simulate async or just wait a tick for UI feedback

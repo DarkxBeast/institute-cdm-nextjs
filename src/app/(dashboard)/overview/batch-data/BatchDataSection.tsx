@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { getBatch } from "@/app/actions/batches";
 import { getLearningJourneyForBatch, type LearningJourneyViewData } from "@/app/actions/learning-journey";
+import { type BatchInfo, type Student } from "@/lib/validations/batch";
 import FilterBar from "@/components/overview/batch-data/FilterBar";
 import StatsGrid from "@/components/overview/batch-data/StatsGrid";
 import ContentTabsPanel from "@/components/overview/batch-data/ContentTabsPanel";
@@ -19,22 +20,8 @@ interface Batch {
 }
 
 interface BatchDetails {
-    batchInfo: {
-        batchName: string;
-
-        startDate: string;
-        endDate: string;
-        status: string;
-        description: string;
-    };
-    students: Array<{
-        id?: string;
-        studentName: string;
-        enrollmentId: string;
-        email: string;
-        phoneNumber: string;
-        gender?: string;
-    }>;
+    batchInfo: BatchInfo;
+    students: Student[];
 }
 
 interface BatchDataSectionProps {

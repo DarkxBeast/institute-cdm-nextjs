@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { format, isSameDay } from "date-fns";
 import type { LearningJourneyViewData } from "@/app/actions/learning-journey";
+import { type BatchInfo, type Student } from "@/lib/validations/batch";
 
 // Learning Journey sub-components (reused from the dedicated page)
 import { StatsBanner } from "@/components/learning-journey/StatsBanner";
@@ -36,22 +37,8 @@ interface Batch {
 }
 
 interface BatchDetails {
-    batchInfo: {
-        batchName: string;
-
-        startDate: string;
-        endDate: string;
-        status: string;
-        description: string;
-    };
-    students: Array<{
-        id?: string;
-        studentName: string;
-        enrollmentId: string;
-        email: string;
-        phoneNumber: string;
-        gender?: string;
-    }>;
+    batchInfo: BatchInfo;
+    students: Student[];
 }
 
 interface ContentTabsPanelProps {
