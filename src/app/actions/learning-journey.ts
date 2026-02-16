@@ -32,6 +32,7 @@ export interface LearningJourneyProgress {
     completed: number;
     inProgress: number;
     upcoming: number;
+    yetToSchedule: number;
 }
 
 export interface LearningJourneyUpNext {
@@ -171,7 +172,7 @@ export async function getLearningJourneyForBatch(batchId: string): Promise<{ dat
             particulars: item.particulars ?? '',
             startDate: item.start_date ?? '',
             endDate: item.end_date ?? '',
-            status: item.status ?? 'Upcoming',
+            status: item.status ?? 'Yet to Schedule',
             deliveryMode: item.delivery_mode ?? 'Online',
             format: item.format ?? 'Session',
             totalHours: item.total_hours ?? 0,
@@ -193,7 +194,8 @@ export async function getLearningJourneyForBatch(batchId: string): Promise<{ dat
         const totalModules = items.length
         const completedModules = items.filter((i) => i.status === 'Completed').length
         const inProgressModules = items.filter((i) => i.status === 'Ongoing').length
-        const upcomingModules = totalModules - completedModules - inProgressModules
+        const upcomingModules = items.filter((i) => i.status === 'Upcoming').length
+        const yetToScheduleModules = items.filter((i) => i.status === 'Yet to Schedule').length
         const progressPercentage = totalModules > 0 ? Math.round((completedModules / totalModules) * 100) : 0
 
         // 5. Calculate program dates & duration from valid dates
@@ -213,8 +215,8 @@ export async function getLearningJourneyForBatch(batchId: string): Promise<{ dat
             durationWeeks = Math.ceil(diffTime / (1000 * 60 * 60 * 24 * 7))
         }
 
-        // 6. Find "Up Next" (first non-completed item)
-        const upNextItem = items.find((i) => i.status !== 'Completed') || null
+        // 6. Find "Up Next" (first item with 'Upcoming' status only)
+        const upNextItem = items.find((i) => i.status === 'Upcoming') || null
 
         // 7. Group items by category for accordion
         const categoryMap: Record<string, LearningJourneyCategory> = {}
@@ -258,6 +260,7 @@ export async function getLearningJourneyForBatch(batchId: string): Promise<{ dat
                 completed: completedModules,
                 inProgress: inProgressModules,
                 upcoming: upcomingModules,
+                yetToSchedule: yetToScheduleModules,
             },
             upNext: upNextItem
                 ? {

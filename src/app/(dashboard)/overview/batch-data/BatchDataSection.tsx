@@ -76,7 +76,7 @@ export default function BatchDataSection({ batches }: BatchDataSectionProps) {
     };
 
     return (
-        <div className="flex flex-col gap-6 w-full">
+        <div className="flex flex-col gap-8 w-full">
             {/* Filter Bar */}
             <FilterBar
                 batches={batches}

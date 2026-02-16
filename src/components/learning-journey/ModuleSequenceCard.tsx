@@ -21,30 +21,27 @@ const getStatusStyle = (status: string) => {
     const s = status.toLowerCase();
     if (s === "completed")
         return {
-            badge: "bg-emerald-50 border-emerald-200 text-emerald-700",
-            dot: "bg-emerald-500",
-            cardBg: "bg-gradient-to-r from-emerald-50/50 via-white to-white",
-            cardBorder: "border-emerald-200/70",
-            accent: "border-l-emerald-500",
-            numBg: "bg-emerald-600",
+            badge: "bg-[#fff5eb] border-[#FF9E44]/30 text-[#FF9E44]",
+            dot: "bg-[#FF9E44]",
+            cardBg: "bg-white",
+            cardBorder: "border-[#FF9E44]/20",
+            numBg: "bg-[#FF9E44]",
         };
     if (s === "ongoing")
         return {
             badge: "bg-amber-50 border-amber-200 text-amber-700",
             dot: "bg-amber-500",
-            cardBg: "bg-gradient-to-r from-amber-50/50 via-white to-white",
+            cardBg: "bg-white",
             cardBorder: "border-amber-200/70",
-            accent: "border-l-amber-400",
-            numBg: "bg-amber-600",
+            numBg: "bg-amber-500",
         };
     if (s === "delayed")
         return {
             badge: "bg-red-50 border-red-200 text-red-700",
             dot: "bg-red-500",
-            cardBg: "bg-gradient-to-r from-red-50/40 via-white to-white",
+            cardBg: "bg-white",
             cardBorder: "border-red-200/70",
-            accent: "border-l-red-400",
-            numBg: "bg-red-600",
+            numBg: "bg-red-500",
         };
     // scheduled / upcoming / default
     return {
@@ -52,7 +49,6 @@ const getStatusStyle = (status: string) => {
         dot: "bg-slate-400",
         cardBg: "bg-white",
         cardBorder: "border-[#e5e7eb]",
-        accent: "border-l-slate-300",
         numBg: "bg-[#45556c]",
     };
 };
@@ -79,10 +75,9 @@ export function ModuleSequenceCard({ item, index }: ModuleSequenceCardProps) {
     return (
         <div
             className={cn(
-                "border border-l-[4px] rounded-[14px] p-3 sm:p-4 shadow-[0px_1px_3px_0px_rgba(0,0,0,0.06)] transition-all duration-200 hover:shadow-[0px_4px_12px_0px_rgba(0,0,0,0.08)]",
+                "border rounded-[14px] p-3 sm:p-4 shadow-[0px_1px_3px_0px_rgba(0,0,0,0.06)] transition-all duration-200 hover:shadow-[0px_4px_12px_0px_rgba(0,0,0,0.08)]",
                 style.cardBg,
-                style.cardBorder,
-                style.accent
+                style.cardBorder
             )}
         >
             {/* ── Desktop layout (md+): horizontal row ── */}

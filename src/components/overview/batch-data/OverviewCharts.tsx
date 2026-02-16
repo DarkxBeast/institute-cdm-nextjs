@@ -25,6 +25,7 @@ const STATUS_COLORS: Record<string, string> = {
     completed: "#10b981",   // emerald-500
     "in-progress": "#f59e0b", // amber-500
     upcoming: "#3b82f6",     // blue-500
+    "yet-to-schedule": "#9ca3af", // gray-400
 };
 
 const CATEGORY_COLORS = [
@@ -93,6 +94,7 @@ export default function OverviewCharts({ data }: OverviewChartsProps) {
         { name: "Completed", value: data.progress.completed, color: STATUS_COLORS.completed },
         { name: "In Progress", value: data.progress.inProgress, color: STATUS_COLORS["in-progress"] },
         { name: "Upcoming", value: data.progress.upcoming, color: STATUS_COLORS.upcoming },
+        { name: "Yet to Schedule", value: data.progress.yetToSchedule, color: STATUS_COLORS["yet-to-schedule"] },
     ].filter(d => d.value > 0), [data.progress]);
 
     // 2) Hours by category
@@ -147,11 +149,12 @@ export default function OverviewCharts({ data }: OverviewChartsProps) {
     return (
         <div className="flex flex-col gap-6">
             {/* ── Row 1: Stat mini-cards ─────────── */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3 sm:gap-4">
                 <StatMiniCard label="Total Modules" value={data.summary.totalModules} color="text-slate-900" />
                 <StatMiniCard label="Completed" value={data.progress.completed} color="text-emerald-600" />
                 <StatMiniCard label="In Progress" value={data.progress.inProgress} color="text-amber-600" />
                 <StatMiniCard label="Upcoming" value={data.progress.upcoming} color="text-blue-600" />
+                <StatMiniCard label="Yet to Schedule" value={data.progress.yetToSchedule} color="text-gray-500" />
             </div>
 
             {hasModules ? (
@@ -309,7 +312,7 @@ export default function OverviewCharts({ data }: OverviewChartsProps) {
 // ─── Tiny helper components ─────────────────────────────────
 function StatMiniCard({ label, value, color }: { label: string; value: number; color: string }) {
     return (
-        <div className="bg-white border border-[#e2e8f0] rounded-xl p-4 sm:p-5">
+        <div className="bg-white border border-[#e2e8f0] rounded-xl p-4 sm:p-5 text-center sm:text-left">
             <p className="text-xs font-medium text-[#717182] uppercase tracking-wide">{label}</p>
             <p className={`text-xl sm:text-2xl font-bold mt-1 ${color}`}>{value}</p>
         </div>

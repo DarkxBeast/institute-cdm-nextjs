@@ -165,12 +165,12 @@ export default function MentorsTable({ mentors = [] }: MentorsTableProps) {
                             size="sm"
                             onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                             disabled={currentPage === 1}
-                            className="h-8 px-3"
+                            className="h-8 px-2 md:px-3"
                         >
-                            <ChevronLeft className="h-4 w-4 mr-1" />
-                            <span className="hidden sm:inline">Previous</span>
+                            <ChevronLeft className="h-4 w-4 md:mr-1" />
+                            <span className="hidden md:inline">Previous</span>
                         </Button>
-                        <div className="flex items-center gap-1 text-sm text-gray-600">
+                        <div className="flex items-center gap-1 text-xs md:text-sm text-gray-600">
                             <span className="font-medium">{currentPage}</span>
                             <span>/</span>
                             <span className="font-medium">{totalPages}</span>
@@ -180,10 +180,10 @@ export default function MentorsTable({ mentors = [] }: MentorsTableProps) {
                             size="sm"
                             onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                             disabled={currentPage === totalPages}
-                            className="h-8 px-3"
+                            className="h-8 px-2 md:px-3"
                         >
-                            <span className="hidden sm:inline">Next</span>
-                            <ChevronRight className="h-4 w-4 ml-1" />
+                            <span className="hidden md:inline">Next</span>
+                            <ChevronRight className="h-4 w-4 md:ml-1" />
                         </Button>
                     </div>
                 </div>

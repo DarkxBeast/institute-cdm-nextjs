@@ -33,12 +33,12 @@ function StatisticsCard({
     return (
         <Card
             className={cn(
-                "group relative overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] animate-in fade-in slide-in-from-bottom-4 fill-mode-both border-slate-100 bg-white/50 backdrop-blur-sm",
-                "hover:border-slate-200"
+                "group relative overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(255,158,68,0.12)] animate-in fade-in slide-in-from-bottom-4 fill-mode-both border-2 border-[#FF9E44]/15 bg-white/50 backdrop-blur-sm",
+                "hover:border-[#FF9E44]/40"
             )}
             style={{ animationDelay: `${delay}ms` }}
         >
-            <CardHeader className="flex flex-row items-center justify-between pb-1 sm:pb-2 space-y-0 px-4 sm:px-6 pt-4 sm:pt-6">
+            <CardHeader className="flex flex-row items-center justify-between pb-1 sm:pb-2 space-y-0 px-4 sm:px-6 pt-3 sm:pt-5">
                 <div
                     className={cn(
                         "flex h-9 w-9 sm:h-12 sm:w-12 items-center justify-center rounded-lg sm:rounded-xl transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3",
@@ -63,7 +63,7 @@ function StatisticsCard({
                     </div>
                 )}
             </CardHeader>
-            <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
+            <CardContent className="px-4 sm:px-6 pb-3 sm:pb-5">
                 <div className="flex flex-col gap-0.5 sm:gap-1">
                     <span className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 tabular-nums">
                         {value}
@@ -89,11 +89,11 @@ export default function StatsGrid({
     activeMentors,
 }: StatsGridProps) {
     return (
-        <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4 items-start">
             <StatisticsCard
                 icon={<Users />}
-                bgClassName="bg-blue-50"
-                iconClassName="text-blue-600"
+                bgClassName="bg-[#FF9E44]/10"
+                iconClassName="text-[#FF9E44]"
                 value={totalStudents}
                 title="Total Students"
                 change="12%"
@@ -102,8 +102,8 @@ export default function StatsGrid({
             />
             <StatisticsCard
                 icon={<TrendingUp />}
-                bgClassName="bg-orange-50"
-                iconClassName="text-orange-600"
+                bgClassName="bg-[#FF9E44]/10"
+                iconClassName="text-[#FF9E44]"
                 value={avgPerformance}
                 title="Avg Performance"
                 change="5%"
@@ -112,8 +112,8 @@ export default function StatsGrid({
             />
             <StatisticsCard
                 icon={<CheckCircle />}
-                bgClassName="bg-emerald-50"
-                iconClassName="text-emerald-600"
+                bgClassName="bg-[#FF9E44]/10"
+                iconClassName="text-[#FF9E44]"
                 value={`${completionRate}%`}
                 title="Completion Rate"
                 change="8%"
@@ -123,8 +123,8 @@ export default function StatsGrid({
             <StatisticsCard
                 icon={<UserCheck />}
                 // Replacing purple with Rose as per 'Purple Ban' guidelines for distinct look
-                bgClassName="bg-rose-50"
-                iconClassName="text-rose-600"
+                bgClassName="bg-[#FF9E44]/10"
+                iconClassName="text-[#FF9E44]"
                 value={activeMentors}
                 title="Active Mentors"
                 change="Active"

@@ -7,6 +7,7 @@ interface ProgressSectionProps {
     completedSessions: number;
     inProgressSessions: number;
     upcomingSessions: number;
+    yetToScheduleSessions: number;
 }
 
 export function ProgressSection({
@@ -14,6 +15,7 @@ export function ProgressSection({
     completedSessions,
     inProgressSessions,
     upcomingSessions,
+    yetToScheduleSessions,
 }: ProgressSectionProps) {
     const percentage =
         totalSessions > 0
@@ -43,7 +45,7 @@ export function ProgressSection({
             />
 
             {/* Stats grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="border border-[#e2e8f0] rounded-[14px] py-4 px-4 flex flex-col items-center gap-1">
                     <span className="text-2xl font-normal text-[#0f172b]">
                         {completedSessions}
@@ -66,6 +68,14 @@ export function ProgressSection({
                     </span>
                     <span className="text-xs font-normal text-[#62748e] uppercase tracking-wider">
                         Upcoming
+                    </span>
+                </div>
+                <div className="border border-[#e2e8f0] rounded-[14px] py-4 px-4 flex flex-col items-center gap-1">
+                    <span className="text-2xl font-normal text-[#0f172b]">
+                        {yetToScheduleSessions}
+                    </span>
+                    <span className="text-xs font-normal text-[#62748e] uppercase tracking-wider">
+                        Yet to Schedule
                     </span>
                 </div>
             </div>

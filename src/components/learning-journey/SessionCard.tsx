@@ -1,6 +1,6 @@
 "use client";
 
-import { BookOpen, Calendar, Clock, CheckCircle2 } from "lucide-react";
+import { BookOpen, Calendar, Clock, CheckCircle2, Sparkles, CalendarClock } from "lucide-react";
 import { type SessionData } from "@/utils/learning-journey-data";
 
 interface SessionCardProps {
@@ -13,71 +13,86 @@ const statusConfig: Record<
         label: string;
         badgeBg: string;
         badgeText: string;
-        badgeBorder: string;
+        badgeDot: string;
         cardBg: string;
         cardBorder: string;
-        cardHoverBorder: string;
-        cardHoverShadow: string;
-        accentBorder: string;
+        cardShadow: string;
         iconBg: string;
         iconText: string;
-        iconHoverBg: string;
-        iconHoverText: string;
-        iconHoverShadow: string;
-        useCheckIcon: boolean;
+        footerBorder: string;
+        dateText: string;
+        icon: "check" | "book" | "sparkle" | "clock";
     }
 > = {
     completed: {
         label: "Completed",
-        badgeBg: "bg-emerald-50",
-        badgeText: "text-emerald-700",
-        badgeBorder: "border-emerald-200",
-        cardBg: "bg-gradient-to-br from-emerald-50/70 via-white to-emerald-50/30",
-        cardBorder: "border-emerald-200/80",
-        cardHoverBorder: "hover:border-emerald-300",
-        cardHoverShadow: "hover:shadow-[0_8px_30px_rgba(16,185,129,0.10)]",
-        accentBorder: "border-l-emerald-500",
-        iconBg: "bg-emerald-100",
-        iconText: "text-emerald-600",
-        iconHoverBg: "group-hover:bg-emerald-500",
-        iconHoverText: "group-hover:text-white",
-        iconHoverShadow: "group-hover:shadow-emerald-200",
-        useCheckIcon: true,
+        badgeBg: "bg-[#fff5eb]",
+        badgeText: "text-[#FF9E44]",
+        badgeDot: "bg-[#FF9E44]",
+        cardBg: "bg-white",
+        cardBorder: "border-[#FFD4A8]/50",
+        cardShadow: "shadow-[0_1px_3px_rgba(0,0,0,0.04)]",
+        iconBg: "bg-[#FF9E44]/10",
+        iconText: "text-[#FF9E44]",
+        footerBorder: "border-[#FFD4A8]/40",
+        dateText: "text-[#b07a3f]",
+        icon: "check",
     },
     in_progress: {
         label: "In Progress",
         badgeBg: "bg-amber-50",
         badgeText: "text-amber-700",
-        badgeBorder: "border-amber-200",
-        cardBg: "bg-gradient-to-br from-amber-50/60 via-white to-orange-50/30",
-        cardBorder: "border-amber-200/80",
-        cardHoverBorder: "hover:border-amber-300",
-        cardHoverShadow: "hover:shadow-[0_8px_30px_rgba(245,158,11,0.10)]",
-        accentBorder: "border-l-amber-400",
-        iconBg: "bg-amber-100",
+        badgeDot: "bg-amber-500",
+        cardBg: "bg-white",
+        cardBorder: "border-amber-200/50",
+        cardShadow: "shadow-[0_1px_3px_rgba(0,0,0,0.04)]",
+        iconBg: "bg-amber-100/80",
         iconText: "text-amber-600",
-        iconHoverBg: "group-hover:bg-amber-500",
-        iconHoverText: "group-hover:text-white",
-        iconHoverShadow: "group-hover:shadow-amber-200",
-        useCheckIcon: false,
+        footerBorder: "border-amber-100/60",
+        dateText: "text-amber-700/70",
+        icon: "sparkle",
     },
     upcoming: {
         label: "Upcoming",
-        badgeBg: "bg-slate-50",
-        badgeText: "text-slate-600",
-        badgeBorder: "border-slate-200",
+        badgeBg: "bg-blue-50",
+        badgeText: "text-blue-600",
+        badgeDot: "bg-blue-500",
         cardBg: "bg-white",
-        cardBorder: "border-slate-200",
-        cardHoverBorder: "hover:border-orange-200",
-        cardHoverShadow: "hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)]",
-        accentBorder: "border-l-slate-200",
-        iconBg: "bg-orange-50",
-        iconText: "text-orange-500",
-        iconHoverBg: "group-hover:bg-orange-500",
-        iconHoverText: "group-hover:text-white",
-        iconHoverShadow: "group-hover:shadow-orange-200",
-        useCheckIcon: false,
+        cardBorder: "border-blue-200/50",
+        cardShadow: "shadow-[0_1px_3px_rgba(0,0,0,0.04)]",
+        iconBg: "bg-blue-50",
+        iconText: "text-blue-500",
+        footerBorder: "border-blue-100/40",
+        dateText: "text-blue-600/60",
+        icon: "book",
     },
+    yet_to_schedule: {
+        label: "Yet to Schedule",
+        badgeBg: "bg-slate-50",
+        badgeText: "text-slate-500",
+        badgeDot: "bg-slate-400",
+        cardBg: "bg-white",
+        cardBorder: "border-slate-200/50",
+        cardShadow: "shadow-[0_1px_3px_rgba(0,0,0,0.03)]",
+        iconBg: "bg-slate-100/80",
+        iconText: "text-slate-400",
+        footerBorder: "border-slate-100/60",
+        dateText: "text-slate-400",
+        icon: "clock",
+    },
+};
+
+const StatusIcon = ({ type, className }: { type: string; className?: string }) => {
+    switch (type) {
+        case "check":
+            return <CheckCircle2 className={className} />;
+        case "sparkle":
+            return <Sparkles className={className} />;
+        case "clock":
+            return <CalendarClock className={className} />;
+        default:
+            return <BookOpen className={className} />;
+    }
 };
 
 export function SessionCard({ session }: SessionCardProps) {
@@ -85,44 +100,42 @@ export function SessionCard({ session }: SessionCardProps) {
 
     return (
         <div
-            className={`group h-full border border-l-[3px] rounded-xl p-5 flex flex-col transition-all duration-300 hover:-translate-y-1 cursor-pointer ${status.cardBg} ${status.cardBorder} ${status.accentBorder} ${status.cardHoverBorder} ${status.cardHoverShadow}`}
+            className={`relative h-full border rounded-2xl p-5 flex flex-col cursor-pointer overflow-hidden ${status.cardBg} ${status.cardBorder} ${status.cardShadow}`}
         >
-            {/* Top row: icon + duration */}
+
+            {/* Top row: icon + duration pill */}
             <div className="flex items-start justify-between mb-4">
                 <div
-                    className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-300 group-hover:shadow-md ${status.iconBg} ${status.iconText} ${status.iconHoverBg} ${status.iconHoverText} ${status.iconHoverShadow}`}
+                    className={`w-9 h-9 rounded-xl flex items-center justify-center ${status.iconBg} ${status.iconText}`}
                 >
-                    {status.useCheckIcon ? (
-                        <CheckCircle2 className="w-5 h-5" />
-                    ) : (
-                        <BookOpen className="w-5 h-5" />
-                    )}
+                    <StatusIcon type={status.icon} className="w-[18px] h-[18px]" />
                 </div>
-                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/80 border border-slate-100 backdrop-blur-sm">
-                    <Clock className="w-3.5 h-3.5 text-slate-400" />
-                    <span className="text-xs font-medium text-slate-600">
+                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/90 border border-slate-100/80 backdrop-blur-sm shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
+                    <Clock className="w-3 h-3 text-slate-400" />
+                    <span className="text-[11px] font-semibold text-slate-500 tracking-wide">
                         {session.duration}
                     </span>
                 </div>
             </div>
 
-            {/* Session title - flex-1 pushes footer down */}
-            <div className="flex-1 mb-6">
-                <h4 className="text-lg font-semibold text-slate-900 leading-snug group-hover:text-slate-800 transition-colors">
+            {/* Session title */}
+            <div className="flex-1 mb-5">
+                <h4 className="text-[15px] font-semibold text-slate-800 leading-snug tracking-[-0.01em] group-hover:text-slate-900 transition-colors duration-200 line-clamp-3">
                     {session.title}
                 </h4>
             </div>
 
-            {/* Bottom row: date + status */}
-            <div className="mt-auto flex items-center justify-between pt-4 border-t border-slate-100/80 dashed">
-                <div className="flex items-center gap-2 text-slate-500">
-                    <Calendar className="w-4 h-4" />
-                    <span className="text-sm font-medium">{session.date}</span>
+            {/* Bottom row: date + status badge */}
+            <div className={`mt-auto flex items-center justify-between pt-3.5 border-t border-dashed ${status.footerBorder}`}>
+                <div className={`flex items-center gap-1.5 ${status.dateText}`}>
+                    <Calendar className="w-3.5 h-3.5" />
+                    <span className="text-xs font-medium">{session.date}</span>
                 </div>
 
                 <div
-                    className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider border ${status.badgeBg} ${status.badgeText} ${status.badgeBorder}`}
+                    className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border border-transparent ${status.badgeBg} ${status.badgeText}`}
                 >
+                    <span className={`w-1.5 h-1.5 rounded-full ${status.badgeDot}`} />
                     {status.label}
                 </div>
             </div>

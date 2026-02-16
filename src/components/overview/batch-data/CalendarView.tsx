@@ -28,7 +28,7 @@ interface Module {
     mentors: string;
     startDate: string; // Format: "Jan 10, 2024"
     endDate: string;   // Format: "Jan 15, 2024"
-    status: "Completed" | "In Progress" | "Scheduled";
+    status: "Completed" | "In Progress" | "Scheduled" | "Yet to Schedule";
     duration: string;
     format: string;
     mode: "Offline" | "Online";
@@ -103,6 +103,7 @@ export default function CalendarView({ modules }: CalendarViewProps) {
             case "Completed": return "bg-green-500/90 text-white border-green-600";
             case "In Progress": return "bg-yellow-500/90 text-white border-yellow-600";
             case "Scheduled": return "bg-blue-500/90 text-white border-blue-600";
+            case "Yet to Schedule": return "bg-gray-400/90 text-white border-gray-500";
             default: return "bg-gray-500/90 text-white border-gray-600";
         }
     };

@@ -55,10 +55,11 @@ function useNormalizedJourneyData(serviceData: LearningJourneyViewData | null) {
     return useMemo(() => {
         if (!serviceData) return null;
 
-        const statusMap: Record<string, "completed" | "in_progress" | "upcoming"> = {
+        const statusMap: Record<string, "completed" | "in_progress" | "upcoming" | "yet_to_schedule"> = {
             Completed: "completed",
             Ongoing: "in_progress",
             Upcoming: "upcoming",
+            "Yet to Schedule": "yet_to_schedule",
         };
 
         return {
@@ -75,6 +76,7 @@ function useNormalizedJourneyData(serviceData: LearningJourneyViewData | null) {
             completedSessions: serviceData.progress.completed,
             inProgressSessions: serviceData.progress.inProgress,
             upcomingSessions: serviceData.progress.upcoming,
+            yetToScheduleSessions: serviceData.progress.yetToSchedule,
             upNext: serviceData.upNext,
             modules: serviceData.categories.map((cat) => ({
                 id: cat.name.toLowerCase().replace(/\s+/g, "-"),
@@ -93,7 +95,7 @@ function useNormalizedJourneyData(serviceData: LearningJourneyViewData | null) {
                             ? format(start, "MMMM d, yyyy")
                             : `${format(start, "MMM d")} - ${format(end, "MMM d, yyyy")}`,
                         duration: `${item.totalHours}h`,
-                        status: statusMap[item.status] ?? "upcoming",
+                        status: statusMap[item.status] ?? "yet_to_schedule",
                     };
                 }),
             })),
@@ -175,15 +177,14 @@ export default function ContentTabsPanel({
                                             completedSessions={journeyData.completedSessions}
                                             inProgressSessions={journeyData.inProgressSessions}
                                             upcomingSessions={journeyData.upcomingSessions}
+                                            yetToScheduleSessions={journeyData.yetToScheduleSessions}
                                         />
 
-                                        {journeyData.upNext && (
-                                            <UpNextCard
-                                                title={journeyData.upNext.title}
-                                                date={journeyData.upNext.date}
-                                                duration={journeyData.upNext.duration}
-                                            />
-                                        )}
+                                        <UpNextCard
+                                            title={journeyData.upNext?.title}
+                                            date={journeyData.upNext?.date}
+                                            duration={journeyData.upNext?.duration}
+                                        />
 
                                         <div className="flex flex-col gap-6">
                                             <FilterTabs

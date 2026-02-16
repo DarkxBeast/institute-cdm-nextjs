@@ -128,8 +128,8 @@ export default function StudentsTable({ data, batchId }: StudentsTableProps) {
 
             {/* Pagination Controls */}
             {totalPages > 1 && (
-                <div className="flex items-center justify-between px-6 py-3 border-t border-gray-100 bg-gray-50/50">
-                    <div className="text-sm text-gray-500">
+                <div className="flex items-center justify-between px-4 md:px-6 py-3 border-t border-gray-100 bg-gray-50/50">
+                    <div className="text-xs md:text-sm text-gray-500">
                         Showing {startIndex + 1} to {Math.min(endIndex, data.length)} of {data.length} students
                     </div>
                     <div className="flex items-center gap-2">
@@ -138,15 +138,16 @@ export default function StudentsTable({ data, batchId }: StudentsTableProps) {
                             size="sm"
                             onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                             disabled={currentPage === 1}
-                            className="h-8 px-3"
+                            className="h-8 px-2 md:px-3"
                         >
-                            <ChevronLeft className="h-4 w-4 mr-1" />
-                            Previous
+                            <ChevronLeft className="h-4 w-4 md:mr-1" />
+                            <span className="hidden md:inline">Previous</span>
                         </Button>
-                        <div className="flex items-center gap-1 text-sm text-gray-600">
-                            <span>Page</span>
+                        <div className="flex items-center gap-1 text-xs md:text-sm text-gray-600">
+                            <span className="hidden md:inline">Page</span>
                             <span className="font-medium">{currentPage}</span>
-                            <span>of</span>
+                            <span className="hidden md:inline">of</span>
+                            <span className="md:hidden">/</span>
                             <span className="font-medium">{totalPages}</span>
                         </div>
                         <Button
@@ -154,10 +155,10 @@ export default function StudentsTable({ data, batchId }: StudentsTableProps) {
                             size="sm"
                             onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                             disabled={currentPage === totalPages}
-                            className="h-8 px-3"
+                            className="h-8 px-2 md:px-3"
                         >
-                            Next
-                            <ChevronRight className="h-4 w-4 ml-1" />
+                            <span className="hidden md:inline">Next</span>
+                            <ChevronRight className="h-4 w-4 md:ml-1" />
                         </Button>
                     </div>
                 </div>

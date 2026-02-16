@@ -33,7 +33,7 @@ interface Module {
     format: string;
     mode: "Offline" | "Online";
     avgScore: number | string;
-    status: "Completed" | "In Progress" | "Scheduled";
+    status: "Completed" | "In Progress" | "Scheduled" | "Yet to Schedule";
 }
 
 // Learning journey item shape (matches server action output)
@@ -58,10 +58,11 @@ interface ModulesTableProps {
     learningJourneyItems?: LearningJourneyItem[] | null;
 }
 
-function mapStatusToModule(status: string): "Completed" | "In Progress" | "Scheduled" {
+function mapStatusToModule(status: string): "Completed" | "In Progress" | "Scheduled" | "Yet to Schedule" {
     switch (status) {
         case "Completed": return "Completed";
         case "Ongoing": return "In Progress";
+        case "Yet to Schedule": return "Yet to Schedule";
         default: return "Scheduled";
     }
 }
@@ -130,6 +131,8 @@ export default function ModulesTable({ learningJourneyItems }: ModulesTableProps
                 return <Badge className="bg-yellow-50 text-yellow-700 hover:bg-yellow-50 border-yellow-200 shadow-none font-normal"><span className="w-1.5 h-1.5 rounded-full bg-yellow-600 mr-2"></span>In Progress</Badge>;
             case "Scheduled":
                 return <Badge className="bg-blue-50 text-blue-700 hover:bg-blue-50 border-blue-200 shadow-none font-normal"><span className="w-1.5 h-1.5 rounded-full bg-blue-600 mr-2"></span>Scheduled</Badge>;
+            case "Yet to Schedule":
+                return <Badge className="bg-gray-50 text-gray-500 hover:bg-gray-50 border-gray-200 shadow-none font-normal"><span className="w-1.5 h-1.5 rounded-full bg-gray-400 mr-2"></span>Yet to Schedule</Badge>;
             default:
                 return <Badge variant="outline">{status}</Badge>;
         }
@@ -177,7 +180,7 @@ export default function ModulesTable({ learningJourneyItems }: ModulesTableProps
                             <Table className="table-fixed">
                                 <TableHeader className="bg-gray-50/50">
                                     <TableRow className="hover:bg-transparent border-b border-gray-100">
-                                        <TableHead className="h-12 px-6 font-medium text-gray-600 w-[22%]">Module Name</TableHead>
+                                        <TableHead className="h-12 px-6 font-medium text-gray-600 w-[19%]">Module Name</TableHead>
                                         <TableHead className="h-12 px-6 font-medium text-gray-600 w-[14%]">Mentor(s)</TableHead>
                                         <TableHead className="h-12 px-6 font-medium text-gray-600 text-center w-[10%]">Start Date</TableHead>
                                         <TableHead className="h-12 px-6 font-medium text-gray-600 text-center w-[10%]">End Date</TableHead>
@@ -185,7 +188,7 @@ export default function ModulesTable({ learningJourneyItems }: ModulesTableProps
                                         <TableHead className="h-12 px-6 font-medium text-gray-600 text-center w-[8%]">Format</TableHead>
                                         <TableHead className="h-12 px-6 font-medium text-gray-600 text-center w-[9%]">Mode</TableHead>
                                         <TableHead className="h-12 px-6 font-medium text-gray-600 text-center w-[8%]">Avg Score</TableHead>
-                                        <TableHead className="h-12 px-6 font-medium text-gray-600 text-center w-[10%]">Status</TableHead>
+                                        <TableHead className="h-12 px-6 font-medium text-gray-600 text-center w-[13%]">Status</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -324,12 +327,12 @@ export default function ModulesTable({ learningJourneyItems }: ModulesTableProps
                                         size="sm"
                                         onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                                         disabled={currentPage === 1}
-                                        className="h-8 px-3"
+                                        className="h-8 px-2 md:px-3"
                                     >
-                                        <ChevronLeft className="h-4 w-4 mr-1" />
-                                        <span className="hidden sm:inline">Previous</span>
+                                        <ChevronLeft className="h-4 w-4 md:mr-1" />
+                                        <span className="hidden md:inline">Previous</span>
                                     </Button>
-                                    <div className="flex items-center gap-1 text-sm text-gray-600">
+                                    <div className="flex items-center gap-1 text-xs md:text-sm text-gray-600">
                                         <span className="font-medium">{currentPage}</span>
                                         <span>/</span>
                                         <span className="font-medium">{totalPages}</span>
@@ -339,10 +342,10 @@ export default function ModulesTable({ learningJourneyItems }: ModulesTableProps
                                         size="sm"
                                         onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                                         disabled={currentPage === totalPages}
-                                        className="h-8 px-3"
+                                        className="h-8 px-2 md:px-3"
                                     >
-                                        <span className="hidden sm:inline">Next</span>
-                                        <ChevronRight className="h-4 w-4 ml-1" />
+                                        <span className="hidden md:inline">Next</span>
+                                        <ChevronRight className="h-4 w-4 md:ml-1" />
                                     </Button>
                                 </div>
                             </div>

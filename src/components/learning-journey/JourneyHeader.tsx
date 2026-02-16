@@ -30,18 +30,18 @@ export function JourneyHeader({
             </Link>
 
             {/* Title row */}
-            <div className="flex items-center gap-6">
-                <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-1">
+                <div className="flex items-center gap-3">
                     <h1 className="text-2xl font-semibold text-[#1a1a1a] leading-8">
                         {batchTitle}
                     </h1>
-                    <p className="text-base text-[#62748e] leading-6">
-                        {batchSubtitle}
-                    </p>
+                    <Badge className="bg-[#ff9e44] text-white text-xs px-3 py-1 rounded-[10px] border-transparent hover:bg-[#ff9e44] capitalize">
+                        {batchStatus}
+                    </Badge>
                 </div>
-                <Badge className="bg-[#ff9e44] text-white text-xs px-3 py-1 rounded-[10px] border-transparent hover:bg-[#ff9e44] capitalize">
-                    {batchStatus}
-                </Badge>
+                <p className="text-base text-[#62748e] leading-6">
+                    {batchSubtitle}
+                </p>
             </div>
         </div>
     );

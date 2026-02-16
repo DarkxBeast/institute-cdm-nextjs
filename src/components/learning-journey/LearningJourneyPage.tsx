@@ -30,11 +30,12 @@ function useNormalizedData(serviceData: LearningJourneyViewData | null) {
     return useMemo(() => {
         if (!serviceData) return null;
 
-        const statusMap: Record<string, "completed" | "in_progress" | "upcoming"> =
+        const statusMap: Record<string, "completed" | "in_progress" | "upcoming" | "yet_to_schedule"> =
         {
             Completed: "completed",
             Ongoing: "in_progress",
             Upcoming: "upcoming",
+            "Yet to Schedule": "yet_to_schedule",
         };
 
         return {
@@ -51,6 +52,7 @@ function useNormalizedData(serviceData: LearningJourneyViewData | null) {
             completedSessions: serviceData.progress.completed,
             inProgressSessions: serviceData.progress.inProgress,
             upcomingSessions: serviceData.progress.upcoming,
+            yetToScheduleSessions: serviceData.progress.yetToSchedule,
             upNext: serviceData.upNext,
             modules: serviceData.categories.map((cat) => ({
                 id: cat.name.toLowerCase().replace(/\s+/g, "-"),
@@ -80,7 +82,7 @@ function useNormalizedData(serviceData: LearningJourneyViewData | null) {
                         title: item.particulars,
                         date: dateStr,
                         duration: `${item.totalHours}h`,
-                        status: statusMap[item.status] ?? "upcoming",
+                        status: statusMap[item.status] ?? "yet_to_schedule",
                     };
                 }),
             })),
@@ -176,15 +178,14 @@ export function LearningJourneyPage({
                                 completedSessions={data.completedSessions}
                                 inProgressSessions={data.inProgressSessions}
                                 upcomingSessions={data.upcomingSessions}
+                                yetToScheduleSessions={data.yetToScheduleSessions}
                             />
 
-                            {data.upNext && (
-                                <UpNextCard
-                                    title={data.upNext.title}
-                                    date={data.upNext.date}
-                                    duration={data.upNext.duration}
-                                />
-                            )}
+                            <UpNextCard
+                                title={data.upNext?.title}
+                                date={data.upNext?.date}
+                                duration={data.upNext?.duration}
+                            />
 
                             <div className="flex flex-col gap-6">
                                 <FilterTabs

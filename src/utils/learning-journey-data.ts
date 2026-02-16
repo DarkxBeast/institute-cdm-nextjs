@@ -1,4 +1,4 @@
-export type SessionStatus = "completed" | "in_progress" | "upcoming";
+export type SessionStatus = "completed" | "in_progress" | "upcoming" | "yet_to_schedule";
 
 export interface SessionData {
     id: string;

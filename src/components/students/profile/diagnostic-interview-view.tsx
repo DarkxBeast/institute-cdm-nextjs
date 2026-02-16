@@ -113,13 +113,11 @@ export function DiagnosticInterviewView({ reports }: DiagnosticInterviewViewProp
 
             {/* ── Overall Rating ── */}
             {(meta.overall_rating !== undefined || meta.alignment_score !== undefined) && (
-                <Card className="border-gray-200 shadow-sm">
+                <Card className="relative border-gray-200 shadow-sm mt-4">
+                    <Badge className="absolute -top-3 left-4 bg-orange-400 hover:bg-orange-400 text-white text-xs rounded-full px-3 py-1 border-0 shadow-sm z-10">
+                        Overall Assessment
+                    </Badge>
                     <CardContent className="pt-6">
-                        <div className="flex items-center gap-2 mb-5">
-                            <Badge className="bg-orange-400 hover:bg-orange-400 text-white text-xs rounded-full px-3 py-1 border-0">
-                                Overall Assessment
-                            </Badge>
-                        </div>
                         <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
                             {meta.overall_rating !== undefined && (
                                 <div className="bg-orange-50 rounded-xl p-4 flex-1 text-center">
@@ -255,12 +253,12 @@ export function DiagnosticInterviewView({ reports }: DiagnosticInterviewViewProp
             {(strengths.length > 0 || developmentAreas.length > 0) && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Strengths */}
-                    <Card className="border-gray-200 shadow-sm">
+                    <Card className="relative border-gray-200 shadow-sm mt-4">
+                        <Badge className="absolute -top-3 left-4 bg-orange-400 hover:bg-orange-400 text-white text-xs rounded-full px-3 py-1 shadow-sm z-10">
+                            Strengths
+                        </Badge>
                         <CardContent className="pt-6">
-                            <Badge className="bg-orange-400 hover:bg-orange-400 text-white text-xs rounded-full px-3 py-1">
-                                Strengths
-                            </Badge>
-                            <div className="space-y-3 mt-5">
+                            <div className="space-y-3">
                                 {strengths.length > 0 ? (
                                     strengths.slice(0, 8).map((item, i) => (
                                         <div key={i} className="flex items-start gap-2">
@@ -276,12 +274,12 @@ export function DiagnosticInterviewView({ reports }: DiagnosticInterviewViewProp
                     </Card>
 
                     {/* Development Areas */}
-                    <Card className="border-gray-200 shadow-sm">
+                    <Card className="relative border-gray-200 shadow-sm mt-4">
+                        <Badge className="absolute -top-3 left-4 bg-orange-400 hover:bg-orange-400 text-white text-xs rounded-full px-3 py-1 shadow-sm z-10">
+                            Areas for Development
+                        </Badge>
                         <CardContent className="pt-6">
-                            <Badge className="bg-orange-400 hover:bg-orange-400 text-white text-xs rounded-full px-3 py-1">
-                                Areas for Development
-                            </Badge>
-                            <div className="space-y-3 mt-5">
+                            <div className="space-y-3">
                                 {developmentAreas.length > 0 ? (
                                     developmentAreas.slice(0, 8).map((item, i) => (
                                         <div key={i} className="flex items-start gap-2">
@@ -300,12 +298,12 @@ export function DiagnosticInterviewView({ reports }: DiagnosticInterviewViewProp
 
             {/* ── Mentor Summary ── */}
             {(meta.mentor_name || report.session?.mentorName) && (
-                <Card className="border-gray-200 shadow-sm">
+                <Card className="relative border-gray-200 shadow-sm mt-4">
+                    <Badge className="absolute -top-3 left-4 bg-orange-400 hover:bg-orange-400 text-white text-xs rounded-full px-3 py-1 shadow-sm z-10">
+                        Mentor Summary
+                    </Badge>
                     <CardContent className="pt-6">
-                        <Badge className="bg-orange-400 hover:bg-orange-400 text-white text-xs rounded-full px-3 py-1">
-                            Mentor Summary
-                        </Badge>
-                        <div className="mt-5 bg-orange-50 rounded-xl p-4 space-y-4">
+                        <div className="bg-orange-50 rounded-xl p-4 space-y-4">
                             <div className="flex items-start gap-3">
                                 {/* Mentor avatar */}
                                 <div className="h-10 w-10 rounded-full bg-orange-400 flex items-center justify-center shrink-0">
@@ -338,12 +336,12 @@ export function DiagnosticInterviewView({ reports }: DiagnosticInterviewViewProp
 
             {/* ── Feedback Summary / Notes ── */}
             {(feedback.job_fit || feedback.areas_for_improvement) && (
-                <Card className="border-gray-200 shadow-sm">
+                <Card className="relative border-gray-200 shadow-sm mt-4">
+                    <Badge className="absolute -top-3 left-4 bg-orange-400 hover:bg-orange-400 text-white text-xs rounded-full px-3 py-1 shadow-sm z-10">
+                        Feedback &amp; Career Notes
+                    </Badge>
                     <CardContent className="pt-6">
-                        <Badge className="bg-orange-400 hover:bg-orange-400 text-white text-xs rounded-full px-3 py-1">
-                            Feedback &amp; Career Notes
-                        </Badge>
-                        <div className="mt-5 space-y-3">
+                        <div className="space-y-3">
                             {feedback.job_fit && (
                                 <div className="bg-gray-50 rounded-xl p-4 space-y-2">
                                     <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Job Fit</p>

@@ -52,7 +52,7 @@ export function StudentJourney({ items = [] }: StudentJourneyProps) {
                 <CardTitle className="text-lg font-semibold text-gray-900">Student Journey</CardTitle>
             </CardHeader>
             <CardContent>
-                <div className="relative space-y-0 max-h-[400px] overflow-y-auto sm:max-h-none sm:overflow-visible pr-2 sm:pr-0">
+                <div className="relative space-y-0 max-h-[400px] sm:max-h-[720px] overflow-y-auto pr-2">
                     {displayItems.length === 0 ? (
                         <p className="text-sm text-gray-500 text-center py-4">No journey items found.</p>
                     ) : (

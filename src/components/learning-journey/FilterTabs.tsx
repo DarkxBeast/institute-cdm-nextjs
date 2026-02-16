@@ -14,6 +14,7 @@ const filters: { label: string; value: FilterValue }[] = [
     { label: "Completed", value: "completed" },
     { label: "In Progress", value: "in_progress" },
     { label: "Upcoming", value: "upcoming" },
+    { label: "Yet to Schedule", value: "yet_to_schedule" },
 ];
 
 export function FilterTabs({ activeFilter, onFilterChange }: FilterTabsProps) {
