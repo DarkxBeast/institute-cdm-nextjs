@@ -8,15 +8,15 @@ import {
     FileText,
     CheckCircle2,
     TrendingUp,
-    Target,
-    Briefcase,
-    ClipboardList,
+    Lightbulb,
+    Award,
+    MessageSquare,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import type { StudentReport } from "@/app/actions/student-reports";
 
-interface DiagnosticInterviewViewProps {
+interface ResumeReviewViewProps {
     reports: StudentReport[];
     instanceLabel?: string;
 }
@@ -28,62 +28,44 @@ interface Meta {
     mentee_name?: string;
     mentor_name?: string;
     overall_rating?: number;
-    alignment_score?: number;
-}
-
-interface SectionItem {
-    label: string;
-    value: boolean;
-    is_positive: boolean;
+    report_version?: string;
 }
 
 interface Section {
     title: string;
     rating: number;
-    items: SectionItem[];
+    comments?: string;
 }
 
 interface FeedbackSummary {
-    job_fit?: string;
-    plan_b_c?: string;
-    target_roles?: string;
-    strongest_aspects?: string;
+    strengths?: string;
     areas_for_improvement?: string;
+    resume_alignment?: string;
+    specific_recommendations?: string;
+    next_steps?: string;
+    certifications_tools_courses?: string;
 }
 
 function parseMeta(data: Record<string, any>): Meta {
-    return (data.meta && typeof data.meta === "object") ? data.meta : {};
+    return data.meta && typeof data.meta === "object" ? data.meta : {};
 }
 
 function parseSections(data: Record<string, any>): Section[] {
     return Array.isArray(data.sections) ? data.sections : [];
 }
 
-function parseFeedbackSummary(data: Record<string, any>): FeedbackSummary {
-    return (data.feedback_summary && typeof data.feedback_summary === "object")
+function parseFeedback(data: Record<string, any>): FeedbackSummary {
+    return data.feedback_summary && typeof data.feedback_summary === "object"
         ? data.feedback_summary
         : {};
 }
 
-/** Rating label and color */
-function getRatingLabel(score: number): { text: string; className: string } {
-    if (score >= 4.5) return { text: "Excellent", className: "text-emerald-600" };
-    if (score >= 3.5) return { text: "Good", className: "text-emerald-500" };
-    if (score >= 2.5) return { text: "Average", className: "text-orange-500" };
-    if (score >= 1.5) return { text: "Below Average", className: "text-amber-500" };
-    return { text: "Needs Improvement", className: "text-red-500" };
-}
+// ── Component ──
 
-function hasMeaningfulContent(text?: string): boolean {
-    if (!text) return false;
-    const t = text.trim().toLowerCase();
-    return t.length > 0 && !["nothing", "none", "n/a", "na", "-", "—"].includes(t);
-}
-
-export function DiagnosticInterviewView({
+export function ResumeReviewView({
     reports,
     instanceLabel,
-}: DiagnosticInterviewViewProps) {
+}: ResumeReviewViewProps) {
     if (!reports.length) return null;
     const report = reports[0];
     if (!report) return null;
@@ -91,28 +73,12 @@ export function DiagnosticInterviewView({
     const data = report.reportData;
     const meta = parseMeta(data);
     const sections = parseSections(data);
-    const feedback = parseFeedbackSummary(data);
-
-    // Collect strengths and development areas
-    const strengths: string[] = [];
-    const developmentAreas: string[] = [];
-    for (const section of sections) {
-        for (const item of section.items || []) {
-            if (item.is_positive && item.value) {
-                strengths.push(item.label);
-            } else if ((!item.is_positive && item.value) || (item.is_positive && !item.value)) {
-                developmentAreas.push(item.label);
-            }
-        }
-    }
-
-    // Only show rated sections in bar chart
-    const ratedSections = sections.filter((s) => s.rating > 0);
+    const feedback = parseFeedback(data);
 
     const completedDate = meta.date || report.session?.scheduledDate || report.createdAt;
     const pathname = usePathname();
-    const journeyItemId = report.journeyItemId || '';
-    const reportUrl = `${pathname}/report?type=${encodeURIComponent(report.reportType)}${journeyItemId ? `&journeyItemId=${encodeURIComponent(journeyItemId)}` : ''}`;
+    const journeyItemId = report.journeyItemId || "";
+    const reportUrl = `${pathname}/report?type=${encodeURIComponent(report.reportType)}${journeyItemId ? `&journeyItemId=${encodeURIComponent(journeyItemId)}` : ""}`;
 
     return (
         <div className="space-y-6">
@@ -122,7 +88,7 @@ export function DiagnosticInterviewView({
                     <div className="flex items-center justify-between flex-wrap gap-4">
                         <div className="space-y-2">
                             <h2 className="text-2xl font-semibold text-gray-900">
-                                {instanceLabel || "Diagnostic Interview"}
+                                {instanceLabel || "Resume Review"}
                             </h2>
                             <div className="flex items-center gap-2 text-sm text-gray-500">
                                 <Calendar className="h-4 w-4" />
@@ -140,84 +106,24 @@ export function DiagnosticInterviewView({
             </Card>
 
             {/* ── Overall Rating ── */}
-            {(meta.overall_rating !== undefined || meta.alignment_score !== undefined) && (
+            {meta.overall_rating !== undefined && (
                 <Card className="relative border-gray-200 shadow-sm mt-4">
                     <Badge className="absolute -top-3 left-4 bg-orange-400 hover:bg-orange-400 text-white text-xs rounded-full px-3 py-1 border-0 shadow-sm z-10">
                         Overall Assessment
                     </Badge>
                     <CardContent className="pt-6">
                         <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
-                            {meta.overall_rating !== undefined && (() => {
-                                const label = getRatingLabel(meta.overall_rating);
-                                return (
-                                    <div className="bg-orange-50 rounded-xl p-4 flex-1 text-center">
-                                        <p className="text-3xl font-bold text-orange-500">{meta.overall_rating}</p>
-                                        <p className={`text-sm font-medium mt-1 ${label.className}`}>{label.text}</p>
-                                        <p className="text-xs text-gray-400 mt-0.5">Overall Rating</p>
-                                    </div>
-                                );
-                            })()}
-                            {meta.alignment_score !== undefined && (() => {
-                                const label = getRatingLabel(meta.alignment_score);
-                                return (
-                                    <div className="bg-orange-50 rounded-xl p-4 flex-1 text-center">
-                                        <p className="text-3xl font-bold text-orange-500">{meta.alignment_score}</p>
-                                        <p className={`text-sm font-medium mt-1 ${label.className}`}>{label.text}</p>
-                                        <p className="text-xs text-gray-400 mt-0.5">Alignment Score</p>
-                                    </div>
-                                );
-                            })()}
+                            <div className="bg-orange-50 rounded-xl p-4 flex-1 text-center">
+                                <p className="text-3xl font-bold text-orange-500">{meta.overall_rating}</p>
+                                <p className="text-sm text-gray-600 mt-1">Overall Rating</p>
+                            </div>
                         </div>
                     </CardContent>
                 </Card>
             )}
 
-            {/* ── Career Direction (compact at-a-glance) ── */}
-            {(hasMeaningfulContent(feedback.target_roles) || hasMeaningfulContent(feedback.job_fit) || hasMeaningfulContent(feedback.plan_b_c)) && (
-                <Card className="relative border-gray-200 shadow-sm mt-4">
-                    <Badge className="absolute -top-3 left-4 bg-orange-400 hover:bg-orange-400 text-white text-xs rounded-full px-3 py-1 shadow-sm z-10">
-                        Career Direction
-                    </Badge>
-                    <CardContent className="pt-6">
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            {hasMeaningfulContent(feedback.target_roles) && (
-                                <div className="bg-gray-50 rounded-xl p-4 space-y-1.5">
-                                    <div className="flex items-center gap-2">
-                                        <Target className="h-4 w-4 text-orange-500" />
-                                        <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Target Roles</p>
-                                    </div>
-                                    <div className="space-y-1">
-                                        {feedback.target_roles!.split(/\n/).filter(Boolean).map((role, i) => (
-                                            <p key={i} className="text-sm font-medium text-gray-800">{role.trim()}</p>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-                            {hasMeaningfulContent(feedback.job_fit) && (
-                                <div className="bg-gray-50 rounded-xl p-4 space-y-1.5">
-                                    <div className="flex items-center gap-2">
-                                        <Briefcase className="h-4 w-4 text-orange-500" />
-                                        <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Job Fit</p>
-                                    </div>
-                                    <p className="text-sm font-medium text-gray-800">{feedback.job_fit}</p>
-                                </div>
-                            )}
-                            {hasMeaningfulContent(feedback.plan_b_c) && (
-                                <div className="bg-gray-50 rounded-xl p-4 space-y-1.5">
-                                    <div className="flex items-center gap-2">
-                                        <ClipboardList className="h-4 w-4 text-orange-500" />
-                                        <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Plan B / C</p>
-                                    </div>
-                                    <p className="text-sm font-medium text-gray-800">{feedback.plan_b_c}</p>
-                                </div>
-                            )}
-                        </div>
-                    </CardContent>
-                </Card>
-            )}
-
-            {/* ── Parameter-wise Rating (bar chart — only rated sections) ── */}
-            {ratedSections.length > 0 && (() => {
+            {/* ── Parameter-wise Rating (bar chart) ── */}
+            {sections.length > 0 && (() => {
                 const maxScore = 5;
                 const chartH = 220;
                 const gridLines = [1, 2, 3, 4, 5];
@@ -274,16 +180,13 @@ export function DiagnosticInterviewView({
                                             className="flex items-end justify-around gap-2 sm:gap-4 relative"
                                             style={{ height: `${chartH}px` }}
                                         >
-                                            {ratedSections.map((section, i) => {
+                                            {sections.map((section, i) => {
                                                 const pct = section.rating / maxScore;
                                                 const barH = Math.max(pct * chartH, 8);
                                                 const colors = getBarColor(section.rating);
 
                                                 return (
-                                                    <div
-                                                        key={i}
-                                                        className="flex flex-col items-center flex-1 min-w-0 group"
-                                                    >
+                                                    <div key={i} className="flex flex-col items-center flex-1 min-w-0 group">
                                                         <div
                                                             className={`${colors.badge} text-white text-xs font-bold rounded-full w-7 h-7 flex items-center justify-center mb-1.5 shadow-sm opacity-90 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300`}
                                                         >
@@ -302,9 +205,9 @@ export function DiagnosticInterviewView({
 
                                 {/* X-axis labels */}
                                 <div className="flex min-w-[500px] mt-3">
-                                    <div className="pr-3 flex-none" style={{ width: '24px' }} />
+                                    <div className="pr-3 flex-none" style={{ width: "24px" }} />
                                     <div className="flex-1 flex justify-around gap-2 sm:gap-4">
-                                        {ratedSections.map((section, i) => (
+                                        {sections.map((section, i) => (
                                             <p
                                                 key={i}
                                                 className="text-[11px] sm:text-xs text-gray-500 text-center flex-1 min-w-0 leading-tight font-medium"
@@ -320,51 +223,160 @@ export function DiagnosticInterviewView({
                 );
             })()}
 
-            {/* ── Strengths & Development Areas ── */}
-            {(strengths.length > 0 || developmentAreas.length > 0) && (
+            {/* ── Section Comments ── */}
+            {sections.some((s) => s.comments) && (
+                <Card className="relative border-gray-200 shadow-sm mt-4">
+                    <Badge className="absolute -top-3 left-4 bg-orange-400 hover:bg-orange-400 text-white text-xs rounded-full px-3 py-1 shadow-sm z-10">
+                        Detailed Feedback
+                    </Badge>
+                    <CardContent className="pt-6">
+                        <div className="space-y-4">
+                            {sections
+                                .filter((s) => s.comments)
+                                .map((section, i) => (
+                                    <div key={i} className="bg-gray-50 rounded-xl p-4 space-y-1.5">
+                                        <div className="flex items-center justify-between">
+                                            <p className="text-sm font-semibold text-gray-900">{section.title}</p>
+                                            <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${section.rating >= 4
+                                                    ? "bg-emerald-100 text-emerald-700"
+                                                    : section.rating >= 3
+                                                        ? "bg-orange-100 text-orange-700"
+                                                        : "bg-red-100 text-red-700"
+                                                }`}>
+                                                {section.rating}/5
+                                            </span>
+                                        </div>
+                                        <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-line">
+                                            {section.comments}
+                                        </p>
+                                    </div>
+                                ))}
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
+
+            {/* ── Strengths & Areas for Improvement ── */}
+            {(feedback.strengths || feedback.areas_for_improvement) && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* Strengths */}
                     <Card className="relative border-gray-200 shadow-sm mt-4">
                         <Badge className="absolute -top-3 left-4 bg-orange-400 hover:bg-orange-400 text-white text-xs rounded-full px-3 py-1 shadow-sm z-10">
                             Strengths
                         </Badge>
                         <CardContent className="pt-6">
-                            <div className="space-y-3">
-                                {strengths.length > 0 ? (
-                                    strengths.slice(0, 6).map((item, i) => (
+                            {feedback.strengths ? (
+                                <div className="space-y-2">
+                                    {feedback.strengths.split(/\n/).filter(Boolean).map((line, i) => (
                                         <div key={i} className="flex items-start gap-2">
                                             <CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" />
-                                            <p className="text-sm text-gray-600">{item}</p>
+                                            <p className="text-sm text-gray-600">{line.replace(/^\d+\.\s*/, "").trim()}</p>
                                         </div>
-                                    ))
-                                ) : (
-                                    <p className="text-sm text-gray-400 italic">No strengths recorded.</p>
-                                )}
-                            </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <p className="text-sm text-gray-400 italic">No strengths recorded.</p>
+                            )}
                         </CardContent>
                     </Card>
 
-                    {/* Development Areas */}
                     <Card className="relative border-gray-200 shadow-sm mt-4">
                         <Badge className="absolute -top-3 left-4 bg-orange-400 hover:bg-orange-400 text-white text-xs rounded-full px-3 py-1 shadow-sm z-10">
-                            Areas for Development
+                            Areas for Improvement
                         </Badge>
                         <CardContent className="pt-6">
-                            <div className="space-y-3">
-                                {developmentAreas.length > 0 ? (
-                                    developmentAreas.slice(0, 6).map((item, i) => (
+                            {feedback.areas_for_improvement ? (
+                                <div className="space-y-2">
+                                    {feedback.areas_for_improvement.split(/\n/).filter(Boolean).map((line, i) => (
                                         <div key={i} className="flex items-start gap-2">
                                             <TrendingUp className="h-5 w-5 text-orange-400 shrink-0 mt-0.5" />
-                                            <p className="text-sm text-gray-600">{item}</p>
+                                            <p className="text-sm text-gray-600">{line.replace(/^\d+\.\s*/, "").trim()}</p>
                                         </div>
-                                    ))
-                                ) : (
-                                    <p className="text-sm text-gray-400 italic">No development areas recorded.</p>
-                                )}
-                            </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <p className="text-sm text-gray-400 italic">No improvement areas recorded.</p>
+                            )}
                         </CardContent>
                     </Card>
                 </div>
+            )}
+
+            {/* ── Resume Alignment ── */}
+            {feedback.resume_alignment && (
+                <Card className="relative border-gray-200 shadow-sm mt-4">
+                    <Badge className="absolute -top-3 left-4 bg-orange-400 hover:bg-orange-400 text-white text-xs rounded-full px-3 py-1 shadow-sm z-10">
+                        Resume Alignment
+                    </Badge>
+                    <CardContent className="pt-6">
+                        <div className="bg-gray-50 rounded-xl p-4">
+                            <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">
+                                {feedback.resume_alignment}
+                            </p>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
+
+            {/* ── Specific Recommendations & Next Steps ── */}
+            {(feedback.specific_recommendations || feedback.next_steps) && (
+                <Card className="relative border-gray-200 shadow-sm mt-4">
+                    <Badge className="absolute -top-3 left-4 bg-orange-400 hover:bg-orange-400 text-white text-xs rounded-full px-3 py-1 shadow-sm z-10">
+                        Recommendations & Next Steps
+                    </Badge>
+                    <CardContent className="pt-6">
+                        <div className="space-y-4">
+                            {feedback.specific_recommendations && (
+                                <div className="bg-gray-50 rounded-xl p-4 space-y-2">
+                                    <div className="flex items-center gap-2">
+                                        <Lightbulb className="h-4 w-4 text-orange-500" />
+                                        <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                                            Specific Recommendations
+                                        </p>
+                                    </div>
+                                    <div className="space-y-1.5">
+                                        {feedback.specific_recommendations.split(/\n/).filter(Boolean).map((line, i) => (
+                                            <p key={i} className="text-sm text-gray-700 leading-relaxed">
+                                                {line.trim()}
+                                            </p>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                            {feedback.next_steps && (
+                                <div className="bg-gray-50 rounded-xl p-4 space-y-2">
+                                    <div className="flex items-center gap-2">
+                                        <TrendingUp className="h-4 w-4 text-orange-500" />
+                                        <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                                            Next Steps
+                                        </p>
+                                    </div>
+                                    <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">
+                                        {feedback.next_steps}
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
+
+            {/* ── Certifications & Tools ── */}
+            {feedback.certifications_tools_courses && (
+                <Card className="relative border-gray-200 shadow-sm mt-4">
+                    <Badge className="absolute -top-3 left-4 bg-orange-400 hover:bg-orange-400 text-white text-xs rounded-full px-3 py-1 shadow-sm z-10">
+                        Recommended Certifications & Tools
+                    </Badge>
+                    <CardContent className="pt-6">
+                        <div className="bg-gray-50 rounded-xl p-4">
+                            <div className="flex items-start gap-2">
+                                <Award className="h-5 w-5 text-orange-500 shrink-0 mt-0.5" />
+                                <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">
+                                    {feedback.certifications_tools_courses}
+                                </p>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
             )}
 
             {/* ── Mentor Summary ── */}
@@ -393,11 +405,11 @@ export function DiagnosticInterviewView({
                                     <p className="text-sm text-gray-500">Mentor</p>
                                 </div>
                             </div>
-                            {hasMeaningfulContent(feedback.strongest_aspects) && (
+                            {feedback.strengths && (
                                 <div className="space-y-2">
                                     <p className="text-sm font-semibold text-gray-900">Summary:</p>
                                     <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-line">
-                                        {feedback.strongest_aspects}
+                                        {feedback.strengths}
                                     </p>
                                 </div>
                             )}

@@ -23,10 +23,22 @@ function formatReportTypeLabel(reportType: string): string {
 }
 
 /**
- * Turn the report_type string into a safe tab value (lowercase, underscored).
+ * Build the display label for a tab.
+ * If there are multiple instances of the same report type, append the instance number.
+ * e.g. "Diagnostic Interview - 1", "Diagnostic Interview - 2"
+ * If only one instance, just "Diagnostic Interview".
  */
-function toTabValue(reportType: string): string {
-    return `report_${reportType.toLowerCase().replace(/\s+/g, "_")}`;
+function buildTabLabel(rt: StudentReportSummary, allTypes: StudentReportSummary[]): string {
+    const base = formatReportTypeLabel(rt.reportType);
+    const sameTypeCount = allTypes.filter(t => t.reportType === rt.reportType).length;
+    return sameTypeCount > 1 ? `${base} - ${rt.instanceNumber}` : base;
+}
+
+/**
+ * Turn a report summary into a unique, safe tab value.
+ */
+function toTabValue(rt: StudentReportSummary): string {
+    return `report_${rt.reportType.toLowerCase().replace(/\s+/g, "_")}_${rt.journeyItemId}`;
 }
 
 export function StudentInfoTabs({
@@ -34,20 +46,18 @@ export function StudentInfoTabs({
     journeyItems = [],
     reportTypes = [],
 }: StudentInfoTabsProps) {
+    // Sort tabs by journey item sequence order
+    const sortedReportTypes = [...reportTypes].sort((a, b) => a.sequenceOrder - b.sequenceOrder);
+
     return (
         <Tabs defaultValue="overview" className="w-full">
             <TabsList className="flex flex-wrap justify-start w-fit max-w-full h-auto gap-1">
                 <TabsTrigger value="overview">Overview</TabsTrigger>
 
-                {/* Dynamic report type tabs */}
-                {reportTypes.map((rt) => (
-                    <TabsTrigger key={toTabValue(rt.reportType)} value={toTabValue(rt.reportType)}>
-                        {formatReportTypeLabel(rt.reportType)}
-                        {rt.count > 0 && (
-                            <span className="ml-1.5 inline-flex items-center justify-center h-5 min-w-[20px] px-1.5 rounded-full bg-orange-100 text-orange-700 text-[11px] font-semibold">
-                                {rt.count}
-                            </span>
-                        )}
+                {/* Dynamic report type tabs — one per journey item, ordered by sequence */}
+                {sortedReportTypes.map((rt) => (
+                    <TabsTrigger key={toTabValue(rt)} value={toTabValue(rt)}>
+                        {buildTabLabel(rt, sortedReportTypes)}
                     </TabsTrigger>
                 ))}
             </TabsList>
@@ -66,13 +76,18 @@ export function StudentInfoTabs({
                     </TabsContent>
 
                     {/* Dynamic report type tab contents */}
-                    {reportTypes.map((rt) => (
+                    {sortedReportTypes.map((rt) => (
                         <TabsContent
-                            key={toTabValue(rt.reportType)}
-                            value={toTabValue(rt.reportType)}
+                            key={toTabValue(rt)}
+                            value={toTabValue(rt)}
                             className="mt-0"
                         >
-                            <StudentReportTab studentId={student.id} reportType={rt.reportType} />
+                            <StudentReportTab
+                                studentId={student.id}
+                                reportType={rt.reportType}
+                                journeyItemId={rt.journeyItemId}
+                                instanceLabel={buildTabLabel(rt, sortedReportTypes)}
+                            />
                         </TabsContent>
                     ))}
                 </div>

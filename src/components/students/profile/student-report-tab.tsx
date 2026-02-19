@@ -5,11 +5,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileText, Calendar, User, Loader2 } from "lucide-react";
 import { getStudentReportsByType, type StudentReport } from "@/app/actions/student-reports";
 import { DiagnosticInterviewView } from "./diagnostic-interview-view";
+import { ResumeReviewView } from "./resume-review-view";
+import { PracticeInterviewView } from "./practice-interview-view";
 import { format, isValid } from "date-fns";
 
 interface StudentReportTabProps {
     studentId: string;
     reportType: string;
+    journeyItemId: string;
+    instanceLabel?: string;
 }
 
 function formatDate(dateStr: string | null): string {
@@ -18,7 +22,7 @@ function formatDate(dateStr: string | null): string {
     return isValid(d) ? format(d, "MMM d, yyyy") : "—";
 }
 
-export function StudentReportTab({ studentId, reportType }: StudentReportTabProps) {
+export function StudentReportTab({ studentId, reportType, journeyItemId, instanceLabel }: StudentReportTabProps) {
     const [reports, setReports] = useState<StudentReport[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -28,7 +32,7 @@ export function StudentReportTab({ studentId, reportType }: StudentReportTabProp
         setLoading(true);
         setError(null);
 
-        getStudentReportsByType(studentId, reportType).then(({ data, error: err }) => {
+        getStudentReportsByType(studentId, reportType, journeyItemId).then(({ data, error: err }) => {
             if (cancelled) return;
             setReports(data);
             setError(err);
@@ -36,7 +40,7 @@ export function StudentReportTab({ studentId, reportType }: StudentReportTabProp
         });
 
         return () => { cancelled = true; };
-    }, [studentId, reportType]);
+    }, [studentId, reportType, journeyItemId]);
 
     if (loading) {
         return (
@@ -72,7 +76,13 @@ export function StudentReportTab({ studentId, reportType }: StudentReportTabProp
     // Normalize: lowercase + replace spaces/hyphens with underscores to match any DB format
     const normalizedType = reportType.toLowerCase().replace(/[\s-]/g, "_");
     if (normalizedType === "diagnostic_interview") {
-        return <DiagnosticInterviewView reports={reports} />;
+        return <DiagnosticInterviewView reports={reports} instanceLabel={instanceLabel} />;
+    }
+    if (normalizedType === "resume_review") {
+        return <ResumeReviewView reports={reports} instanceLabel={instanceLabel} />;
+    }
+    if (normalizedType === "practice_interview") {
+        return <PracticeInterviewView reports={reports} instanceLabel={instanceLabel} />;
     }
 
     return (

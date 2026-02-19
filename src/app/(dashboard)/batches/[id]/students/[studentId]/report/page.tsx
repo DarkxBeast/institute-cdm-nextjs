@@ -1,15 +1,17 @@
 import { getStudentReportsByType } from "@/app/actions/student-reports";
 import { DiagnosticInterviewFullReport } from "@/components/students/profile/diagnostic-interview-full-report";
+import { ResumeReviewFullReport } from "@/components/students/profile/resume-review-full-report";
+import { PracticeInterviewFullReport } from "@/components/students/profile/practice-interview-full-report";
 import { getBatch } from "@/app/actions/batches";
 
 interface PageProps {
     params: Promise<{ id: string; studentId: string }>;
-    searchParams: Promise<{ type?: string }>;
+    searchParams: Promise<{ type?: string; journeyItemId?: string }>;
 }
 
-export default async function DiagnosticReportPage({ params, searchParams }: PageProps) {
+export default async function FullReportPage({ params, searchParams }: PageProps) {
     const { id, studentId } = await params;
-    const { type: reportType } = await searchParams;
+    const { type: reportType, journeyItemId } = await searchParams;
 
     // The URL studentId might be enrollmentId – resolve the real DB id
     const { data: batchData } = await getBatch(id);
@@ -18,9 +20,12 @@ export default async function DiagnosticReportPage({ params, searchParams }: Pag
     );
     const realStudentId = student?.id || studentId;
 
+    const resolvedType = reportType || "Diagnostic Interview";
+
     const { data: reports, error } = await getStudentReportsByType(
         realStudentId,
-        reportType || "Diagnostic Interview"
+        resolvedType,
+        journeyItemId
     );
 
     if (error || !reports || reports.length === 0) {
@@ -28,10 +33,10 @@ export default async function DiagnosticReportPage({ params, searchParams }: Pag
             <div className="flex items-center justify-center min-h-screen bg-gray-50">
                 <div className="text-center space-y-2">
                     <h2 className="text-xl font-semibold text-gray-900">
-                        No Diagnostic Interview Report Found
+                        No {resolvedType} Report Found
                     </h2>
                     <p className="text-sm text-gray-500">
-                        {error || "There are no diagnostic interview reports for this student yet."}
+                        {error || `There are no ${resolvedType.toLowerCase()} reports for this student yet.`}
                     </p>
                 </div>
             </div>
@@ -41,10 +46,16 @@ export default async function DiagnosticReportPage({ params, searchParams }: Pag
     const report = reports[0];
     const backUrl = `/batches/${id}/students/${studentId}`;
 
-    return (
-        <DiagnosticInterviewFullReport
-            report={report}
-            backUrl={backUrl}
-        />
-    );
+    // Route to the correct full report component
+    switch (resolvedType) {
+        case "Resume Review":
+            return <ResumeReviewFullReport report={report} backUrl={backUrl} />;
+
+        case "Practice Interview":
+            return <PracticeInterviewFullReport report={report} backUrl={backUrl} />;
+
+        case "Diagnostic Interview":
+        default:
+            return <DiagnosticInterviewFullReport report={report} backUrl={backUrl} />;
+    }
 }

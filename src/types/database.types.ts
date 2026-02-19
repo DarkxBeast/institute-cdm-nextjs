@@ -190,40 +190,34 @@ export interface Database {
                 Row: {
                     id: string
                     journey_item_id: string | null
-                    student_id: string
+                    journey_item_name: string | null
                     mentor_id: string | null
                     scheduled_date: string | null
                     meeting_link: string | null
                     status: string | null
-                    student_feedback_rating: number | null
-                    student_feedback_comment: string | null
-                    is_report_generated: boolean | null
+                    session_type: string | null
                     recording_link: string | null
                 }
                 Insert: {
                     id?: string
                     journey_item_id?: string | null
-                    student_id: string
+                    journey_item_name?: string | null
                     mentor_id?: string | null
                     scheduled_date?: string | null
                     meeting_link?: string | null
                     status?: string | null
-                    student_feedback_rating?: number | null
-                    student_feedback_comment?: string | null
-                    is_report_generated?: boolean | null
+                    session_type?: string | null
                     recording_link?: string | null
                 }
                 Update: {
                     id?: string
                     journey_item_id?: string | null
-                    student_id?: string
+                    journey_item_name?: string | null
                     mentor_id?: string | null
                     scheduled_date?: string | null
                     meeting_link?: string | null
                     status?: string | null
-                    student_feedback_rating?: number | null
-                    student_feedback_comment?: string | null
-                    is_report_generated?: boolean | null
+                    session_type?: string | null
                     recording_link?: string | null
                 }
                 Relationships: [
@@ -239,13 +233,6 @@ export interface Database {
                         columns: ["mentor_id"]
                         isOneToOne: false
                         referencedRelation: "mentors"
-                        referencedColumns: ["id"]
-                    },
-                    {
-                        foreignKeyName: "cdm_journey_sessions_student_id_fkey"
-                        columns: ["student_id"]
-                        isOneToOne: false
-                        referencedRelation: "cdm_students"
                         referencedColumns: ["id"]
                     }
                 ]
@@ -626,34 +613,121 @@ export interface Database {
                     }
                 ]
             }
+            cdm_session_attendees: {
+                Row: {
+                    id: string
+                    session_id: string
+                    student_id: string
+                    attendance_status: string | null
+                    feedback_data: Json | null
+                    is_report_generated: boolean | null
+                    session_name: string | null
+                    batch_name: string | null
+                    student_name: string | null
+                    journey_item_id: string | null
+                }
+                Insert: {
+                    id?: string
+                    session_id: string
+                    student_id: string
+                    attendance_status?: string | null
+                    feedback_data?: Json | null
+                    is_report_generated?: boolean | null
+                    session_name?: string | null
+                    batch_name?: string | null
+                    student_name?: string | null
+                    journey_item_id?: string | null
+                }
+                Update: {
+                    id?: string
+                    session_id?: string
+                    student_id?: string
+                    attendance_status?: string | null
+                    feedback_data?: Json | null
+                    is_report_generated?: boolean | null
+                    session_name?: string | null
+                    batch_name?: string | null
+                    student_name?: string | null
+                    journey_item_id?: string | null
+                }
+                Relationships: [
+                    {
+                        foreignKeyName: "cdm_attendees_session_fkey"
+                        columns: ["session_id"]
+                        isOneToOne: false
+                        referencedRelation: "cdm_journey_sessions"
+                        referencedColumns: ["id"]
+                    },
+                    {
+                        foreignKeyName: "cdm_attendees_student_fkey"
+                        columns: ["student_id"]
+                        isOneToOne: false
+                        referencedRelation: "cdm_students"
+                        referencedColumns: ["id"]
+                    },
+                    {
+                        foreignKeyName: "cdm_attendees_lji_fkey"
+                        columns: ["journey_item_id"]
+                        isOneToOne: false
+                        referencedRelation: "cdm_learning_journey_items"
+                        referencedColumns: ["id"]
+                    }
+                ]
+            }
             cdm_student_reports: {
                 Row: {
                     id: string
+                    attendee_id: string
                     session_id: string | null
+                    journey_item_id: string | null
                     report_type: string
                     report_data: Json | null
+                    batch_name: string | null
+                    student_name: string | null
                     created_at: string | null
                 }
                 Insert: {
                     id?: string
+                    attendee_id: string
                     session_id?: string | null
+                    journey_item_id?: string | null
                     report_type: string
                     report_data?: Json | null
+                    batch_name?: string | null
+                    student_name?: string | null
                     created_at?: string | null
                 }
                 Update: {
                     id?: string
+                    attendee_id?: string
                     session_id?: string | null
+                    journey_item_id?: string | null
                     report_type?: string
                     report_data?: Json | null
+                    batch_name?: string | null
+                    student_name?: string | null
                     created_at?: string | null
                 }
                 Relationships: [
+                    {
+                        foreignKeyName: "cdm_reports_attendee_fkey"
+                        columns: ["attendee_id"]
+                        isOneToOne: false
+                        referencedRelation: "cdm_session_attendees"
+                        referencedColumns: ["id"]
+                    },
                     {
                         foreignKeyName: "cdm_student_reports_session_id_fkey"
                         columns: ["session_id"]
                         isOneToOne: false
                         referencedRelation: "cdm_journey_sessions"
+                        referencedColumns: ["id"]
+                    },
+                    {
+                        foreignKeyName: "cdm_reports_lji_fkey"
+                        columns: ["journey_item_id"]
+                        isOneToOne: false
+                        referencedRelation: "cdm_learning_journey_items"
                         referencedColumns: ["id"]
                     }
                 ]

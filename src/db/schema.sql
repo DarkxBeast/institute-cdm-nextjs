@@ -1,292 +1,330 @@
-create table public.cdm_institute_pocs (
-  id uuid not null default gen_random_uuid (),
-  institute_id uuid null,
-  full_name text not null,
-  email text null,
-  phone text null,
-  designation text null,
-  is_primary_contact boolean null default false,
-  created_at timestamp with time zone null default now(),
-  user_id uuid null,
-  constraint cdm_institute_pocs_pkey primary key (id),
-  constraint cdm_institute_pocs_user_id_key unique (user_id),
-  constraint cdm_institute_pocs_institute_id_fkey foreign KEY (institute_id) references cdm_institutes (id) on delete CASCADE,
-  constraint cdm_institute_pocs_user_id_fkey foreign KEY (user_id) references auth.users (id) on delete set null
-) TABLESPACE pg_default;
+-- ============================================================
+-- CDM Schema (16 tables) — Supabase project: Career Company
+-- Generated from live database on 2026-02-19
+-- ============================================================
 
-create table public.cdm_institutes (
-  id uuid not null default gen_random_uuid (),
-  name text not null,
-  code text null,
-  location text null,
-  logo_url text null,
-  website_url text null,
-  status text null default 'Active'::text,
-  created_at timestamp with time zone null default now(),
-  updated_at timestamp with time zone null default now(),
-  constraint cdm_institutes_pkey primary key (id),
-  constraint cdm_institutes_code_key unique (code)
-) TABLESPACE pg_default;
+-- ----------------------------------------
+-- 1. cdm_modules
+-- ----------------------------------------
+CREATE TABLE public.cdm_modules (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  title text NOT NULL,
+  category text NOT NULL,
+  category_code text,
+  description text,
+  mode text NOT NULL,
+  delivery_type text NOT NULL,
+  indicative_timeline text,
+  total_hours_per_student numeric,
+  session_count integer DEFAULT 1,
+  num_students integer DEFAULT 1,
+  price_per_session_ctu numeric DEFAULT 0,
+  ctc numeric NOT NULL DEFAULT 0,
+  ctu numeric DEFAULT 0,
+  price_per_student numeric DEFAULT 0,
+  ctc_per_session numeric DEFAULT 0,
+  margin numeric DEFAULT 0,
+  margin_percentage numeric DEFAULT 0,
+  created_at timestamp with time zone DEFAULT now(),
+  updated_at timestamp with time zone DEFAULT now(),
 
-create table public.cdm_batches (
-  id uuid not null default gen_random_uuid (),
-  institute_id uuid null,
-  proposal_id uuid null,
-  name text not null,
-  status text null default 'Tentative'::text,
-  start_date date null,
-  end_date date null,
-  schedule_description text null,
-  mentor_id uuid null,
-  created_at timestamp with time zone null default now(),
-  department text null,
-  constraint cdm_batches_pkey primary key (id),
-  constraint cdm_batches_institute_id_fkey foreign KEY (institute_id) references cdm_institutes (id),
-  constraint cdm_batches_mentor_id_fkey foreign KEY (mentor_id) references mentors (id)
-) TABLESPACE pg_default;
+  CONSTRAINT cdm_modules_pkey PRIMARY KEY (id)
+);
 
-create table public.cdm_journey_item_mentors (
-  id uuid not null default gen_random_uuid (),
-  journey_item_id uuid null,
-  mentor_id uuid null,
-  constraint cdm_journey_item_mentors_pkey primary key (id),
-  constraint cdm_journey_item_mentors_item_mentor_unique unique (journey_item_id, mentor_id),
-  constraint cdm_journey_item_mentors_journey_item_id_fkey foreign KEY (journey_item_id) references cdm_learning_journey_items (id) on delete CASCADE,
-  constraint cdm_journey_item_mentors_mentor_id_fkey foreign KEY (mentor_id) references mentors (id) on delete CASCADE
-) TABLESPACE pg_default;
+-- ----------------------------------------
+-- 2. cdm_institutes
+-- ----------------------------------------
+CREATE TABLE public.cdm_institutes (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  name text NOT NULL,
+  code text,
+  location text,
+  logo_url text,
+  website_url text,
+  status text DEFAULT 'Active'::text,
+  created_at timestamp with time zone DEFAULT now(),
+  updated_at timestamp with time zone DEFAULT now(),
 
-create table public.cdm_journey_sessions (
-  id uuid not null default gen_random_uuid (),
-  journey_item_id uuid null,
-  student_id uuid not null,
-  mentor_id uuid null,
-  scheduled_date timestamp with time zone null,
-  meeting_link text null,
-  status text null default 'Pending'::text,
-  student_feedback_rating integer null,
-  student_feedback_comment text null,
-  is_report_generated boolean null default false,
-  recording_link text null,
-  constraint cdm_journey_sessions_pkey primary key (id),
-  constraint cdm_journey_sessions_journey_item_id_fkey foreign KEY (journey_item_id) references cdm_learning_journey_items (id),
-  constraint cdm_journey_sessions_mentor_id_fkey foreign KEY (mentor_id) references mentors (id),
-  constraint cdm_journey_sessions_student_id_fkey foreign KEY (student_id) references cdm_students (id)
-) TABLESPACE pg_default;
+  CONSTRAINT cdm_institutes_pkey PRIMARY KEY (id),
+  CONSTRAINT cdm_institutes_code_key UNIQUE (code)
+);
 
-create table public.cdm_learning_journey_items (
-  id uuid not null default gen_random_uuid (),
-  learning_journey_id uuid null,
-  product_id uuid null,
-  particulars text null,
-  product_code text null,
-  delivery_mode text null,
-  format text null,
-  total_hours numeric(5, 1) null,
-  student_count integer null,
-  num_sessions integer null,
-  start_date date null,
-  end_date date null,
-  status text null default 'Yet to Schedule'::text,
-  average_rating numeric(3, 2) null default 0.00,
-  sequence_order integer null default 1,
-  constraint cdm_learning_journey_items_pkey primary key (id),
-  constraint cdm_learning_journey_items_learning_journey_id_fkey foreign KEY (learning_journey_id) references cdm_learning_journeys (id),
-  constraint cdm_learning_journey_items_product_id_fkey foreign KEY (product_id) references cdm_products (id)
-) TABLESPACE pg_default;
+-- ----------------------------------------
+-- 3. cdm_institute_pocs
+-- ----------------------------------------
+CREATE TABLE public.cdm_institute_pocs (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  institute_id uuid,
+  full_name text NOT NULL,
+  email text,
+  phone text,
+  designation text,
+  is_primary_contact boolean DEFAULT false,
+  created_at timestamp with time zone DEFAULT now(),
+  user_id uuid,
 
-create table public.cdm_learning_journeys (
-  id uuid not null default gen_random_uuid (),
-  proposal_id uuid null,
-  institute_id uuid null,
-  batch_id uuid null,
-  status text null default 'Active'::text,
-  created_at timestamp with time zone null default now(),
-  constraint cdm_learning_journeys_pkey primary key (id),
-  constraint cdm_learning_journeys_batch_id_fkey foreign KEY (batch_id) references cdm_batches (id),
-  constraint cdm_learning_journeys_institute_id_fkey foreign KEY (institute_id) references cdm_institutes (id),
-  constraint cdm_learning_journeys_proposal_id_fkey foreign KEY (proposal_id) references cdm_proposals (id)
-) TABLESPACE pg_default;
+  CONSTRAINT cdm_institute_pocs_pkey PRIMARY KEY (id),
+  CONSTRAINT cdm_institute_pocs_user_id_key UNIQUE (user_id),
+  CONSTRAINT cdm_institute_pocs_institute_id_fkey FOREIGN KEY (institute_id) REFERENCES public.cdm_institutes(id),
+  CONSTRAINT cdm_institute_pocs_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id)
+);
 
-create table public.cdm_modules (
-  id uuid not null default gen_random_uuid (),
-  title text not null,
-  category text not null,
-  category_code text null,
-  description text null,
-  mode text not null,
-  delivery_type text not null,
-  indicative_timeline text null,
-  total_hours_per_student numeric(5, 2) null,
-  session_count integer null default 1,
-  num_students integer null default 1,
-  price_per_session_ctu numeric(12, 2) null default 0,
-  ctc numeric(12, 2) not null default 0,
-  ctu numeric(12, 2) null default 0,
-  price_per_student numeric(12, 2) null default 0,
-  ctc_per_session numeric(12, 2) null default 0,
-  margin numeric(12, 2) null default 0,
-  margin_percentage numeric(5, 2) null default 0,
-  created_at timestamp with time zone null default now(),
-  updated_at timestamp with time zone null default now(),
-  constraint modules_pkey primary key (id),
-  constraint check_category check (
-    (
-      category = any (
-        array[
-          'Clarity'::text,
-          'Prep'::text,
-          'Last-mile Prep'::text
-        ]
-      )
-    )
-  ),
-  constraint check_category_code check (
-    (
-      category_code = any (
-        array[
-          'ORN'::text,
-          'ASM'::text,
-          'WKS'::text,
-          'MCL'::text,
-          'PRP'::text,
-          'APT'::text,
-          'BCP'::text,
-          'LMH'::text,
-          'SIEP'::text,
-          'PMF'::text,
-          'LMS'::text
-        ]
-      )
-    )
-  ),
-  constraint check_delivery check (
-    (
-      delivery_type = any (
-        array[
-          'Offline'::text,
-          'Online'::text,
-          'Platform'::text,
-          'Offline/Online'::text
-        ]
-      )
-    )
-  ),
-  constraint check_mode check (
-    (
-      mode = any (
-        array[
-          '1:1'::text,
-          '1:M'::text,
-          '1:8'::text,
-          '1:10'::text
-        ]
-      )
-    )
-  )
-) TABLESPACE pg_default;
+-- ----------------------------------------
+-- 4. cdm_batches
+-- ----------------------------------------
+CREATE TABLE public.cdm_batches (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  institute_id uuid,
+  proposal_id uuid,
+  name text NOT NULL,
+  status text DEFAULT 'Tentative'::text,
+  start_date date,
+  end_date date,
+  schedule_description text,
+  mentor_id uuid,
+  created_at timestamp with time zone DEFAULT now(),
+  department text,
 
+  CONSTRAINT cdm_batches_pkey PRIMARY KEY (id),
+  CONSTRAINT cdm_batches_institute_id_fkey FOREIGN KEY (institute_id) REFERENCES public.cdm_institutes(id),
+  CONSTRAINT cdm_batches_mentor_id_fkey FOREIGN KEY (mentor_id) REFERENCES public.mentors(id)
+);
 
-create table public.cdm_products (
-  id uuid not null default gen_random_uuid (),
-  module_id uuid null,
-  particulars text not null,
-  product_code text not null,
-  delivery_mode text null,
-  format text null,
-  total_hours numeric(5, 1) null,
-  max_students integer null,
-  num_sessions integer null,
-  ctc_per_session numeric(12, 2) null,
-  asking_price_per_session numeric(12, 2) null,
-  created_at timestamp with time zone null default now(),
-  constraint cdm_products_pkey primary key (id),
-  constraint cdm_products_product_code_key unique (product_code)
-) TABLESPACE pg_default;
+-- ----------------------------------------
+-- 5. cdm_students
+-- ----------------------------------------
+CREATE TABLE public.cdm_students (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  batch_id uuid,
+  email text,
+  phone text,
+  full_name text NOT NULL,
+  gender text,
+  enrollment_id text,
 
+  CONSTRAINT cdm_students_pkey PRIMARY KEY (id),
+  CONSTRAINT cdm_students_enrollment_id_key UNIQUE (enrollment_id),
+  CONSTRAINT cdm_students_batch_id_fkey FOREIGN KEY (batch_id) REFERENCES public.cdm_batches(id)
+);
 
-create table public.cdm_proposal_items (
-  id uuid not null default gen_random_uuid (),
-  proposal_id uuid null,
-  product_id uuid null,
-  sequence_order integer not null default 1,
-  tentative_start_date date null,
-  tentative_end_date date null,
-  student_count integer not null,
-  quoted_price_per_session numeric(12, 2) null,
-  snapshot_particulars text null,
-  snapshot_product_code text null,
-  snapshot_delivery_mode text null,
-  snapshot_max_students integer null,
-  snapshot_ctc_per_session numeric(12, 2) null,
-  num_sessions integer null,
-  total_ctc numeric(12, 2) null,
-  total_asking_price numeric(12, 2) null,
-  created_at timestamp with time zone null default now(),
-  constraint cdm_proposal_items_pkey primary key (id),
-  constraint cdm_proposal_items_product_id_fkey foreign KEY (product_id) references cdm_products (id),
-  constraint cdm_proposal_items_proposal_id_fkey foreign KEY (proposal_id) references cdm_proposals (id) on delete CASCADE
-) TABLESPACE pg_default;
+-- ----------------------------------------
+-- 6. cdm_products
+-- ----------------------------------------
+CREATE TABLE public.cdm_products (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  module_id uuid,
+  particulars text NOT NULL,
+  product_code text NOT NULL,
+  delivery_mode text,
+  format text,
+  total_hours numeric,
+  max_students integer,
+  num_sessions integer,
+  ctc_per_session numeric,
+  asking_price_per_session numeric,
+  created_at timestamp with time zone DEFAULT now(),
 
-create trigger trigger_calc_proposal_totals BEFORE INSERT
-or
-update on cdm_proposal_items for EACH row
-execute FUNCTION calculate_proposal_item_totals ();
+  CONSTRAINT cdm_products_pkey PRIMARY KEY (id),
+  CONSTRAINT cdm_products_product_code_key UNIQUE (product_code),
+  CONSTRAINT cdm_products_module_id_fkey FOREIGN KEY (module_id) REFERENCES public.cdm_modules(id)
+);
 
+-- ----------------------------------------
+-- 7. cdm_proposals
+-- ----------------------------------------
+CREATE TABLE public.cdm_proposals (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  proposal_ref_id text,
+  institute_id uuid NOT NULL,
+  batch_id uuid NOT NULL,
+  status text DEFAULT 'Draft'::text,
+  discount_percentage numeric DEFAULT 0,
+  gst_percentage numeric DEFAULT 18.00,
+  created_by uuid,
+  created_at timestamp with time zone DEFAULT now(),
+  updated_at timestamp with time zone DEFAULT now(),
 
-create table public.cdm_proposals (
-  id uuid not null default gen_random_uuid (),
-  proposal_ref_id text null,
-  institute_id uuid not null,
-  batch_id uuid not null,
-  status text null default 'Draft'::text,
-  discount_percentage numeric(5, 2) null default 0,
-  gst_percentage numeric(5, 2) null default 18.00,
-  created_by uuid null,
-  created_at timestamp with time zone null default now(),
-  updated_at timestamp with time zone null default now(),
-  constraint cdm_proposals_pkey primary key (id),
-  constraint cdm_proposals_proposal_ref_id_key unique (proposal_ref_id),
-  constraint cdm_proposals_batch_id_fkey foreign KEY (batch_id) references cdm_batches (id),
-  constraint cdm_proposals_created_by_fkey foreign KEY (created_by) references tcc_admins (id),
-  constraint cdm_proposals_institute_id_fkey foreign KEY (institute_id) references cdm_institutes (id)
-) TABLESPACE pg_default;
+  CONSTRAINT cdm_proposals_pkey PRIMARY KEY (id),
+  CONSTRAINT cdm_proposals_proposal_ref_id_key UNIQUE (proposal_ref_id),
+  CONSTRAINT cdm_proposals_institute_id_fkey FOREIGN KEY (institute_id) REFERENCES public.cdm_institutes(id),
+  CONSTRAINT cdm_proposals_batch_id_fkey FOREIGN KEY (batch_id) REFERENCES public.cdm_batches(id),
+  CONSTRAINT cdm_proposals_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.tcc_admins(id)
+);
 
-create trigger trigger_on_proposal_approval
-after
-update on cdm_proposals for EACH row
-execute FUNCTION handle_proposal_approval ();
+-- ----------------------------------------
+-- 8. cdm_proposal_items
+-- ----------------------------------------
+CREATE TABLE public.cdm_proposal_items (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  proposal_id uuid,
+  product_id uuid,
+  sequence_order integer NOT NULL DEFAULT 1,
+  tentative_start_date date,
+  tentative_end_date date,
+  student_count integer NOT NULL,
+  quoted_price_per_session numeric,
+  snapshot_particulars text,
+  snapshot_product_code text,
+  snapshot_delivery_mode text,
+  snapshot_max_students integer,
+  snapshot_ctc_per_session numeric,
+  num_sessions integer,
+  total_ctc numeric,
+  total_asking_price numeric,
+  created_at timestamp with time zone DEFAULT now(),
+  snapshot_format text,
+  snapshot_total_hours numeric,
 
+  CONSTRAINT cdm_proposal_items_pkey PRIMARY KEY (id),
+  CONSTRAINT cdm_proposal_items_proposal_id_fkey FOREIGN KEY (proposal_id) REFERENCES public.cdm_proposals(id),
+  CONSTRAINT cdm_proposal_items_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.cdm_products(id)
+);
 
-create table public.cdm_student_reports (
-  id uuid not null default gen_random_uuid (),
-  session_id uuid null,
-  report_type text not null,
-  report_data jsonb null,
-  created_at timestamp with time zone null default now(),
-  constraint cdm_student_reports_pkey primary key (id),
-  constraint cdm_student_reports_session_id_fkey foreign KEY (session_id) references cdm_journey_sessions (id) on delete CASCADE
-) TABLESPACE pg_default;
+-- ----------------------------------------
+-- 9. cdm_learning_journeys
+-- ----------------------------------------
+CREATE TABLE public.cdm_learning_journeys (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  proposal_id uuid,
+  institute_id uuid,
+  batch_id uuid,
+  status text DEFAULT 'Active'::text,
+  created_at timestamp with time zone DEFAULT now(),
 
-create index IF not exists idx_cdm_student_reports_session_id on public.cdm_student_reports using btree (session_id) TABLESPACE pg_default;
+  CONSTRAINT cdm_learning_journeys_pkey PRIMARY KEY (id),
+  CONSTRAINT cdm_learning_journeys_proposal_id_fkey FOREIGN KEY (proposal_id) REFERENCES public.cdm_proposals(id),
+  CONSTRAINT cdm_learning_journeys_institute_id_fkey FOREIGN KEY (institute_id) REFERENCES public.cdm_institutes(id),
+  CONSTRAINT cdm_learning_journeys_batch_id_fkey FOREIGN KEY (batch_id) REFERENCES public.cdm_batches(id)
+);
 
-create index IF not exists idx_reports_data_gin on public.cdm_student_reports using gin (report_data) TABLESPACE pg_default;
+-- ----------------------------------------
+-- 10. cdm_learning_journey_items
+-- ----------------------------------------
+CREATE TABLE public.cdm_learning_journey_items (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  learning_journey_id uuid,
+  product_id uuid,
+  particulars text,
+  product_code text,
+  delivery_mode text,
+  format text,
+  total_hours numeric,
+  student_count integer,
+  num_sessions integer,
+  start_date date,
+  end_date date,
+  status text DEFAULT 'Yet to Schedule'::text,
+  average_rating numeric DEFAULT 0.00,
+  sequence_order integer DEFAULT 1,
 
-create index IF not exists idx_reports_score on public.cdm_student_reports using btree ((((report_data ->> 'score'::text))::numeric)) TABLESPACE pg_default;
+  CONSTRAINT cdm_learning_journey_items_pkey PRIMARY KEY (id),
+  CONSTRAINT cdm_learning_journey_items_learning_journey_id_fkey FOREIGN KEY (learning_journey_id) REFERENCES public.cdm_learning_journeys(id),
+  CONSTRAINT cdm_learning_journey_items_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.cdm_products(id)
+);
 
-create trigger trigger_update_session_report_status
-after INSERT on cdm_student_reports for EACH row
-execute FUNCTION handle_report_generation ();
+-- ----------------------------------------
+-- 11. cdm_journey_item_mentors
+-- ----------------------------------------
+CREATE TABLE public.cdm_journey_item_mentors (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  journey_item_id uuid,
+  mentor_id uuid,
 
+  CONSTRAINT cdm_journey_item_mentors_pkey PRIMARY KEY (id),
+  CONSTRAINT cdm_journey_item_mentors_item_mentor_unique UNIQUE (journey_item_id, mentor_id),
+  CONSTRAINT cdm_journey_item_mentors_journey_item_id_fkey FOREIGN KEY (journey_item_id) REFERENCES public.cdm_learning_journey_items(id),
+  CONSTRAINT cdm_journey_item_mentors_mentor_id_fkey FOREIGN KEY (mentor_id) REFERENCES public.mentors(id)
+);
 
-create table public.cdm_students (
-  id uuid not null default gen_random_uuid (),
-  batch_id uuid null,
-  email text null,
-  phone text null,
-  full_name text not null,
-  gender text null,
-  enrollment_id text null,
-  constraint cdm_students_pkey primary key (id),
-  constraint cdm_students_enrollment_id_key unique (enrollment_id),
-  constraint cdm_students_batch_id_fkey foreign KEY (batch_id) references cdm_batches (id)
-) TABLESPACE pg_default;
+-- ----------------------------------------
+-- 12. cdm_journey_sessions
+-- ----------------------------------------
+CREATE TABLE public.cdm_journey_sessions (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  journey_item_id uuid,
+  mentor_id uuid,
+  scheduled_date timestamp with time zone,
+  meeting_link text,
+  status text DEFAULT 'Pending'::text,
+  recording_link text,
+  session_type text DEFAULT '1:1'::text,
+  journey_item_name text,
+
+  CONSTRAINT cdm_journey_sessions_pkey PRIMARY KEY (id),
+  CONSTRAINT cdm_journey_sessions_journey_item_id_fkey FOREIGN KEY (journey_item_id) REFERENCES public.cdm_learning_journey_items(id),
+  CONSTRAINT cdm_journey_sessions_mentor_id_fkey FOREIGN KEY (mentor_id) REFERENCES public.mentors(id)
+);
+
+-- ----------------------------------------
+-- 13. cdm_session_attendees
+-- ----------------------------------------
+CREATE TABLE public.cdm_session_attendees (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  session_id uuid NOT NULL,
+  student_id uuid NOT NULL,
+  attendance_status text DEFAULT 'Pending'::text,
+  is_report_generated boolean DEFAULT false,
+  feedback_data jsonb DEFAULT '{}'::jsonb,
+  student_name text,
+  batch_name text,
+  session_name text,
+  journey_item_id uuid,
+
+  CONSTRAINT cdm_session_attendees_pkey PRIMARY KEY (id),
+  CONSTRAINT cdm_attendees_unique UNIQUE (session_id, student_id),
+  CONSTRAINT cdm_attendees_session_fkey FOREIGN KEY (session_id) REFERENCES public.cdm_journey_sessions(id),
+  CONSTRAINT cdm_attendees_student_fkey FOREIGN KEY (student_id) REFERENCES public.cdm_students(id),
+  CONSTRAINT cdm_attendees_lji_fkey FOREIGN KEY (journey_item_id) REFERENCES public.cdm_learning_journey_items(id)
+);
+
+-- ----------------------------------------
+-- 14. cdm_student_reports
+-- ----------------------------------------
+CREATE TABLE public.cdm_student_reports (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  session_id uuid,
+  report_type text NOT NULL,
+  report_data jsonb,
+  created_at timestamp with time zone DEFAULT now(),
+  student_name text,
+  batch_name text,
+  attendee_id uuid NOT NULL,
+  journey_item_id uuid,
+
+  CONSTRAINT cdm_student_reports_pkey PRIMARY KEY (id),
+  CONSTRAINT cdm_student_reports_session_id_fkey FOREIGN KEY (session_id) REFERENCES public.cdm_journey_sessions(id),
+  CONSTRAINT cdm_reports_attendee_fkey FOREIGN KEY (attendee_id) REFERENCES public.cdm_session_attendees(id),
+  CONSTRAINT cdm_reports_lji_fkey FOREIGN KEY (journey_item_id) REFERENCES public.cdm_learning_journey_items(id)
+);
+
+-- ----------------------------------------
+-- 15. cdm_product_analytics (VIEW)
+-- ----------------------------------------
+-- Note: This is a database view, not a table.
+-- Columns listed for reference:
+--   id uuid
+--   product_code text
+--   particulars text
+--   total_ctc numeric
+--   total_asking_price numeric
+--   asking_price_per_student numeric
+--   margin_value numeric
+--   margin_percentage numeric
+
+-- ----------------------------------------
+-- 16. cdm_proposal_analytics (VIEW)
+-- ----------------------------------------
+-- Note: This is a database view, not a table.
+-- Columns listed for reference:
+--   proposal_id uuid
+--   proposal_ref_id text
+--   status text
+--   discount_percentage numeric
+--   gst_percentage numeric
+--   subtotal_asking_price numeric
+--   total_cost_company numeric
+--   discount_amount numeric
+--   net_total_before_tax numeric
+--   gst_amount numeric
+--   final_total_payable numeric
+--   final_margin_value numeric

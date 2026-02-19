@@ -1,6 +1,0 @@
-studentName,enrollmentId,email,phoneNumber,department,year,status
-Alice Smith,EN2025001,alice@example.com,+91 98765-43210,Computer Science,1,active
-Bob Johnson,EN2025002,bob@example.com,+91 87654-32109,Electronics,2,active
-Charlie Brown,EN2025003,charlie@example.com,+91 76543-21098,Mechanical,3,inactive
-Diana Prince,EN2025004,diana@example.com,+91 65432-10987,Civil,4,graduated
-Edward Norton,EN2025005,edward@example.com,+91 54321-09876,Computer Science,1,active
