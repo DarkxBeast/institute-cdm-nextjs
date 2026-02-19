@@ -161,7 +161,7 @@ export async function getStudentReportsByType(
                     id,
                     scheduled_date,
                     status,
-                    mentors ( first_name, last_name ),
+                    mentors_new ( mentor_first_name, mentor_last_name ),
                     cdm_learning_journey_items ( particulars, sequence_order )
                 )
             `)
@@ -186,7 +186,7 @@ export async function getStudentReportsByType(
 
         const mapped: StudentReport[] = reports.map((r: any) => {
             const session = r.session
-            const mentor = session?.mentors
+            const mentor = session?.mentors_new
             const journeyItem = session?.cdm_learning_journey_items
 
             return {
@@ -200,9 +200,7 @@ export async function getStudentReportsByType(
                         id: session.id,
                         scheduledDate: session.scheduled_date ?? null,
                         status: session.status ?? 'Unknown',
-                        mentorName: [mentor?.first_name, mentor?.last_name]
-                            .filter(Boolean)
-                            .join(' ') || 'Unknown Mentor',
+                        mentorName: [mentor?.mentor_first_name, mentor?.mentor_last_name].filter(Boolean).join(' ') || 'Unknown Mentor',
                         journeyItemTitle: journeyItem?.particulars ?? 'Unknown Session',
                     }
                     : null,

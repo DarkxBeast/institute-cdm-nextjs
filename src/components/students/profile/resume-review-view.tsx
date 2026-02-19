@@ -238,10 +238,10 @@ export function ResumeReviewView({
                                         <div className="flex items-center justify-between">
                                             <p className="text-sm font-semibold text-gray-900">{section.title}</p>
                                             <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${section.rating >= 4
-                                                    ? "bg-emerald-100 text-emerald-700"
-                                                    : section.rating >= 3
-                                                        ? "bg-orange-100 text-orange-700"
-                                                        : "bg-red-100 text-red-700"
+                                                ? "bg-emerald-100 text-emerald-700"
+                                                : section.rating >= 3
+                                                    ? "bg-orange-100 text-orange-700"
+                                                    : "bg-red-100 text-red-700"
                                                 }`}>
                                                 {section.rating}/5
                                             </span>

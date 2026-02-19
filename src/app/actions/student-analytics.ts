@@ -82,7 +82,7 @@ export async function getStudentAllReports(
                     student_id
                 ),
                 session:cdm_journey_sessions!cdm_student_reports_session_id_fkey (
-                    mentors ( first_name, last_name ),
+                    mentors_new ( mentor_first_name, mentor_last_name ),
                     cdm_learning_journey_items ( particulars, sequence_order )
                 )
             `)
@@ -100,7 +100,7 @@ export async function getStudentAllReports(
 
         const mapped: AnalyticsReport[] = reports.map((r: any) => {
             const session = r.session
-            const mentor = session?.mentors
+            const mentor = session?.mentors_new
             const ji = session?.cdm_learning_journey_items
 
             return {
@@ -111,9 +111,7 @@ export async function getStudentAllReports(
                 journeyItemId: r.journey_item_id ?? null,
                 journeyItemName: ji?.particulars ?? null,
                 sequenceOrder: ji?.sequence_order ?? 0,
-                mentorName: [mentor?.first_name, mentor?.last_name]
-                    .filter(Boolean)
-                    .join(' ') || null,
+                mentorName: [mentor?.mentor_first_name, mentor?.mentor_last_name].filter(Boolean).join(' ') || null,
             }
         })
 

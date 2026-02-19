@@ -223,11 +223,14 @@ export default function StudentPerformanceView() {
                                         ) : students.length === 0 ? (
                                             <p className="text-sm text-gray-400">No students in this batch</p>
                                         ) : (
-                                            <Select value={selectedStudentId} onValueChange={setSelectedStudentId}>
+                                            <Select value={selectedStudentId} onValueChange={(val) => setSelectedStudentId(val === "__none__" ? "" : val)}>
                                                 <SelectTrigger className="w-[220px] h-9 text-sm">
                                                     <SelectValue placeholder="Select a student" />
                                                 </SelectTrigger>
                                                 <SelectContent>
+                                                    <SelectItem value="__none__" className="text-gray-500 italic">
+                                                        All Students (Batch View)
+                                                    </SelectItem>
                                                     {students.map((s) => (
                                                         <SelectItem key={s.id} value={s.id}>
                                                             {s.studentName}

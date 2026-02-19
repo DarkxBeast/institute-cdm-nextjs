@@ -61,7 +61,7 @@ export interface Database {
                         foreignKeyName: "cdm_batches_mentor_id_fkey"
                         columns: ["mentor_id"]
                         isOneToOne: false
-                        referencedRelation: "mentors"
+                        referencedRelation: "mentors_new"
                         referencedColumns: ["id"]
                     }
                 ]
@@ -153,39 +153,6 @@ export interface Database {
                 }
                 Relationships: []
             }
-            cdm_journey_item_mentors: {
-                Row: {
-                    id: string
-                    journey_item_id: string | null
-                    mentor_id: string | null
-                }
-                Insert: {
-                    id?: string
-                    journey_item_id?: string | null
-                    mentor_id?: string | null
-                }
-                Update: {
-                    id?: string
-                    journey_item_id?: string | null
-                    mentor_id?: string | null
-                }
-                Relationships: [
-                    {
-                        foreignKeyName: "cdm_journey_item_mentors_journey_item_id_fkey"
-                        columns: ["journey_item_id"]
-                        isOneToOne: false
-                        referencedRelation: "cdm_learning_journey_items"
-                        referencedColumns: ["id"]
-                    },
-                    {
-                        foreignKeyName: "cdm_journey_item_mentors_mentor_id_fkey"
-                        columns: ["mentor_id"]
-                        isOneToOne: false
-                        referencedRelation: "mentors"
-                        referencedColumns: ["id"]
-                    }
-                ]
-            }
             cdm_journey_sessions: {
                 Row: {
                     id: string
@@ -232,7 +199,7 @@ export interface Database {
                         foreignKeyName: "cdm_journey_sessions_mentor_id_fkey"
                         columns: ["mentor_id"]
                         isOneToOne: false
-                        referencedRelation: "mentors"
+                        referencedRelation: "mentors_new"
                         referencedColumns: ["id"]
                     }
                 ]
@@ -770,30 +737,21 @@ export interface Database {
                     }
                 ]
             }
-            mentors: {
+            mentors_new: {
                 Row: {
                     id: string
-                    full_name: string
-                    email: string | null
-                    phone: string | null
-                    specialization: string[] | null
-                    status: string | null
+                    mentor_first_name: string | null
+                    mentor_last_name: string | null
                 }
                 Insert: {
                     id?: string
-                    full_name: string
-                    email?: string | null
-                    phone?: string | null
-                    specialization?: string[] | null
-                    status?: string | null
+                    mentor_first_name?: string | null
+                    mentor_last_name?: string | null
                 }
                 Update: {
                     id?: string
-                    full_name?: string
-                    email?: string | null
-                    phone?: string | null
-                    specialization?: string[] | null
-                    status?: string | null
+                    mentor_first_name?: string | null
+                    mentor_last_name?: string | null
                 }
                 Relationships: []
             }

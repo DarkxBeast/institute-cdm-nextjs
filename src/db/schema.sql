@@ -87,7 +87,7 @@ CREATE TABLE public.cdm_batches (
 
   CONSTRAINT cdm_batches_pkey PRIMARY KEY (id),
   CONSTRAINT cdm_batches_institute_id_fkey FOREIGN KEY (institute_id) REFERENCES public.cdm_institutes(id),
-  CONSTRAINT cdm_batches_mentor_id_fkey FOREIGN KEY (mentor_id) REFERENCES public.mentors(id)
+  CONSTRAINT cdm_batches_mentor_id_fkey FOREIGN KEY (mentor_id) REFERENCES public.mentors_new(id)
 );
 
 -- ----------------------------------------
@@ -223,18 +223,61 @@ CREATE TABLE public.cdm_learning_journey_items (
 );
 
 -- ----------------------------------------
--- 11. cdm_journey_item_mentors
+-- 11. mentors_new
 -- ----------------------------------------
-CREATE TABLE public.cdm_journey_item_mentors (
-  id uuid NOT NULL DEFAULT gen_random_uuid(),
-  journey_item_id uuid,
-  mentor_id uuid,
-
-  CONSTRAINT cdm_journey_item_mentors_pkey PRIMARY KEY (id),
-  CONSTRAINT cdm_journey_item_mentors_item_mentor_unique UNIQUE (journey_item_id, mentor_id),
-  CONSTRAINT cdm_journey_item_mentors_journey_item_id_fkey FOREIGN KEY (journey_item_id) REFERENCES public.cdm_learning_journey_items(id),
-  CONSTRAINT cdm_journey_item_mentors_mentor_id_fkey FOREIGN KEY (mentor_id) REFERENCES public.mentors(id)
-);
+create table public.mentors_new (
+  id uuid not null default auth.uid (),
+  mentor_email text null,
+  mentor_phone text null,
+  mentor_profile_url text null,
+  mentor_first_name text null,
+  mentor_last_name text null,
+  mentor_address text null,
+  mentor_city text null,
+  mentor_pincode text null,
+  mentor_state text null,
+  mentor_country text null,
+  mentor_about text null,
+  mentor_education json null,
+  mentor_work_experience json null,
+  mentor_resume_url text null,
+  mentor_domain_expertise text[] null,
+  mentor_technical_skills text[] null,
+  mentor_soft_skills text[] null,
+  mentor_certification json null,
+  mentor_languages json null,
+  mentor_who_do_you text[] null,
+  mentor_prefer_mentoring text[] null,
+  mentor_area_interest text[] null,
+  mentor_weekly_time text null,
+  mentor_earnings text null,
+  mentor_linkedin_url text null,
+  mentor_other_profile_url text null,
+  mentor_account_holder_name text null,
+  mentor_bank_name text null,
+  mentor_average_rating text null,
+  mentor_threshold_rating text null,
+  mentor_account_no text null,
+  mentor_ifsc_code text null,
+  mentor_weekly_availability json null,
+  mentor_access_token text null,
+  mentor_referesh_token text null,
+  is_delete boolean null default false,
+  is_suspended boolean null,
+  suspended_duration text null,
+  created_at timestamp without time zone null default CURRENT_TIMESTAMP,
+  personal_draft boolean null default false,
+  education_draft boolean null default false,
+  skills_draft boolean null default false,
+  service_payment_draft boolean null default false,
+  username text null,
+  experience_years text null,
+  mentor_functional_domain_expertise text[] null,
+  gd_session boolean null default false,
+  mentor_pan_number text null,
+  constraint mentors_new_pkey primary key (id),
+  constraint mentors_new_mentor_email_key unique (mentor_email)
+) TABLESPACE pg_default;
 
 -- ----------------------------------------
 -- 12. cdm_journey_sessions
@@ -252,7 +295,7 @@ CREATE TABLE public.cdm_journey_sessions (
 
   CONSTRAINT cdm_journey_sessions_pkey PRIMARY KEY (id),
   CONSTRAINT cdm_journey_sessions_journey_item_id_fkey FOREIGN KEY (journey_item_id) REFERENCES public.cdm_learning_journey_items(id),
-  CONSTRAINT cdm_journey_sessions_mentor_id_fkey FOREIGN KEY (mentor_id) REFERENCES public.mentors(id)
+  CONSTRAINT cdm_journey_sessions_mentor_id_fkey FOREIGN KEY (mentor_id) REFERENCES public.mentors_new(id)
 );
 
 -- ----------------------------------------

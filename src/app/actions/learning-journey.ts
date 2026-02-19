@@ -131,9 +131,9 @@ export async function getLearningJourneyForBatch(batchId: string): Promise<{ dat
                             category
                         )
                     ),
-                    cdm_journey_item_mentors (
-                        mentors (
-                            id, first_name, last_name, email, phone
+                    cdm_journey_sessions (
+                        mentors_new (
+                            id, mentor_first_name, mentor_last_name
                         )
                     )
                 )
@@ -179,14 +179,23 @@ export async function getLearningJourneyForBatch(batchId: string): Promise<{ dat
             averageRating: item.average_rating ?? null,
             sequenceOrder: item.sequence_order ?? 0,
             category: item.cdm_products?.cdm_modules?.category ?? 'General',
-            mentors: (item.cdm_journey_item_mentors ?? []).map((jim: any) => ({
-                id: jim.mentors?.id ?? '',
-                fullName: [jim.mentors?.first_name, jim.mentors?.last_name].filter(Boolean).join(' ') || 'Unknown',
-                email: jim.mentors?.email ?? null,
-                phone: jim.mentors?.phone ?? null,
-                specialization: [],
-                status: 'active',
-            })).filter((m: MentorInfo) => m.id !== ''),
+            mentors: (() => {
+                const mentorMap = new Map<string, MentorInfo>();
+                for (const s of (item.cdm_journey_sessions ?? [])) {
+                    const m = s.mentors_new;
+                    if (m && m.id && !mentorMap.has(m.id)) {
+                        mentorMap.set(m.id, {
+                            id: m.id,
+                            fullName: [m.mentor_first_name, m.mentor_last_name].filter(Boolean).join(' ') || 'Unknown',
+                            email: null,
+                            phone: null,
+                            specialization: [],
+                            status: 'active',
+                        });
+                    }
+                }
+                return Array.from(mentorMap.values());
+            })(),
         }))
             .sort((a, b) => a.sequenceOrder - b.sequenceOrder)
 
