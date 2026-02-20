@@ -222,10 +222,17 @@ export async function getBatch(batchId: string): Promise<{ data: { batchInfo: Ba
         return { error: batchError?.message || 'Batch not found', data: null }
     }
 
-    // 3. Fetch students
+    // 3. Fetch students with their reports to calculate overall score
     const { data: studentsData, error: studentsError } = await supabase
         .from('cdm_students')
-        .select('*')
+        .select(`
+            *,
+            cdm_session_attendees (
+                cdm_student_reports (
+                    report_data
+                )
+            )
+        `)
         .eq('batch_id', batchId)
 
     if (studentsError) {
@@ -243,14 +250,46 @@ export async function getBatch(batchId: string): Promise<{ data: { batchInfo: Ba
         department: batch.department || '',
     }
 
-    const students: Student[] = studentsData.map((s: any) => ({
-        id: s.id,
-        studentName: s.full_name,
-        enrollmentId: s.enrollment_id || '',
-        email: s.email || '',
-        phoneNumber: s.phone || '',
-        gender: s.gender || '',
-    }))
+    const students: Student[] = studentsData.map((s: any) => {
+        let averageRating = 0;
+        let ratingCount = 0;
+
+        if (s.cdm_session_attendees && Array.isArray(s.cdm_session_attendees)) {
+            s.cdm_session_attendees.forEach((attendee: any) => {
+                if (attendee.cdm_student_reports && Array.isArray(attendee.cdm_student_reports)) {
+                    attendee.cdm_student_reports.forEach((report: any) => {
+                        const data = report.report_data || {};
+                        let rating: number | null = null;
+
+                        if (data.meta && typeof data.meta === 'object' && typeof data.meta.overall_rating === 'number') {
+                            rating = data.meta.overall_rating;
+                        } else if (typeof data.overall_rating === 'number') {
+                            rating = data.overall_rating;
+                        } else if (typeof data.overall_experience === 'number') {
+                            rating = data.overall_experience;
+                        }
+
+                        if (rating !== null) {
+                            averageRating += rating;
+                            ratingCount++;
+                        }
+                    });
+                }
+            });
+        }
+
+        const overallScore = ratingCount > 0 ? (averageRating / ratingCount).toFixed(1) : "-";
+
+        return {
+            id: s.id,
+            studentName: s.full_name,
+            enrollmentId: s.enrollment_id || '',
+            email: s.email || '',
+            phoneNumber: s.phone || '',
+            gender: s.gender || '',
+            overallScore,
+        };
+    })
 
     // Note: It seems I am missing some columns in DB or mapping. 
     // Looking at createBatch, we only insert first_name, last_name, email, phone.

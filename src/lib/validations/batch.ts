@@ -18,6 +18,7 @@ export const studentSchema = z.object({
         .enum(["", "male", "female", "other"])
         .optional()
         .default(""),
+    overallScore: z.string().optional(),
 });
 
 // Schema for form input (before adding id)

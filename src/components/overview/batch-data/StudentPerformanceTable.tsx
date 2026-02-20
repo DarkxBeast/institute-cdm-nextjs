@@ -74,7 +74,7 @@ export default function StudentPerformanceTable({ students, batchId }: StudentPe
                                     </TableCell>
                                     <TableCell className="px-6 py-4 text-center">
                                         <span className="inline-flex items-center justify-center px-2.5 py-1 rounded-md text-sm font-semibold bg-gray-50 text-gray-500">
-                                            -
+                                            {student.overallScore || "-"}
                                         </span>
                                     </TableCell>
                                     <TableCell className="px-6 py-4 text-center">
@@ -124,7 +124,7 @@ export default function StudentPerformanceTable({ students, batchId }: StudentPe
                                     <div>
                                         <span className="text-gray-400 block">Overall Score</span>
                                         <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-md text-xs font-semibold bg-gray-50 text-gray-500">
-                                            -
+                                            {student.overallScore || "-"}
                                         </span>
                                     </div>
                                 </div>

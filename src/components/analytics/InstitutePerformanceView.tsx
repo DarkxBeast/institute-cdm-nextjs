@@ -295,9 +295,7 @@ export default function InstitutePerformanceView() {
                                     <th className="text-center py-3.5 px-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
                                         Avg. Rating
                                     </th>
-                                    <th className="text-center py-3.5 px-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                                        Completion
-                                    </th>
+
                                     <th className="text-center py-3.5 px-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
                                         Attendance %
                                     </th>
@@ -329,19 +327,7 @@ export default function InstitutePerformanceView() {
                                                 {batch.avgRating > 0 ? `${batch.avgRating.toFixed(1)}/5` : "—"}
                                             </span>
                                         </td>
-                                        <td className="py-4 px-4 text-center">
-                                            <div className="flex items-center justify-center gap-3">
-                                                <div className="w-16 h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                                                    <div
-                                                        className="h-full bg-indigo-500 rounded-full transition-all"
-                                                        style={{ width: `${Math.min(batch.completionRate, 100)}%` }}
-                                                    />
-                                                </div>
-                                                <span className="text-xs font-semibold text-slate-600 w-8 text-right">
-                                                    {Math.round(batch.completionRate)}%
-                                                </span>
-                                            </div>
-                                        </td>
+
                                         <td className="py-4 px-4 text-center">
                                             <span className={`text-sm font-bold ${batch.attendanceRate > 0 ? 'text-teal-600' : 'text-slate-400'}`}>
                                                 {Math.round(batch.attendanceRate)}%
