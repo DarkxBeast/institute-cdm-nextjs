@@ -10,15 +10,10 @@ import {
     ArrowRightLeft,
     Clock,
 } from "lucide-react";
+import dynamic from "next/dynamic";
+
 import {
-    BarChart,
-    Bar,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-    ResponsiveContainer,
-    Cell,
+    BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell
 } from "recharts";
 import type { AnalyticsReport } from "@/app/actions/student-analytics";
 
@@ -165,14 +160,14 @@ export default function ResumeReviewAnalytics({ reports }: ResumeReviewAnalytics
             </div>
 
             {!hasData ? (
-                <Card className="border-gray-200 shadow-sm rounded-2xl">
-                    <CardContent className="p-5">
-                        <div className="flex flex-col items-center justify-center py-8 text-center">
-                            <div className="p-3 bg-gray-50 rounded-full mb-3">
-                                <Clock className="h-5 w-5 text-gray-400" />
+                <Card className="border-slate-100 shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] rounded-2xl bg-white">
+                    <CardContent className="p-6">
+                        <div className="flex flex-col items-center justify-center py-12 text-center bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
+                            <div className="p-3.5 bg-white rounded-full mb-4 shadow-sm border border-slate-100">
+                                <Clock className="h-5 w-5 text-slate-400" />
                             </div>
-                            <p className="text-sm font-medium text-gray-500">Report data not yet available</p>
-                            <p className="text-xs text-gray-400 mt-1 max-w-xs">
+                            <p className="text-sm font-bold text-slate-600 mb-1">Report data not yet available</p>
+                            <p className="text-[13px] text-slate-400 max-w-xs font-medium">
                                 This report has been created but detailed analytics haven&apos;t been generated yet.
                             </p>
                         </div>
@@ -182,21 +177,33 @@ export default function ResumeReviewAnalytics({ reports }: ResumeReviewAnalytics
                 <>
                     {/* Section Ratings */}
                     {sectionData.length > 0 && (
-                        <Card className="border-gray-200 shadow-sm rounded-2xl">
-                            <CardContent className="p-5">
-                                <h3 className="text-base font-semibold text-gray-900 mb-4">Section Ratings — Latest</h3>
-                                <ResponsiveContainer width="100%" height={Math.max(180, sectionData.length * 40)}>
-                                    <BarChart data={sectionData} layout="vertical" barCategoryGap="25%">
-                                        <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" horizontal={false} />
+                        <Card className="border-slate-100 shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] rounded-2xl bg-white">
+                            <CardContent className="p-4 sm:p-6">
+                                <h3 className="text-base font-bold text-slate-900 mb-6">Section Ratings — Latest</h3>
+                                <ResponsiveContainer width="100%" height={Math.max(220, sectionData.length * 45)}>
+                                    <BarChart data={sectionData} layout="vertical" barCategoryGap="25%" margin={{ top: 10, right: 20, left: -20, bottom: 0 }}>
+                                        <CartesianGrid strokeDasharray="4 4" stroke="#f1f5f9" horizontal={false} />
                                         <XAxis type="number" domain={[0, 5]} ticks={[0, 1, 2, 3, 4, 5]}
-                                            tick={{ fontSize: 11, fill: "#6b7280" }} tickLine={false} axisLine={{ stroke: "#e5e7eb" }} />
-                                        <YAxis type="category" dataKey="name" width={130}
-                                            tick={{ fontSize: 11, fill: "#374151" }} tickLine={false} axisLine={false} />
-                                        <Tooltip contentStyle={{ borderRadius: "8px", border: "1px solid #e5e7eb", fontSize: "12px" }}
-                                            formatter={(v) => [`${v ?? 0}/5`, "Rating"]} />
-                                        <Bar dataKey="rating" radius={[0, 6, 6, 0]} barSize={16}>
+                                            tick={{ fontSize: 12, fill: "#64748b" }} tickLine={false} axisLine={false} dy={10} />
+                                        <YAxis type="category" dataKey="name" width={150}
+                                            tick={{ fontSize: 12, fill: "#475569", fontWeight: 500 }} tickLine={false} axisLine={false} />
+                                        <Tooltip
+                                            cursor={{ fill: "#f8fafc" }}
+                                            contentStyle={{
+                                                borderRadius: "12px",
+                                                border: "1px solid #f1f5f9",
+                                                backgroundColor: "rgba(255, 255, 255, 0.95)",
+                                                backdropFilter: "blur(8px)",
+                                                boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+                                                fontSize: "13px",
+                                                fontWeight: 500,
+                                                color: "#0f172a",
+                                            }}
+                                            formatter={(v) => [`${v ?? 0}/5`, "Rating"]}
+                                        />
+                                        <Bar dataKey="rating" radius={[0, 6, 6, 0]} barSize={20} animationDuration={1000}>
                                             {sectionData.map((entry, i) => (
-                                                <Cell key={i} fill={entry.fill} />
+                                                <Cell key={i} fill={entry.fill} opacity={0.9} />
                                             ))}
                                         </Bar>
                                     </BarChart>
@@ -206,7 +213,7 @@ export default function ResumeReviewAnalytics({ reports }: ResumeReviewAnalytics
                     )}
 
                     {/* Feedback Cards */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-2">
                         {feedback.strengths && (
                             <FeedbackCard title="Strengths" content={feedback.strengths} color="emerald" />
                         )}
@@ -223,48 +230,62 @@ export default function ResumeReviewAnalytics({ reports }: ResumeReviewAnalytics
 
                     {/* Comparison */}
                     {hasComparison && comparisonData.length > 0 && (
-                        <Card className="border-gray-200 shadow-sm rounded-2xl">
-                            <CardContent className="p-5">
-                                <div className="flex items-center gap-2 mb-4">
-                                    <ArrowRightLeft className="h-4 w-4 text-orange-500" />
-                                    <h3 className="text-base font-semibold text-gray-900">
-                                        {r1Label} vs {r2Label}
+                        <Card className="border-slate-100 shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] rounded-2xl bg-white mt-6">
+                            <CardContent className="p-4 sm:p-6">
+                                <div className="flex items-center gap-3 mb-8">
+                                    <div className="p-2 bg-orange-50/80 rounded-lg">
+                                        <ArrowRightLeft className="h-4.5 w-4.5 text-orange-600" />
+                                    </div>
+                                    <h3 className="text-base font-bold text-slate-900">
+                                        {r1Label} <span className="text-slate-400 font-medium mx-1">vs</span> {r2Label}
                                     </h3>
                                 </div>
-                                <ResponsiveContainer width="100%" height={Math.max(180, comparisonData.length * 45)}>
-                                    <BarChart data={comparisonData} layout="vertical" barCategoryGap="30%">
-                                        <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" horizontal={false} />
+                                <ResponsiveContainer width="100%" height={Math.max(240, comparisonData.length * 50)}>
+                                    <BarChart data={comparisonData} layout="vertical" barCategoryGap="25%" margin={{ top: 10, right: 20, left: -10, bottom: 0 }}>
+                                        <CartesianGrid strokeDasharray="4 4" stroke="#f1f5f9" horizontal={false} />
                                         <XAxis type="number" domain={[0, 5]} ticks={[0, 1, 2, 3, 4, 5]}
-                                            tick={{ fontSize: 11, fill: "#6b7280" }} tickLine={false} axisLine={{ stroke: "#e5e7eb" }} />
-                                        <YAxis type="category" dataKey="name" width={130}
-                                            tick={{ fontSize: 11, fill: "#374151" }} tickLine={false} axisLine={false} />
-                                        <Tooltip contentStyle={{ borderRadius: "8px", border: "1px solid #e5e7eb", fontSize: "12px" }}
+                                            tick={{ fontSize: 12, fill: "#64748b" }} tickLine={false} axisLine={false} dy={10} />
+                                        <YAxis type="category" dataKey="name" width={140}
+                                            tick={{ fontSize: 12, fill: "#475569", fontWeight: 500 }} tickLine={false} axisLine={false} />
+                                        <Tooltip
+                                            cursor={{ fill: "#f8fafc" }}
+                                            contentStyle={{
+                                                borderRadius: "12px",
+                                                border: "1px solid #f1f5f9",
+                                                backgroundColor: "rgba(255, 255, 255, 0.95)",
+                                                backdropFilter: "blur(8px)",
+                                                boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+                                                fontSize: "13px",
+                                                fontWeight: 500,
+                                                color: "#0f172a",
+                                            }}
                                             formatter={(v, name) => [
                                                 `${v ?? 0}/5`, name === "report1" ? r1Label : r2Label,
-                                            ]} />
-                                        <Bar dataKey="report1" fill="#fed7aa" radius={[0, 4, 4, 0]} barSize={12} name="report1" />
-                                        <Bar dataKey="report2" fill="#f97316" radius={[0, 4, 4, 0]} barSize={12} name="report2" />
+                                            ]}
+                                        />
+                                        <Bar dataKey="report1" fill="#fed7aa" radius={[0, 4, 4, 0]} barSize={14} name="report1" animationDuration={1000} />
+                                        <Bar dataKey="report2" fill="#f97316" radius={[0, 4, 4, 0]} barSize={14} name="report2" animationDuration={1000} />
                                     </BarChart>
                                 </ResponsiveContainer>
 
                                 {/* Delta Table */}
-                                <div className="mt-4 border border-gray-100 rounded-xl overflow-hidden">
+                                <div className="mt-8 border border-slate-100 rounded-xl overflow-hidden shadow-sm">
                                     <table className="w-full text-sm">
                                         <thead>
-                                            <tr className="bg-gray-50">
-                                                <th className="text-left py-2 px-3 font-medium text-gray-600">Section</th>
-                                                <th className="text-center py-2 px-3 font-medium text-gray-600">RR #1</th>
-                                                <th className="text-center py-2 px-3 font-medium text-gray-600">RR #{sorted.length}</th>
-                                                <th className="text-center py-2 px-3 font-medium text-gray-600">Change</th>
+                                            <tr className="bg-slate-50/80 border-b border-slate-100">
+                                                <th className="text-left py-3.5 px-5 text-[11px] font-bold text-slate-500 uppercase tracking-wider">Section</th>
+                                                <th className="text-center py-3.5 px-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider">RR #1</th>
+                                                <th className="text-center py-3.5 px-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider">RR #{sorted.length}</th>
+                                                <th className="text-center py-3.5 px-5 text-[11px] font-bold text-slate-500 uppercase tracking-wider">Change</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             {comparisonData.map((row, i) => (
-                                                <tr key={i} className="border-t border-gray-50">
-                                                    <td className="py-2 px-3 text-gray-800">{row.name}</td>
-                                                    <td className="text-center py-2 px-3 text-gray-600">{row.report1.toFixed(1)}</td>
-                                                    <td className="text-center py-2 px-3 text-gray-600">{row.report2.toFixed(1)}</td>
-                                                    <td className="text-center py-2 px-3"><DeltaBadge delta={row.delta} /></td>
+                                                <tr key={i} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors last:border-0">
+                                                    <td className="py-4 px-5 font-bold text-slate-900">{row.name}</td>
+                                                    <td className="text-center py-4 px-4 font-medium text-slate-600">{row.report1.toFixed(1)}</td>
+                                                    <td className="text-center py-4 px-4 font-medium text-slate-600">{row.report2.toFixed(1)}</td>
+                                                    <td className="text-center py-4 px-5"><DeltaBadge delta={row.delta} /></td>
                                                 </tr>
                                             ))}
                                         </tbody>
@@ -281,20 +302,20 @@ export default function ResumeReviewAnalytics({ reports }: ResumeReviewAnalytics
 
 // ── Sub-components ──
 
-const FEEDBACK_COLORS: Record<string, { bg: string; border: string; icon: string }> = {
-    emerald: { bg: "bg-emerald-50", border: "border-emerald-100", icon: "text-emerald-500" },
-    amber: { bg: "bg-amber-50", border: "border-amber-100", icon: "text-amber-500" },
-    blue: { bg: "bg-blue-50", border: "border-blue-100", icon: "text-blue-500" },
-    violet: { bg: "bg-violet-50", border: "border-violet-100", icon: "text-violet-500" },
+const FEEDBACK_COLORS: Record<string, { bg: string; border: string; title: string; text: string }> = {
+    emerald: { bg: "bg-emerald-50/50", border: "border-emerald-100", title: "text-emerald-700", text: "text-emerald-800/80" },
+    amber: { bg: "bg-amber-50/50", border: "border-amber-100", title: "text-amber-700", text: "text-amber-800/80" },
+    blue: { bg: "bg-blue-50/50", border: "border-blue-100", title: "text-blue-700", text: "text-blue-800/80" },
+    violet: { bg: "bg-violet-50/50", border: "border-violet-100", title: "text-violet-700", text: "text-violet-800/80" },
 };
 
 function FeedbackCard({ title, content, color }: { title: string; content: string; color: string }) {
     const c = FEEDBACK_COLORS[color] ?? FEEDBACK_COLORS.blue;
     return (
-        <Card className={`${c.border} shadow-sm rounded-2xl`}>
-            <CardContent className="p-4">
-                <h4 className="text-sm font-semibold text-gray-800 mb-2">{title}</h4>
-                <p className="text-sm text-gray-600 leading-relaxed">{content}</p>
+        <Card className={`${c.border} ${c.bg} shadow-sm rounded-2xl transition-colors hover:bg-white`}>
+            <CardContent className="p-5">
+                <h4 className={`text-[11px] font-bold uppercase tracking-wider mb-2 ${c.title}`}>{title}</h4>
+                <p className={`text-[13px] leading-relaxed font-medium ${c.text}`}>{content}</p>
             </CardContent>
         </Card>
     );
@@ -303,19 +324,19 @@ function FeedbackCard({ title, content, color }: { title: string; content: strin
 function DeltaBadge({ delta }: { delta: number }) {
     if (delta > 0)
         return (
-            <span className="inline-flex items-center gap-1 text-emerald-600 font-medium text-xs bg-emerald-50 px-2 py-0.5 rounded-full">
-                <TrendingUp className="h-3 w-3" /> +{delta.toFixed(1)}
+            <span className="inline-flex items-center justify-center gap-1 text-emerald-700 font-bold text-[11px] uppercase tracking-wide bg-emerald-50 px-2.5 py-1 rounded-full ring-1 ring-emerald-600/20 shadow-sm">
+                <TrendingUp className="h-3.5 w-3.5" /> +{delta.toFixed(1)}
             </span>
         );
     if (delta < 0)
         return (
-            <span className="inline-flex items-center gap-1 text-red-500 font-medium text-xs bg-red-50 px-2 py-0.5 rounded-full">
-                <TrendingDown className="h-3 w-3" /> {delta.toFixed(1)}
+            <span className="inline-flex items-center justify-center gap-1 text-red-700 font-bold text-[11px] uppercase tracking-wide bg-red-50 px-2.5 py-1 rounded-full ring-1 ring-red-600/20 shadow-sm">
+                <TrendingDown className="h-3.5 w-3.5" /> {delta.toFixed(1)}
             </span>
         );
     return (
-        <span className="inline-flex items-center gap-1 text-gray-500 font-medium text-xs bg-gray-100 px-2 py-0.5 rounded-full">
-            <Minus className="h-3 w-3" /> 0
+        <span className="inline-flex items-center justify-center gap-1 text-slate-500 font-bold text-[11px] uppercase tracking-wide bg-slate-50 px-2.5 py-1 rounded-full ring-1 ring-slate-200 shadow-sm">
+            <Minus className="h-3.5 w-3.5" /> 0
         </span>
     );
 }

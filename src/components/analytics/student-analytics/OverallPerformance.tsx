@@ -8,17 +8,10 @@ import {
     Award,
     Clock,
 } from "lucide-react";
+import dynamic from "next/dynamic";
+
 import {
-    BarChart,
-    Bar,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-    ResponsiveContainer,
-    LineChart,
-    Line,
-    Cell,
+    BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, Cell
 } from "recharts";
 import type { AnalyticsReport } from "@/app/actions/student-analytics";
 
@@ -132,7 +125,7 @@ export default function OverallPerformance({ reports }: OverallPerformanceProps)
             </h2>
 
             {/* ── Metric Cards ── */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <MetricCard
                     icon={<FileText className="h-5 w-5 text-blue-500" />}
                     label="Total Reports"
@@ -162,31 +155,39 @@ export default function OverallPerformance({ reports }: OverallPerformanceProps)
             {/* ── Charts Row ── */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Rating Trend */}
-                <Card className="border-gray-200 shadow-sm rounded-2xl">
-                    <CardContent className="p-5">
-                        <h3 className="text-base font-semibold text-gray-900 mb-4">Rating Trend</h3>
+                <Card className="border-slate-100 shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] rounded-2xl bg-white">
+                    <CardContent className="p-4 sm:p-6">
+                        <h3 className="text-base font-bold text-slate-900 mb-6">Rating Trend</h3>
                         {ratingTrendData.length > 1 ? (
                             <ResponsiveContainer width="100%" height={220}>
-                                <LineChart data={ratingTrendData}>
-                                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                                <LineChart data={ratingTrendData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                                    <CartesianGrid strokeDasharray="4 4" stroke="#f1f5f9" vertical={false} />
                                     <XAxis
                                         dataKey="label"
-                                        tick={{ fontSize: 11, fill: "#6b7280" }}
+                                        tick={{ fontSize: 12, fill: "#64748b" }}
                                         tickLine={false}
-                                        axisLine={{ stroke: "#e5e7eb" }}
+                                        axisLine={false}
+                                        dy={10}
                                     />
                                     <YAxis
                                         domain={[0, 5]}
                                         ticks={[0, 1, 2, 3, 4, 5]}
-                                        tick={{ fontSize: 11, fill: "#6b7280" }}
+                                        tick={{ fontSize: 12, fill: "#64748b" }}
                                         tickLine={false}
-                                        axisLine={{ stroke: "#e5e7eb" }}
+                                        axisLine={false}
+                                        dx={-10}
                                     />
                                     <Tooltip
+                                        cursor={{ stroke: "#e2e8f0", strokeWidth: 1, strokeDasharray: "4 4" }}
                                         contentStyle={{
-                                            borderRadius: "8px",
-                                            border: "1px solid #e5e7eb",
-                                            fontSize: "12px",
+                                            borderRadius: "12px",
+                                            border: "1px solid #f1f5f9",
+                                            backgroundColor: "rgba(255, 255, 255, 0.95)",
+                                            backdropFilter: "blur(8px)",
+                                            boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+                                            fontSize: "13px",
+                                            fontWeight: 500,
+                                            color: "#0f172a",
                                         }}
                                         formatter={(value) => [`${value ?? 0}/5`, "Rating"]}
                                     />
@@ -194,19 +195,20 @@ export default function OverallPerformance({ reports }: OverallPerformanceProps)
                                         type="monotone"
                                         dataKey="rating"
                                         stroke="#f97316"
-                                        strokeWidth={2.5}
-                                        dot={{ r: 4, fill: "#f97316", strokeWidth: 0 }}
-                                        activeDot={{ r: 6, fill: "#f97316" }}
+                                        strokeWidth={3}
+                                        dot={{ r: 4, fill: "#fff", stroke: "#f97316", strokeWidth: 2 }}
+                                        activeDot={{ r: 6, fill: "#f97316", stroke: "#fff", strokeWidth: 2 }}
+                                        animationDuration={1500}
                                     />
                                 </LineChart>
                             </ResponsiveContainer>
                         ) : (
-                            <div className="flex flex-col items-center justify-center py-10 text-center">
-                                <div className="p-3 bg-gray-50 rounded-full mb-3">
-                                    <Clock className="h-5 w-5 text-gray-400" />
+                            <div className="flex flex-col items-center justify-center py-10 text-center bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
+                                <div className="p-3 bg-white rounded-full mb-3 shadow-sm border border-slate-100">
+                                    <Clock className="h-5 w-5 text-slate-400" />
                                 </div>
-                                <p className="text-sm font-medium text-gray-500">Not enough data for trend</p>
-                                <p className="text-xs text-gray-400 mt-1 max-w-xs">
+                                <p className="text-sm font-bold text-slate-600 mb-1">Not enough data for trend</p>
+                                <p className="text-[13px] text-slate-400 max-w-xs font-medium">
                                     Rating trend will appear once at least two reports with ratings are available.
                                 </p>
                             </div>
@@ -215,49 +217,56 @@ export default function OverallPerformance({ reports }: OverallPerformanceProps)
                 </Card>
 
                 {/* Report Type Breakdown */}
-                <Card className="border-gray-200 shadow-sm rounded-2xl">
-                    <CardContent className="p-5">
-                        <h3 className="text-base font-semibold text-gray-900 mb-4">Report Breakdown</h3>
+                <Card className="border-slate-100 shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] rounded-2xl bg-white">
+                    <CardContent className="p-4 sm:p-6">
+                        <h3 className="text-base font-bold text-slate-900 mb-6">Report Breakdown</h3>
                         {typeBreakdownData.length > 0 ? (
                             <ResponsiveContainer width="100%" height={220}>
-                                <BarChart data={typeBreakdownData} layout="vertical" barCategoryGap="30%">
-                                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" horizontal={false} />
+                                <BarChart data={typeBreakdownData} layout="vertical" barCategoryGap="25%" margin={{ top: 10, right: 20, left: 10, bottom: 0 }}>
+                                    <CartesianGrid strokeDasharray="4 4" stroke="#f1f5f9" horizontal={false} />
                                     <XAxis
                                         type="number"
-                                        tick={{ fontSize: 11, fill: "#6b7280" }}
+                                        tick={{ fontSize: 12, fill: "#64748b" }}
                                         tickLine={false}
-                                        axisLine={{ stroke: "#e5e7eb" }}
+                                        axisLine={false}
                                         allowDecimals={false}
+                                        dy={10}
                                     />
                                     <YAxis
                                         type="category"
                                         dataKey="name"
-                                        tick={{ fontSize: 11, fill: "#374151" }}
+                                        tick={{ fontSize: 12, fill: "#475569", fontWeight: 500 }}
                                         tickLine={false}
                                         axisLine={false}
                                         width={140}
                                     />
                                     <Tooltip
+                                        cursor={{ fill: "#f8fafc" }}
                                         contentStyle={{
-                                            borderRadius: "8px",
-                                            border: "1px solid #e5e7eb",
-                                            fontSize: "12px",
+                                            borderRadius: "12px",
+                                            border: "1px solid #f1f5f9",
+                                            backgroundColor: "rgba(255, 255, 255, 0.95)",
+                                            backdropFilter: "blur(8px)",
+                                            boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+                                            fontSize: "13px",
+                                            fontWeight: 500,
+                                            color: "#0f172a",
                                         }}
                                     />
-                                    <Bar dataKey="count" radius={[0, 6, 6, 0]} barSize={20}>
+                                    <Bar dataKey="count" radius={[0, 6, 6, 0]} barSize={24} animationDuration={1000}>
                                         {typeBreakdownData.map((entry, i) => (
-                                            <Cell key={i} fill={entry.fill} />
+                                            <Cell key={i} fill={entry.fill} opacity={0.9} />
                                         ))}
                                     </Bar>
                                 </BarChart>
                             </ResponsiveContainer>
                         ) : (
-                            <div className="flex flex-col items-center justify-center py-10 text-center">
-                                <div className="p-3 bg-gray-50 rounded-full mb-3">
-                                    <Clock className="h-5 w-5 text-gray-400" />
+                            <div className="flex flex-col items-center justify-center py-10 text-center bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
+                                <div className="p-3 bg-white rounded-full mb-3 shadow-sm border border-slate-100">
+                                    <Clock className="h-5 w-5 text-slate-400" />
                                 </div>
-                                <p className="text-sm font-medium text-gray-500">No report data</p>
-                                <p className="text-xs text-gray-400 mt-1 max-w-xs">
+                                <p className="text-sm font-bold text-slate-600 mb-1">No report data</p>
+                                <p className="text-[13px] text-slate-400 max-w-xs font-medium">
                                     Report breakdown will appear once reports are available.
                                 </p>
                             </div>
@@ -283,12 +292,12 @@ function MetricCard({
     bg: string;
 }) {
     return (
-        <Card className="border-gray-200 shadow-sm rounded-2xl hover:shadow-md transition-shadow">
-            <CardContent className="p-4 flex items-center gap-4">
-                <div className={`p-2.5 rounded-xl ${bg}`}>{icon}</div>
+        <Card className="border-slate-100 shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] rounded-2xl transition-all duration-300 hover:shadow-lg hover:-translate-y-1 bg-white">
+            <CardContent className="p-4 sm:p-5 flex items-center gap-4">
+                <div className={`p-3 rounded-xl ${bg}`}>{icon}</div>
                 <div>
-                    <p className="text-xs text-gray-500 font-medium">{label}</p>
-                    <p className="text-lg font-bold text-gray-900">{value}</p>
+                    <p className="text-sm text-slate-500 font-medium mb-1">{label}</p>
+                    <p className="text-2xl font-bold text-slate-900 tracking-tight">{value}</p>
                 </div>
             </CardContent>
         </Card>

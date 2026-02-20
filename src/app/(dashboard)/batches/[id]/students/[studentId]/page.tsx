@@ -6,6 +6,7 @@ import Link from "next/link";
 import { getBatch } from "@/app/actions/batches";
 import { getLearningJourneyForBatch } from "@/app/actions/learning-journey";
 import { getStudentReportTypes } from "@/app/actions/student-reports";
+import { getStudentAllReports } from "@/app/actions/student-analytics";
 
 interface PageProps {
     params: Promise<{ id: string; studentId: string }>;
@@ -56,6 +57,9 @@ export default async function StudentFilePage({ params, searchParams }: PageProp
     // Fetch available report types for this student
     const { data: reportTypes } = await getStudentReportTypes(extendedStudent.id);
 
+    // Fetch all reports to power dynamic overview data
+    const { data: allReports } = await getStudentAllReports(extendedStudent.id);
+
     return (
         <div className="min-h-screen bg-gray-50/50 p-4 sm:p-6 lg:p-8">
             <div className="mx-auto max-w-7xl space-y-6">
@@ -76,6 +80,7 @@ export default async function StudentFilePage({ params, searchParams }: PageProp
                     student={extendedStudent}
                     journeyItems={journeyData?.sequenceList || []}
                     reportTypes={reportTypes || []}
+                    allReports={allReports || []}
                 />
             </div>
         </div>

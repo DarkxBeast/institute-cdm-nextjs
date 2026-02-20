@@ -46,7 +46,7 @@ export default async function BatchesPage() {
               Manage your institution&apos;s batches and track student enrollment
             </p>
           </div>
-          {batches && batches.length > 0 && (
+          {/* {batches && batches.length > 0 && (
             <Link
               href="/batches/add"
               className="flex items-center justify-center gap-2 bg-[#ff9e44] text-white px-4 h-11 rounded-lg shadow-sm hover:bg-[#ff8c2e] transition-colors w-full sm:w-auto mt-2 sm:mt-0"
@@ -54,7 +54,7 @@ export default async function BatchesPage() {
               <Plus className="w-5 h-5" />
               <span className="font-medium">Add Batch</span>
             </Link>
-          )}
+          )} */}
         </div>
 
         {/* Batch Cards Grid */}
@@ -129,7 +129,7 @@ export default async function BatchesPage() {
                     <Pencil className="w-4 h-4 sm:w-5 sm:h-5" />
                     <span className="text-sm font-medium">Edit</span>
                   </Link>
-                  <DeleteBatchDialog batchId={batch.id} batchName={batch.title} />
+                  {/* <DeleteBatchDialog batchId={batch.id} batchName={batch.title} /> */}
                 </div>
               </div>
             </div>

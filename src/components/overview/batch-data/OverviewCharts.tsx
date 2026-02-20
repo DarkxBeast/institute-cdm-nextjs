@@ -1,21 +1,13 @@
 "use client";
 
 import { useMemo } from "react";
-import {
-    PieChart,
-    Pie,
-    Cell,
-    BarChart,
-    Bar,
-    XAxis,
-    YAxis,
-    Tooltip,
-    ResponsiveContainer,
-    Legend,
-} from "recharts";
+import dynamic from "next/dynamic";
 import type { PieLabelRenderProps } from "recharts";
 import type { LearningJourneyViewData } from "@/app/actions/learning-journey";
 
+import {
+    PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend
+} from "recharts";
 interface OverviewChartsProps {
     data: LearningJourneyViewData;
 }

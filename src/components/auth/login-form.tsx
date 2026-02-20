@@ -15,13 +15,20 @@ import {
 import { Input } from "@/components/ui/input"
 import { EyeIcon, EyeSlashIcon } from "@phosphor-icons/react"
 
+const ERROR_MESSAGES: Record<string, string> = {
+  invalid_credentials: 'Invalid email or password. Please try again.',
+  session_expired: 'Your session has expired. Please login again.',
+  unauthorized: 'You are not authorized to access this resource.',
+}
+
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"form">) {
   const [showPassword, setShowPassword] = useState(false)
   const searchParams = useSearchParams()
-  const error = searchParams.get('error')
+  const errorCode = searchParams.get('error')
+  const errorMessage = ERROR_MESSAGES[errorCode ?? '']
 
   return (
     <form className={cn("flex flex-col gap-6", className)} action={login} {...props}>
@@ -33,9 +40,9 @@ export function LoginForm({
           </p>
         </div>
 
-        {error && (
+        {errorMessage && (
           <div className="bg-destructive/15 text-destructive text-sm p-3 rounded-md text-center">
-            {error}
+            {errorMessage}
           </div>
         )}
 
@@ -46,12 +53,6 @@ export function LoginForm({
         <Field>
           <div className="flex items-center">
             <FieldLabel htmlFor="password">Password</FieldLabel>
-            <a
-              href="#"
-              className="ml-auto text-sm underline-offset-4 hover:underline"
-            >
-              Forgot your password?
-            </a>
           </div>
           <div className="relative">
             <Input

@@ -11,6 +11,7 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import MentorDetailModal from "./MentorDetailModal";
 
 interface Mentor {
     id: string;
@@ -19,6 +20,7 @@ interface Mentor {
     phone: string | null;
     specialization: string[];
     status: string;
+    linkedinUrl?: string; // Optional LinkedIn URL for external profiles
 }
 
 const ROWS_PER_PAGE = 10;
@@ -29,6 +31,17 @@ interface MentorsTableProps {
 
 export default function MentorsTable({ mentors = [] }: MentorsTableProps) {
     const [currentPage, setCurrentPage] = useState(1);
+    const [selectedMentorId, setSelectedMentorId] = useState<string | null>(null);
+    const [modalOpen, setModalOpen] = useState(false);
+
+    const handleViewDetails = (mentorId: string, linkedinUrl?: string) => {
+        if (linkedinUrl) {
+            window.open(linkedinUrl, '_blank', 'noopener,noreferrer');
+            return;
+        }
+        setSelectedMentorId(mentorId);
+        setModalOpen(true);
+    };
 
     // Pagination calculations
     const totalPages = Math.ceil(mentors.length / ROWS_PER_PAGE);
@@ -50,7 +63,7 @@ export default function MentorsTable({ mentors = [] }: MentorsTableProps) {
         <div className="rounded-xl border border-gray-100 bg-white shadow-sm overflow-hidden">
             <div className="p-4 sm:p-6 border-b border-gray-100 flex flex-col gap-1">
                 <h3 className="text-lg font-semibold text-gray-900">Mentor Management</h3>
-                <p className="text-sm text-gray-500">Admin shortlisted mentors for institution review</p>
+                <p className="text-sm text-gray-500">Mentors shortlisted for your institution</p>
             </div>
 
             {/* ===== DESKTOP TABLE (hidden below md) ===== */}
@@ -59,7 +72,7 @@ export default function MentorsTable({ mentors = [] }: MentorsTableProps) {
                     <TableHeader className="bg-gray-50/50">
                         <TableRow className="hover:bg-transparent border-b border-gray-100">
                             <TableHead className="h-12 px-6 font-medium text-gray-600">Mentor Name</TableHead>
-                            <TableHead className="h-12 px-6 font-medium text-gray-600">Email</TableHead>
+
                             <TableHead className="h-12 px-6 font-medium text-gray-600">Specialization</TableHead>
                             <TableHead className="h-12 px-6 font-medium text-gray-600 text-center">Status</TableHead>
                             <TableHead className="h-12 px-6 font-medium text-gray-600 text-center">Actions</TableHead>
@@ -68,7 +81,7 @@ export default function MentorsTable({ mentors = [] }: MentorsTableProps) {
                     <TableBody>
                         {mentors.length === 0 ? (
                             <TableRow>
-                                <TableCell colSpan={5} className="h-24 text-center text-gray-500">
+                                <TableCell colSpan={4} className="h-24 text-center text-gray-500">
                                     No mentors found.
                                 </TableCell>
                             </TableRow>
@@ -78,9 +91,7 @@ export default function MentorsTable({ mentors = [] }: MentorsTableProps) {
                                     <TableCell className="px-6 py-4 font-medium text-gray-900">
                                         {mentor.fullName}
                                     </TableCell>
-                                    <TableCell className="px-6 py-4 text-gray-900 text-sm">
-                                        {mentor.email || '—'}
-                                    </TableCell>
+
                                     <TableCell className="px-6 py-4">
                                         <div className="flex flex-wrap gap-1">
                                             {mentor.specialization && mentor.specialization.length > 0
@@ -97,8 +108,9 @@ export default function MentorsTable({ mentors = [] }: MentorsTableProps) {
                                         <Button
                                             variant="default"
                                             className="bg-[#ff9e44] hover:bg-[#e88d35] text-white text-xs h-8 px-3"
+                                            onClick={() => handleViewDetails(mentor.id, mentor.linkedinUrl)}
                                         >
-                                            View Details
+                                            View Profile
                                         </Button>
                                     </TableCell>
                                 </TableRow>
@@ -126,10 +138,7 @@ export default function MentorsTable({ mentors = [] }: MentorsTableProps) {
                                     </div>
                                 </div>
 
-                                {/* Row 2: Email */}
-                                {mentor.email && (
-                                    <p className="text-xs text-gray-500 mb-2 truncate">{mentor.email}</p>
-                                )}
+
 
                                 {/* Row 3: Specialization pills */}
                                 {mentor.specialization && mentor.specialization.length > 0 && (
@@ -144,8 +153,9 @@ export default function MentorsTable({ mentors = [] }: MentorsTableProps) {
                                 <Button
                                     variant="default"
                                     className="bg-[#ff9e44] hover:bg-[#e88d35] text-white text-xs h-8 px-3 w-full sm:w-auto"
+                                    onClick={() => handleViewDetails(mentor.id, mentor.linkedinUrl)}
                                 >
-                                    View Details
+                                    View Profile
                                 </Button>
                             </div>
                         ))}
@@ -188,6 +198,13 @@ export default function MentorsTable({ mentors = [] }: MentorsTableProps) {
                     </div>
                 </div>
             )}
+
+            {/* Mentor Detail Modal */}
+            <MentorDetailModal
+                mentorId={selectedMentorId}
+                open={modalOpen}
+                onOpenChange={setModalOpen}
+            />
         </div>
     );
 }

@@ -28,6 +28,7 @@ import ResumeReviewAnalytics from "./student-analytics/ResumeReviewAnalytics";
 import PracticeInterviewAnalytics from "./student-analytics/PracticeInterviewAnalytics";
 import BatchOverview from "./batch-analytics/BatchOverview";
 import StudentEngagement from "./student-analytics/StudentEngagement";
+import { StudentSkeleton, BatchOverviewSkeleton } from "./AnalyticsSkeletons";
 
 // ── Types ──
 
@@ -170,30 +171,30 @@ export default function StudentPerformanceView() {
     return (
         <div className="space-y-6">
             {/* ── Selection Bar ── */}
-            <Card className="border-gray-200 shadow-sm rounded-2xl">
+            <Card className="border-slate-100 shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] rounded-2xl bg-white">
                 <CardContent className="p-5">
                     <div className="flex flex-col lg:flex-row items-start lg:items-center gap-4">
                         {/* Left: Dropdowns */}
                         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                             {/* Batch Selector */}
                             <div className="flex items-center gap-3 min-w-0">
-                                <div className="p-2 bg-orange-50 rounded-xl shrink-0">
-                                    <Users className="h-4 w-4 text-orange-500" />
+                                <div className="p-2.5 bg-orange-50/80 rounded-xl shrink-0">
+                                    <Users className="h-5 w-5 text-orange-600" />
                                 </div>
                                 <div className="min-w-0">
-                                    <p className="text-xs text-gray-500 font-medium mb-1">Batch</p>
+                                    <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider mb-0.5">Batch</p>
                                     {batchesLoading ? (
-                                        <div className="flex items-center gap-2 text-sm text-gray-400">
-                                            <Loader2 className="h-3 w-3 animate-spin" /> Loading…
+                                        <div className="flex items-center gap-2 text-sm text-slate-400 font-medium pt-1">
+                                            <Loader2 className="h-3.5 w-3.5 animate-spin" /> Loading…
                                         </div>
                                     ) : (
                                         <Select value={selectedBatchId} onValueChange={setSelectedBatchId} disabled={batches.length <= 1}>
-                                            <SelectTrigger className={`w-[220px] h-9 text-sm ${batches.length <= 1 ? "opacity-70 cursor-default" : ""}`}>
+                                            <SelectTrigger className={`w-[220px] h-9 text-sm font-medium border-slate-200 shadow-sm rounded-lg ${batches.length <= 1 ? "opacity-70 cursor-default" : ""}`}>
                                                 <SelectValue placeholder="Select a batch" />
                                             </SelectTrigger>
-                                            <SelectContent>
+                                            <SelectContent className="rounded-xl border-slate-100 shadow-xl">
                                                 {batches.map((b) => (
-                                                    <SelectItem key={b.id} value={b.id}>
+                                                    <SelectItem key={b.id} value={b.id} className="rounded-lg cursor-pointer">
                                                         {b.title}
                                                     </SelectItem>
                                                 ))}
@@ -205,34 +206,34 @@ export default function StudentPerformanceView() {
 
                             {/* Chevron */}
                             {selectedBatchId && (
-                                <ChevronRight className="hidden sm:block h-4 w-4 text-gray-300 shrink-0" />
+                                <ChevronRight className="hidden sm:block h-5 w-5 text-slate-300 shrink-0" />
                             )}
 
                             {/* Student Selector */}
                             {selectedBatchId && (
                                 <div className="flex items-center gap-3 min-w-0">
-                                    <div className="p-2 bg-violet-50 rounded-xl shrink-0">
-                                        <GraduationCap className="h-4 w-4 text-violet-500" />
+                                    <div className="p-2.5 bg-violet-50/80 rounded-xl shrink-0">
+                                        <GraduationCap className="h-5 w-5 text-violet-600" />
                                     </div>
                                     <div className="min-w-0">
-                                        <p className="text-xs text-gray-500 font-medium mb-1">Student</p>
+                                        <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider mb-0.5">Student</p>
                                         {studentsLoading ? (
-                                            <div className="flex items-center gap-2 text-sm text-gray-400">
-                                                <Loader2 className="h-3 w-3 animate-spin" /> Loading…
+                                            <div className="flex items-center gap-2 text-sm text-slate-400 font-medium pt-1">
+                                                <Loader2 className="h-3.5 w-3.5 animate-spin" /> Loading…
                                             </div>
                                         ) : students.length === 0 ? (
-                                            <p className="text-sm text-gray-400">No students in this batch</p>
+                                            <p className="text-sm text-slate-400 font-medium pt-1">No students in this batch</p>
                                         ) : (
                                             <Select value={selectedStudentId} onValueChange={(val) => setSelectedStudentId(val === "__none__" ? "" : val)}>
-                                                <SelectTrigger className="w-[220px] h-9 text-sm">
+                                                <SelectTrigger className="w-[220px] h-9 text-sm font-medium border-slate-200 shadow-sm rounded-lg">
                                                     <SelectValue placeholder="Select a student" />
                                                 </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="__none__" className="text-gray-500 italic">
-                                                        All Students (Batch View)
+                                                <SelectContent className="rounded-xl border-slate-100 shadow-xl max-h-[300px]">
+                                                    <SelectItem value="__none__" className="text-slate-500 italic rounded-lg cursor-pointer font-medium">
+                                                        Overview (Batch Level)
                                                     </SelectItem>
                                                     {students.map((s) => (
-                                                        <SelectItem key={s.id} value={s.id}>
+                                                        <SelectItem key={s.id} value={s.id} className="rounded-lg cursor-pointer">
                                                             {s.studentName}
                                                         </SelectItem>
                                                     ))}
@@ -246,21 +247,21 @@ export default function StudentPerformanceView() {
 
                         {/* Right: Student Info Card */}
                         {selectedStudentId && selectedStudentName && !reportsLoading && (
-                            <div className="ml-auto flex items-center gap-3 bg-gray-50 rounded-xl px-4 py-3 border border-gray-100">
-                                <div className="h-10 w-10 rounded-full bg-gradient-to-br from-orange-400 to-orange-500 flex items-center justify-center text-white font-bold text-sm shrink-0">
+                            <div className="mt-2 lg:mt-0 lg:ml-auto flex w-full sm:w-fit items-center gap-3.5 bg-slate-50/80 rounded-xl px-4 py-3 border border-slate-100 shadow-sm">
+                                <div className="h-10 w-10 rounded-full bg-gradient-to-br from-orange-400 to-orange-500 flex items-center justify-center text-white font-bold tracking-wider shadow-sm shrink-0">
                                     {selectedStudentName.charAt(0).toUpperCase()}
                                 </div>
                                 <div className="min-w-0">
-                                    <p className="text-sm font-semibold text-gray-900 truncate">{selectedStudentName}</p>
-                                    <div className="flex items-center gap-3 text-xs text-gray-500">
+                                    <p className="text-sm font-bold text-slate-900 truncate tracking-tight">{selectedStudentName}</p>
+                                    <div className="flex items-center gap-3.5 text-[11px] font-medium text-slate-500 mt-0.5">
                                         {selectedBatchName && (
-                                            <span className="flex items-center gap-1">
-                                                <Users className="h-3 w-3" /> {selectedBatchName}
+                                            <span className="flex items-center gap-1.5">
+                                                <Users className="h-3.5 w-3.5 text-slate-400" /> <span className="truncate max-w-[120px]">{selectedBatchName}</span>
                                             </span>
                                         )}
                                         {reports.length > 0 && (
-                                            <span className="flex items-center gap-1">
-                                                <FileText className="h-3 w-3" /> {reports.length} report{reports.length > 1 ? "s" : ""}
+                                            <span className="flex items-center gap-1.5">
+                                                <FileText className="h-3.5 w-3.5 text-slate-400" /> {reports.length} report{reports.length > 1 ? "s" : ""}
                                             </span>
                                         )}
                                     </div>
@@ -280,12 +281,7 @@ export default function StudentPerformanceView() {
             )}
 
             {/* ── Loading State ── */}
-            {reportsLoading && (
-                <div className="flex flex-col items-center justify-center py-16">
-                    <Loader2 className="h-8 w-8 text-orange-400 animate-spin mb-3" />
-                    <p className="text-sm text-gray-500">Loading analytics…</p>
-                </div>
-            )}
+            {reportsLoading && <StudentSkeleton />}
 
             {/* ── Empty State ── */}
             {!reportsLoading && selectedStudentId && reports.length === 0 && !error && (
@@ -304,10 +300,7 @@ export default function StudentPerformanceView() {
             {/* ── Batch Overview (after batch selected, before student selected) ── */}
             {selectedBatchId && !selectedStudentId && !reportsLoading && (
                 batchAnalyticsLoading ? (
-                    <div className="flex flex-col items-center justify-center py-16">
-                        <Loader2 className="h-8 w-8 text-orange-400 animate-spin mb-3" />
-                        <p className="text-sm text-gray-500">Loading batch analytics…</p>
-                    </div>
+                    <BatchOverviewSkeleton />
                 ) : batchAnalytics ? (
                     <BatchOverview
                         data={batchAnalytics}

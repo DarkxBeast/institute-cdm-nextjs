@@ -68,7 +68,6 @@ export default async function OverviewPage() {
                                     alt="Institute Logo"
                                     fill
                                     className="object-cover"
-                                    unoptimized
                                 />
                             </div>
                         </div>

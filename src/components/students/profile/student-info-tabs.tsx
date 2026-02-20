@@ -1,15 +1,19 @@
 "use client";
 
+import { useState } from "react";
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { StudentOverview } from "./overview/student-overview";
 import { StudentJourney } from "./overview/student-journey";
 import { StudentReportTab } from "./student-report-tab";
 import type { StudentReportSummary } from "@/app/actions/student-reports";
+import type { AnalyticsReport } from "@/app/actions/student-analytics";
 
 interface StudentInfoTabsProps {
     student: any;
     journeyItems?: any[];
     reportTypes?: StudentReportSummary[];
+    allReports?: AnalyticsReport[];
 }
 
 /**
@@ -37,7 +41,7 @@ function buildTabLabel(rt: StudentReportSummary, allTypes: StudentReportSummary[
 /**
  * Turn a report summary into a unique, safe tab value.
  */
-function toTabValue(rt: StudentReportSummary): string {
+export function toTabValue(rt: StudentReportSummary): string {
     return `report_${rt.reportType.toLowerCase().replace(/\s+/g, "_")}_${rt.journeyItemId}`;
 }
 
@@ -45,12 +49,15 @@ export function StudentInfoTabs({
     student,
     journeyItems = [],
     reportTypes = [],
+    allReports = [],
 }: StudentInfoTabsProps) {
+    const [activeTab, setActiveTab] = useState("overview");
+
     // Sort tabs by journey item sequence order
     const sortedReportTypes = [...reportTypes].sort((a, b) => a.sequenceOrder - b.sequenceOrder);
 
     return (
-        <Tabs defaultValue="overview" className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="flex flex-wrap justify-start w-fit max-w-full h-auto gap-1">
                 <TabsTrigger value="overview">Overview</TabsTrigger>
 
@@ -72,7 +79,12 @@ export function StudentInfoTabs({
                 {/* Right Column - Active Tab Content */}
                 <div className="flex-1 w-full min-w-0">
                     <TabsContent value="overview" className="mt-0">
-                        <StudentOverview student={student} />
+                        <StudentOverview
+                            student={student}
+                            reportTypes={reportTypes}
+                            allReports={allReports}
+                            onTabChange={setActiveTab}
+                        />
                     </TabsContent>
 
                     {/* Dynamic report type tab contents */}

@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import CalendarView from "./CalendarView";
+
 import { format } from "date-fns";
 import type { MentorInfo } from "@/app/actions/learning-journey";
 import {
@@ -88,7 +88,7 @@ function calculateDurationDays(start: string, end: string): string {
 
 export default function ModulesTable({ learningJourneyItems }: ModulesTableProps) {
     const [currentPage, setCurrentPage] = useState(1);
-    const [view, setView] = useState<"table" | "calendar">("table");
+
 
     // Map learning journey items to Module interface when available
     const modules: Module[] = useMemo(() => {
@@ -151,207 +151,185 @@ export default function ModulesTable({ learningJourneyItems }: ModulesTableProps
                         <h3 className="text-lg font-semibold text-gray-900">Module Timeline & Schedule</h3>
                         <p className="text-sm text-gray-500">Detailed schedule for selected batch</p>
                     </div>
-                    <div className="flex items-center gap-2">
-                        <Button
-                            variant={view === "table" ? "default" : "outline"}
-                            onClick={() => setView("table")}
-                            className={`h-9 px-3 sm:px-4 text-xs sm:text-sm ${view === "table" ? 'bg-[#ff9e44] hover:bg-[#e88d35] text-white' : 'text-gray-600'}`}
-                        >
-                            <LayoutList className="h-4 w-4 mr-1 sm:mr-2" />
-                            Table View
-                        </Button>
-                        <Button
-                            variant={view === "calendar" ? "default" : "outline"}
-                            onClick={() => setView("calendar")}
-                            className={`h-9 px-3 sm:px-4 text-xs sm:text-sm ${view === "calendar" ? 'bg-[#ff9e44] hover:bg-[#e88d35] text-white' : 'text-gray-600'}`}
-                        >
-                            <CalendarIcon className="h-4 w-4 mr-1 sm:mr-2" />
-                            Calendar View
-                        </Button>
-                    </div>
                 </div>
 
-                {view === "calendar" ? (
-                    <CalendarView modules={modules} />
-                ) : (
-                    <>
-                        {/* ===== DESKTOP TABLE (hidden below lg) ===== */}
-                        <div className="hidden lg:block">
-                            <Table className="table-fixed">
-                                <TableHeader className="bg-gray-50/50">
-                                    <TableRow className="hover:bg-transparent border-b border-gray-100">
-                                        <TableHead className="h-12 px-6 font-medium text-gray-600 w-[19%]">Module Name</TableHead>
-                                        <TableHead className="h-12 px-6 font-medium text-gray-600 w-[14%]">Mentor(s)</TableHead>
-                                        <TableHead className="h-12 px-6 font-medium text-gray-600 text-center w-[10%]">Start Date</TableHead>
-                                        <TableHead className="h-12 px-6 font-medium text-gray-600 text-center w-[10%]">End Date</TableHead>
-                                        <TableHead className="h-12 px-6 font-medium text-gray-600 text-center w-[8%]">Duration</TableHead>
-                                        <TableHead className="h-12 px-6 font-medium text-gray-600 text-center w-[8%]">Format</TableHead>
-                                        <TableHead className="h-12 px-6 font-medium text-gray-600 text-center w-[9%]">Mode</TableHead>
-                                        <TableHead className="h-12 px-6 font-medium text-gray-600 text-center w-[8%]">Avg Score</TableHead>
-                                        <TableHead className="h-12 px-6 font-medium text-gray-600 text-center w-[13%]">Status</TableHead>
+                <>
+                    {/* ===== DESKTOP TABLE (hidden below lg) ===== */}
+                    <div className="hidden lg:block">
+                        <Table className="table-fixed">
+                            <TableHeader className="bg-gray-50/50">
+                                <TableRow className="hover:bg-transparent border-b border-gray-100">
+                                    <TableHead className="h-12 px-6 font-medium text-gray-600 w-[19%]">Module Name</TableHead>
+                                    <TableHead className="h-12 px-6 font-medium text-gray-600 w-[14%]">Mentor(s)</TableHead>
+                                    <TableHead className="h-12 px-6 font-medium text-gray-600 text-center w-[10%]">Start Date</TableHead>
+                                    <TableHead className="h-12 px-6 font-medium text-gray-600 text-center w-[10%]">End Date</TableHead>
+                                    <TableHead className="h-12 px-6 font-medium text-gray-600 text-center w-[8%]">Duration</TableHead>
+                                    <TableHead className="h-12 px-6 font-medium text-gray-600 text-center w-[8%]">Format</TableHead>
+                                    <TableHead className="h-12 px-6 font-medium text-gray-600 text-center w-[9%]">Mode</TableHead>
+                                    <TableHead className="h-12 px-6 font-medium text-gray-600 text-center w-[8%]">Avg Score</TableHead>
+                                    <TableHead className="h-12 px-6 font-medium text-gray-600 text-center w-[13%]">Status</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {modules.length === 0 ? (
+                                    <TableRow>
+                                        <TableCell colSpan={9} className="h-24 text-center text-gray-500">
+                                            No modules found.
+                                        </TableCell>
                                     </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {modules.length === 0 ? (
-                                        <TableRow>
-                                            <TableCell colSpan={9} className="h-24 text-center text-gray-500">
-                                                No modules found.
+                                ) : (
+                                    paginatedData.map((module) => (
+                                        <TableRow key={module.id} className="hover:bg-gray-50/50 transition-colors border-b border-gray-50 last:border-0">
+                                            <TableCell className="px-6 py-4 font-medium text-gray-900">
+                                                <Tooltip>
+                                                    <TooltipTrigger asChild>
+                                                        <span className="block truncate max-w-full cursor-default">{module.name}</span>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent side="top">
+                                                        <p>{module.name}</p>
+                                                    </TooltipContent>
+                                                </Tooltip>
+                                            </TableCell>
+                                            <TableCell className="px-6 py-4 text-gray-500 text-sm">
+                                                <Tooltip>
+                                                    <TooltipTrigger asChild>
+                                                        <span className="block truncate max-w-full cursor-default">{module.mentors}</span>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent side="top">
+                                                        <p>{module.mentors}</p>
+                                                    </TooltipContent>
+                                                </Tooltip>
+                                            </TableCell>
+                                            <TableCell className="px-6 py-4 text-gray-900 text-sm text-center">
+                                                {module.startDate}
+                                            </TableCell>
+                                            <TableCell className="px-6 py-4 text-gray-900 text-sm text-center">
+                                                {module.endDate}
+                                            </TableCell>
+                                            <TableCell className="px-6 py-4 text-center">
+                                                <div className="flex items-center justify-center gap-1.5 text-gray-900 text-sm">
+                                                    <Clock className="h-3.5 w-3.5 text-gray-400" />
+                                                    {module.duration}
+                                                </div>
+                                            </TableCell>
+                                            <TableCell className="px-6 py-4 text-gray-900 text-sm text-center font-mono bg-gray-50/50 rounded-sm">
+                                                {module.format}
+                                            </TableCell>
+                                            <TableCell className="px-6 py-4 text-center">
+                                                {getModeBadge(module.mode)}
+                                            </TableCell>
+                                            <TableCell className="px-6 py-4 text-gray-900 text-sm text-center font-medium">
+                                                {module.avgScore}
+                                            </TableCell>
+                                            <TableCell className="px-6 py-4">
+                                                {getStatusBadge(module.status)}
                                             </TableCell>
                                         </TableRow>
-                                    ) : (
-                                        paginatedData.map((module) => (
-                                            <TableRow key={module.id} className="hover:bg-gray-50/50 transition-colors border-b border-gray-50 last:border-0">
-                                                <TableCell className="px-6 py-4 font-medium text-gray-900">
-                                                    <Tooltip>
-                                                        <TooltipTrigger asChild>
-                                                            <span className="block truncate max-w-full cursor-default">{module.name}</span>
-                                                        </TooltipTrigger>
-                                                        <TooltipContent side="top">
-                                                            <p>{module.name}</p>
-                                                        </TooltipContent>
-                                                    </Tooltip>
-                                                </TableCell>
-                                                <TableCell className="px-6 py-4 text-gray-500 text-sm">
-                                                    <Tooltip>
-                                                        <TooltipTrigger asChild>
-                                                            <span className="block truncate max-w-full cursor-default">{module.mentors}</span>
-                                                        </TooltipTrigger>
-                                                        <TooltipContent side="top">
-                                                            <p>{module.mentors}</p>
-                                                        </TooltipContent>
-                                                    </Tooltip>
-                                                </TableCell>
-                                                <TableCell className="px-6 py-4 text-gray-900 text-sm text-center">
-                                                    {module.startDate}
-                                                </TableCell>
-                                                <TableCell className="px-6 py-4 text-gray-900 text-sm text-center">
-                                                    {module.endDate}
-                                                </TableCell>
-                                                <TableCell className="px-6 py-4 text-center">
-                                                    <div className="flex items-center justify-center gap-1.5 text-gray-900 text-sm">
-                                                        <Clock className="h-3.5 w-3.5 text-gray-400" />
-                                                        {module.duration}
-                                                    </div>
-                                                </TableCell>
-                                                <TableCell className="px-6 py-4 text-gray-900 text-sm text-center font-mono bg-gray-50/50 rounded-sm">
-                                                    {module.format}
-                                                </TableCell>
-                                                <TableCell className="px-6 py-4 text-center">
-                                                    {getModeBadge(module.mode)}
-                                                </TableCell>
-                                                <TableCell className="px-6 py-4 text-gray-900 text-sm text-center font-medium">
-                                                    {module.avgScore}
-                                                </TableCell>
-                                                <TableCell className="px-6 py-4">
-                                                    {getStatusBadge(module.status)}
-                                                </TableCell>
-                                            </TableRow>
-                                        ))
-                                    )}
-                                </TableBody>
-                            </Table>
-                        </div>
+                                    ))
+                                )}
+                            </TableBody>
+                        </Table>
+                    </div>
 
-                        {/* ===== MOBILE / TABLET CARD LAYOUT (visible below lg) ===== */}
-                        <div className="lg:hidden">
-                            {modules.length === 0 ? (
-                                <div className="py-12 text-center text-gray-500">No modules found.</div>
-                            ) : (
-                                <div className="divide-y divide-gray-100">
-                                    {paginatedData.map((module) => (
-                                        <div key={module.id} className="p-4 hover:bg-gray-50/50 transition-colors">
-                                            {/* Row 1: Name + Status */}
-                                            <div className="flex items-start justify-between gap-3 mb-2">
-                                                <h4 className="font-medium text-gray-900 text-sm leading-snug line-clamp-2 flex-1">
-                                                    {module.name}
-                                                </h4>
-                                                <div className="shrink-0">
-                                                    {getStatusBadge(module.status)}
-                                                </div>
-                                            </div>
-
-                                            {/* Row 2: Mentor */}
-                                            {module.mentors !== "—" && (
-                                                <p className="text-xs text-gray-500 mb-3 truncate">
-                                                    Mentor: {module.mentors}
-                                                </p>
-                                            )}
-
-                                            {/* Row 3: Key details grid */}
-                                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-2 text-xs">
-                                                <div>
-                                                    <span className="text-gray-400 block">Start</span>
-                                                    <span className="text-gray-700 font-medium">{module.startDate}</span>
-                                                </div>
-                                                <div>
-                                                    <span className="text-gray-400 block">End</span>
-                                                    <span className="text-gray-700 font-medium">{module.endDate}</span>
-                                                </div>
-                                                <div>
-                                                    <span className="text-gray-400 block">Duration</span>
-                                                    <span className="text-gray-700 font-medium flex items-center gap-1">
-                                                        <Clock className="h-3 w-3 text-gray-400" />
-                                                        {module.duration}
-                                                    </span>
-                                                </div>
-                                                <div>
-                                                    <span className="text-gray-400 block">Format</span>
-                                                    <span className="text-gray-700 font-medium font-mono">{module.format}</span>
-                                                </div>
-                                            </div>
-
-                                            {/* Row 4: Mode + Avg Score */}
-                                            <div className="flex items-center gap-3 mt-3">
-                                                {getModeBadge(module.mode)}
-                                                {module.avgScore !== "—" && (
-                                                    <span className="text-xs text-gray-500">
-                                                        Avg Score: <span className="font-medium text-gray-700">{module.avgScore}</span>
-                                                    </span>
-                                                )}
+                    {/* ===== MOBILE / TABLET CARD LAYOUT (visible below lg) ===== */}
+                    <div className="lg:hidden">
+                        {modules.length === 0 ? (
+                            <div className="py-12 text-center text-gray-500">No modules found.</div>
+                        ) : (
+                            <div className="divide-y divide-gray-100">
+                                {paginatedData.map((module) => (
+                                    <div key={module.id} className="p-4 hover:bg-gray-50/50 transition-colors">
+                                        {/* Row 1: Name + Status */}
+                                        <div className="flex items-start justify-between gap-3 mb-2">
+                                            <h4 className="font-medium text-gray-900 text-sm leading-snug line-clamp-2 flex-1">
+                                                {module.name}
+                                            </h4>
+                                            <div className="shrink-0">
+                                                {getStatusBadge(module.status)}
                                             </div>
                                         </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
 
-                        {/* Pagination Controls */}
-                        {totalPages > 1 && (
-                            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 sm:px-6 py-3 border-t border-gray-100 bg-gray-50/50">
-                                <div className="text-xs sm:text-sm text-gray-500">
-                                    Showing {startIndex + 1} to {Math.min(endIndex, modules.length)} of {modules.length} modules
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                                        disabled={currentPage === 1}
-                                        className="h-8 px-2 md:px-3"
-                                    >
-                                        <ChevronLeft className="h-4 w-4 md:mr-1" />
-                                        <span className="hidden md:inline">Previous</span>
-                                    </Button>
-                                    <div className="flex items-center gap-1 text-xs md:text-sm text-gray-600">
-                                        <span className="font-medium">{currentPage}</span>
-                                        <span>/</span>
-                                        <span className="font-medium">{totalPages}</span>
+                                        {/* Row 2: Mentor */}
+                                        {module.mentors !== "—" && (
+                                            <p className="text-xs text-gray-500 mb-3 truncate">
+                                                Mentor: {module.mentors}
+                                            </p>
+                                        )}
+
+                                        {/* Row 3: Key details grid */}
+                                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-2 text-xs">
+                                            <div>
+                                                <span className="text-gray-400 block">Start</span>
+                                                <span className="text-gray-700 font-medium">{module.startDate}</span>
+                                            </div>
+                                            <div>
+                                                <span className="text-gray-400 block">End</span>
+                                                <span className="text-gray-700 font-medium">{module.endDate}</span>
+                                            </div>
+                                            <div>
+                                                <span className="text-gray-400 block">Duration</span>
+                                                <span className="text-gray-700 font-medium flex items-center gap-1">
+                                                    <Clock className="h-3 w-3 text-gray-400" />
+                                                    {module.duration}
+                                                </span>
+                                            </div>
+                                            <div>
+                                                <span className="text-gray-400 block">Format</span>
+                                                <span className="text-gray-700 font-medium font-mono">{module.format}</span>
+                                            </div>
+                                        </div>
+
+                                        {/* Row 4: Mode + Avg Score */}
+                                        <div className="flex items-center gap-3 mt-3">
+                                            {getModeBadge(module.mode)}
+                                            {module.avgScore !== "—" && (
+                                                <span className="text-xs text-gray-500">
+                                                    Avg Score: <span className="font-medium text-gray-700">{module.avgScore}</span>
+                                                </span>
+                                            )}
+                                        </div>
                                     </div>
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                                        disabled={currentPage === totalPages}
-                                        className="h-8 px-2 md:px-3"
-                                    >
-                                        <span className="hidden md:inline">Next</span>
-                                        <ChevronRight className="h-4 w-4 md:ml-1" />
-                                    </Button>
-                                </div>
+                                ))}
                             </div>
                         )}
-                    </>
-                )}
+                    </div>
+
+                    {/* Pagination Controls */}
+                    {totalPages > 1 && (
+                        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 sm:px-6 py-3 border-t border-gray-100 bg-gray-50/50">
+                            <div className="text-xs sm:text-sm text-gray-500">
+                                Showing {startIndex + 1} to {Math.min(endIndex, modules.length)} of {modules.length} modules
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                                    disabled={currentPage === 1}
+                                    className="h-8 px-2 md:px-3"
+                                >
+                                    <ChevronLeft className="h-4 w-4 md:mr-1" />
+                                    <span className="hidden md:inline">Previous</span>
+                                </Button>
+                                <div className="flex items-center gap-1 text-xs md:text-sm text-gray-600">
+                                    <span className="font-medium">{currentPage}</span>
+                                    <span>/</span>
+                                    <span className="font-medium">{totalPages}</span>
+                                </div>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                                    disabled={currentPage === totalPages}
+                                    className="h-8 px-2 md:px-3"
+                                >
+                                    <span className="hidden md:inline">Next</span>
+                                    <ChevronRight className="h-4 w-4 md:ml-1" />
+                                </Button>
+                            </div>
+                        </div>
+                    )}
+                </>
             </div>
         </TooltipProvider>
     );

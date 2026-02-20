@@ -15,7 +15,21 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "TCC-CDM-Institute",
-  description: "Institute Management System",
+  description: "Institute Management System — The Career Company",
+  openGraph: {
+    title: "TCC-CDM-Institute",
+    description: "Institute Management System — The Career Company",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "TCC-CDM-Institute",
+    description: "Institute Management System — The Career Company",
+  },
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default function RootLayout({

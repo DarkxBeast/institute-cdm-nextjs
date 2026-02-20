@@ -35,7 +35,7 @@ export default function AdminAccessTab() {
     }
 
     const handleFormSubmit = (data: AdminFormData) => {
-        console.log("Form submitted:", data);
+        // Add submit logic here
         // Here you would typically call an API to save/update the admin
         setIsDialogOpen(false);
     }

@@ -150,38 +150,28 @@ export function DiagnosticInterviewFullReport({
 
     return (
         <div className="min-h-screen bg-gray-50/50">
-            {/* ── Header ── */}
-            <div className="bg-white border-b border-gray-200 static md:sticky top-0 z-10">
+            {/* ── Header (dark, sticky) ── */}
+            <div className="bg-[#161616] static md:sticky top-0 z-10 shadow-lg">
                 <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-4">
                     <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
                         <div className="space-y-1">
                             <div className="flex items-center gap-3">
                                 <Link
                                     href={backUrl}
-                                    className="text-gray-400 hover:text-gray-600 transition-colors p-1 -ml-1"
+                                    className="text-gray-400 hover:text-white transition-colors p-1 -ml-1"
                                 >
                                     <ArrowLeft className="h-6 w-6 sm:h-5 sm:w-5" />
                                 </Link>
-                                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 leading-tight">
+                                <h1 className="text-xl sm:text-2xl font-bold text-white leading-tight">
                                     Diagnostic Interview Report
                                 </h1>
                             </div>
-                            <p className="text-sm text-gray-500 ml-8 sm:ml-9 max-w-xl">
+                            <p className="text-sm text-slate-300 ml-8 sm:ml-9 max-w-xl">
                                 Comprehensive evaluation to identify strengths and growth areas
                             </p>
                         </div>
-                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mt-2 md:mt-0 pl-8 md:pl-0">
-                            <Button variant="outline" className="gap-2 text-sm justify-center">
-                                <Video className="h-4 w-4" />
-                                View Recording
-                            </Button>
-                            <Button className="gap-2 text-sm bg-gray-900 hover:bg-gray-800 text-white justify-center">
-                                <Download className="h-4 w-4" />
-                                Download Report
-                            </Button>
-                        </div>
                     </div>
-                    <p className="text-xs text-gray-400 mt-3 md:mt-2 ml-8 sm:ml-9">
+                    <p className="text-xs text-slate-400 mt-3 md:mt-2 ml-8 sm:ml-9">
                         Generated on {reportDate || "—"}
                     </p>
                 </div>

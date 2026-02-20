@@ -1,4 +1,5 @@
 import { Suspense } from "react"
+import Image from "next/image"
 import { GalleryVerticalEnd } from "lucide-react"
 
 import { LoginForm } from "@/components/auth/login-form"
@@ -7,23 +8,26 @@ export default function LoginPage() {
   return (
     <div className="grid min-h-svh lg:grid-cols-2">
       <div className="bg-muted relative hidden lg:block">
-        <img
+        <Image
           src="/images/login.png"
-          alt="Image"
-          className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+          alt="The Career Company campus"
+          fill
+          className="object-cover dark:brightness-[0.2] dark:grayscale"
+          priority
         />
       </div>
       <div className="flex flex-col gap-4 p-6 md:p-10">
-        <div className="flex justify-center gap-2 md:justify-start">
-          <a href="https://www.thecareercompany.in/" target="blank" className="flex items-center gap-2 font-medium">
-            <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
-              <GalleryVerticalEnd className="size-4" />
-            </div>
-            The Career Company
-          </a>
-        </div>
         <div className="flex flex-1 items-center justify-center">
           <div className="w-full max-w-xs">
+            <div className="relative mx-auto mb-8 h-60 w-4/5 overflow-hidden rounded-2xl lg:hidden">
+              <Image
+                src="/images/logo.png"
+                alt="The Career Company logo"
+                fill
+                className="object-contain dark:brightness-[0.2] dark:grayscale"
+                priority
+              />
+            </div>
             <Suspense fallback={<div>Loading...</div>}>
               <LoginForm />
             </Suspense>

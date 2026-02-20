@@ -3,14 +3,18 @@
 import { StudentStats } from "./student-stats";
 import { StudentSkills } from "./student-skills";
 import { StudentDiagnostic } from "./student-diagnostic";
-import { StudentFeedback } from "./student-feedback";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import type { AnalyticsReport } from "@/app/actions/student-analytics";
+import type { StudentReportSummary } from "@/app/actions/student-reports";
 
 interface StudentOverviewProps {
     student: any;
+    reportTypes?: StudentReportSummary[];
+    allReports?: AnalyticsReport[];
+    onTabChange?: (tab: string) => void;
 }
 
-export function StudentOverview({ student }: StudentOverviewProps) {
+export function StudentOverview({ student, reportTypes = [], allReports = [], onTabChange }: StudentOverviewProps) {
     return (
         <div className="space-y-6">
             {/* Summary Section */}
@@ -22,23 +26,20 @@ export function StudentOverview({ student }: StudentOverviewProps) {
                     </span>
                 </CardHeader>
                 <CardContent>
-                    <p className="text-gray-600 leading-relaxed">
-                        Passionate software engineer with strong problem-solving skills and experience in full-stack development. Actively seeking opportunities in product development and system design. Proficient in React, Node.js, and cloud technologies. Led multiple hackathon teams to victory.
-                    </p>
+                    <div className="flex flex-col items-center justify-center py-6 text-center">
+                        <p className="text-gray-500 text-sm">No summary is currently available for this student.</p>
+                    </div>
                 </CardContent>
             </Card>
 
             {/* Stats Row */}
-            <StudentStats />
+            <StudentStats allReports={allReports} />
 
             {/* Skills Section */}
             <StudentSkills />
 
             {/* Diagnostic & Roadmap */}
-            <StudentDiagnostic />
-
-            {/* Mentor Feedback */}
-            <StudentFeedback />
+            <StudentDiagnostic reportTypes={reportTypes} onTabChange={onTabChange} />
         </div>
     );
 }

@@ -222,8 +222,8 @@ function RadarChart({
     });
 
     return (
-        <div className="flex items-center justify-center">
-            <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+        <div className="flex items-center justify-center py-6">
+            <svg width="100%" height={size + 60} viewBox={`-30 -30 ${size + 60} ${size + 60}`} className="overflow-visible">
                 {/* Grid polygons */}
                 {gridPolygons.map((points, i) => (
                     <polygon
@@ -364,22 +364,12 @@ export function PracticeInterviewFullReport({
                                     Practice Interview Report
                                 </h1>
                             </div>
-                            <p className="text-sm text-slate-400 ml-8 sm:ml-9 max-w-xl">
+                            <p className="text-sm text-slate-300 ml-8 sm:ml-9 max-w-xl">
                                 Comprehensive evaluation to identify strengths and growth areas
                             </p>
                         </div>
-                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mt-2 md:mt-0 pl-8 md:pl-0">
-                            <Button variant="outline" className="gap-2 text-sm justify-center border-white text-white hover:bg-white/10 hover:text-white">
-                                <Video className="h-4 w-4" />
-                                View Recording
-                            </Button>
-                            <Button className="gap-2 text-sm bg-orange-500 hover:bg-orange-600 text-white justify-center">
-                                <Download className="h-4 w-4" />
-                                Download Report
-                            </Button>
-                        </div>
                     </div>
-                    <p className="text-xs text-slate-500 mt-3 md:mt-2 ml-8 sm:ml-9">
+                    <p className="text-xs text-slate-400 mt-3 md:mt-2 ml-8 sm:ml-9">
                         Generated on {reportDate || "—"}
                     </p>
                 </div>
@@ -498,7 +488,7 @@ export function PracticeInterviewFullReport({
                         </div>
                         <div className="flex flex-col lg:flex-row gap-8 items-center lg:items-start">
                             {/* Left: Radar chart */}
-                            <div className="shrink-0">
+                            <div className="shrink-0 w-full lg:w-3/5 xl:w-[60%] flex justify-center">
                                 <RadarChart
                                     labels={radarLabels}
                                     values={radarValues}
@@ -508,11 +498,11 @@ export function PracticeInterviewFullReport({
 
                             {/* Right: Skill breakdown grid */}
                             {effectiveSkillBreakdown.length > 0 && (
-                                <div className="flex-1 w-full">
+                                <div className="flex-1 w-full max-w-sm ml-auto">
                                     <h3 className="text-base font-semibold text-gray-900 mb-4">
                                         Skill Breakdown
                                     </h3>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <div className="grid grid-cols-1 gap-3">
                                         {effectiveSkillBreakdown.map((skill, i) => (
                                             <div
                                                 key={i}

@@ -117,19 +117,6 @@ export function ResumeReviewFullReport({
                                 Comprehensive evaluation to identify strengths and growth areas
                             </p>
                         </div>
-                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mt-2 md:mt-0 pl-8 md:pl-0">
-                            <Button
-                                variant="outline"
-                                className="gap-2 text-sm justify-center border-white text-white hover:bg-white/10 bg-transparent"
-                            >
-                                <Video className="h-4 w-4" />
-                                View Recording
-                            </Button>
-                            <Button className="gap-2 text-sm bg-orange-500 hover:bg-orange-600 text-white justify-center">
-                                <Download className="h-4 w-4" />
-                                Download Report
-                            </Button>
-                        </div>
                     </div>
                     <p className="text-xs text-slate-400 mt-3 md:mt-2 ml-8 sm:ml-9">
                         Generated on {reportDate || "—"}

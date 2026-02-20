@@ -84,17 +84,26 @@ function useNormalizedJourneyData(serviceData: LearningJourneyViewData | null) {
                 totalSessions: cat.total,
                 completedSessions: cat.completed,
                 sessions: cat.items.map((item) => {
-                    const start = new Date(item.startDate);
-                    const end = new Date(item.endDate);
-                    const isSame = isSameDay(start, end);
+                    const start = item.startDate ? new Date(item.startDate) : null;
+                    const end = item.endDate ? new Date(item.endDate) : null;
+
+                    let dateString = "TBD";
+                    if (start && !isNaN(start.getTime())) {
+                        if (end && !isNaN(end.getTime())) {
+                            const isSame = isSameDay(start, end);
+                            dateString = isSame
+                                ? format(start, "MMMM d, yyyy")
+                                : `${format(start, "MMM d")} - ${format(end, "MMM d, yyyy")}`;
+                        } else {
+                            dateString = format(start, "MMMM d, yyyy");
+                        }
+                    }
 
                     return {
                         id: item.id,
                         title: item.particulars,
-                        date: isSame
-                            ? format(start, "MMMM d, yyyy")
-                            : `${format(start, "MMM d")} - ${format(end, "MMM d, yyyy")}`,
-                        duration: `${item.totalHours}h`,
+                        date: dateString,
+                        duration: `${item.totalHours || 0}h`,
                         status: statusMap[item.status] ?? "yet_to_schedule",
                     };
                 }),
@@ -271,6 +280,7 @@ export default function ContentTabsPanel({
                                             phone: m.phone,
                                             specialization: m.specialization,
                                             status: m.status,
+                                            linkedinUrl: m.linkedinUrl,
                                         }))}
                                     />
                                 ) : (

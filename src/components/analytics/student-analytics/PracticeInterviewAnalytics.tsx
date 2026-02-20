@@ -3,20 +3,11 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MessageSquare, Clock } from "lucide-react";
+import dynamic from "next/dynamic";
+
 import {
-    BarChart,
-    Bar,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-    ResponsiveContainer,
-    Cell,
-    RadarChart,
-    Radar,
-    PolarGrid,
-    PolarAngleAxis,
-    PolarRadiusAxis,
+    BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
+    RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis
 } from "recharts";
 import type { AnalyticsReport } from "@/app/actions/student-analytics";
 
@@ -180,7 +171,7 @@ export default function PracticeInterviewAnalytics({ reports }: PracticeIntervie
 
                 return (
                     <Card key={name} className="border-gray-200 shadow-sm rounded-2xl">
-                        <CardContent className="p-5 space-y-5">
+                        <CardContent className="p-4 sm:p-5 space-y-5">
                             {/* Sub-type header */}
                             <div className="flex items-center gap-3">
                                 <div className={`p-1.5 ${accent.bg} rounded-lg`}>
@@ -203,86 +194,143 @@ export default function PracticeInterviewAnalytics({ reports }: PracticeIntervie
 
                             {!hasData ? (
                                 /* Empty state: report exists but no analyzable data yet */
-                                <div className="flex flex-col items-center justify-center py-8 text-center">
-                                    <div className="p-3 bg-gray-50 rounded-full mb-3">
-                                        <Clock className="h-5 w-5 text-gray-400" />
+                                <div className="flex flex-col items-center justify-center py-12 text-center bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
+                                    <div className="p-3.5 bg-white rounded-full mb-4 shadow-sm border border-slate-100">
+                                        <Clock className="h-5 w-5 text-slate-400" />
                                     </div>
-                                    <p className="text-sm font-medium text-gray-500">Report data not yet available</p>
-                                    <p className="text-xs text-gray-400 mt-1 max-w-xs">
+                                    <p className="text-sm font-bold text-slate-600 mb-1">Report data not yet available</p>
+                                    <p className="text-[13px] text-slate-400 max-w-xs font-medium">
                                         This report has been created but detailed analytics haven&apos;t been generated yet.
                                     </p>
                                 </div>
                             ) : (
                                 <>
                                     {/* Charts Row */}
-                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                         {/* Skill Radar */}
                                         {radarData.length >= 3 && (
                                             <div>
-                                                <h4 className="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-3">Skill Breakdown</h4>
-                                                <ResponsiveContainer width="100%" height={240}>
-                                                    <RadarChart data={radarData} cx="50%" cy="50%" outerRadius="70%">
-                                                        <PolarGrid stroke="#e5e7eb" />
-                                                        <PolarAngleAxis dataKey="subject" tick={{ fontSize: 10, fill: "#374151" }} />
-                                                        <PolarRadiusAxis domain={[0, 5]} tick={{ fontSize: 10 }} axisLine={false} />
-                                                        <Tooltip contentStyle={{ borderRadius: "8px", border: "1px solid #e5e7eb", fontSize: "12px" }}
-                                                            formatter={(v) => [`${v ?? 0}/5`, "Rating"]} />
-                                                        <Radar dataKey="value" stroke={accent.stroke} fill={accent.fill} fillOpacity={0.25} strokeWidth={2} />
-                                                    </RadarChart>
-                                                </ResponsiveContainer>
+                                                <h4 className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-4">Skill Breakdown</h4>
+                                                <div className="bg-slate-50/50 rounded-xl border border-slate-100 p-2">
+                                                    <ResponsiveContainer width="100%" height={260}>
+                                                        <RadarChart data={radarData} cx="50%" cy="50%" outerRadius="65%" margin={{ top: 10, right: 30, bottom: 10, left: 30 }}>
+                                                            <PolarGrid stroke="#e2e8f0" strokeDasharray="3 3" />
+                                                            <PolarAngleAxis
+                                                                dataKey="subject"
+                                                                tick={{ fontSize: 11, fill: "#475569", fontWeight: 500 }}
+                                                                tickSize={12}
+                                                            />
+                                                            <PolarRadiusAxis
+                                                                domain={[0, 5]}
+                                                                tick={{ fontSize: 10, fill: "#94a3b8" }}
+                                                                axisLine={false}
+                                                                tickCount={6}
+                                                            />
+                                                            <Tooltip
+                                                                contentStyle={{
+                                                                    borderRadius: "12px",
+                                                                    border: "1px solid #f1f5f9",
+                                                                    backgroundColor: "rgba(255, 255, 255, 0.95)",
+                                                                    backdropFilter: "blur(8px)",
+                                                                    boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+                                                                    fontSize: "13px",
+                                                                    fontWeight: 500,
+                                                                    color: "#0f172a",
+                                                                }}
+                                                                formatter={(v) => [`${v ?? 0}/5`, "Rating"]}
+                                                            />
+                                                            <Radar
+                                                                dataKey="value"
+                                                                stroke={accent.stroke}
+                                                                fill={accent.fill}
+                                                                fillOpacity={0.25}
+                                                                strokeWidth={2.5}
+                                                                animationDuration={1500}
+                                                            />
+                                                        </RadarChart>
+                                                    </ResponsiveContainer>
+                                                </div>
                                             </div>
                                         )}
 
                                         {/* Section Ratings */}
                                         {sectionData.length > 0 && (
                                             <div>
-                                                <h4 className="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-3">Section Ratings</h4>
-                                                <ResponsiveContainer width="100%" height={Math.max(180, sectionData.length * 36)}>
-                                                    <BarChart data={sectionData} layout="vertical" barCategoryGap="25%">
-                                                        <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" horizontal={false} />
-                                                        <XAxis type="number" domain={[0, 5]} ticks={[0, 1, 2, 3, 4, 5]}
-                                                            tick={{ fontSize: 11, fill: "#6b7280" }} tickLine={false} axisLine={{ stroke: "#e5e7eb" }} />
-                                                        <YAxis type="category" dataKey="name" width={130}
-                                                            tick={{ fontSize: 11, fill: "#374151" }} tickLine={false} axisLine={false} />
-                                                        <Tooltip contentStyle={{ borderRadius: "8px", border: "1px solid #e5e7eb", fontSize: "12px" }}
-                                                            formatter={(v) => [`${v ?? 0}/5`, "Rating"]} />
-                                                        <Bar dataKey="rating" radius={[0, 6, 6, 0]} barSize={16}>
-                                                            {sectionData.map((entry, i) => (
-                                                                <Cell key={i} fill={entry.fill} />
-                                                            ))}
-                                                        </Bar>
-                                                    </BarChart>
-                                                </ResponsiveContainer>
+                                                <h4 className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-4">Section Ratings</h4>
+                                                <div className="bg-slate-50/50 rounded-xl border border-slate-100 p-4">
+                                                    <ResponsiveContainer width="100%" height={Math.max(220, sectionData.length * 45)}>
+                                                        <BarChart data={sectionData} layout="vertical" barCategoryGap="25%" margin={{ top: 0, right: 20, left: -20, bottom: 0 }}>
+                                                            <CartesianGrid strokeDasharray="4 4" stroke="#f1f5f9" horizontal={false} />
+                                                            <XAxis type="number" domain={[0, 5]} ticks={[0, 1, 2, 3, 4, 5]}
+                                                                tick={{ fontSize: 12, fill: "#64748b" }} tickLine={false} axisLine={false} dy={10} />
+                                                            <YAxis type="category" dataKey="name" width={150}
+                                                                tick={{ fontSize: 12, fill: "#475569", fontWeight: 500 }} tickLine={false} axisLine={false} />
+                                                            <Tooltip
+                                                                cursor={{ fill: "#f8fafc" }}
+                                                                contentStyle={{
+                                                                    borderRadius: "12px",
+                                                                    border: "1px solid #f1f5f9",
+                                                                    backgroundColor: "rgba(255, 255, 255, 0.95)",
+                                                                    backdropFilter: "blur(8px)",
+                                                                    boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+                                                                    fontSize: "13px",
+                                                                    fontWeight: 500,
+                                                                    color: "#0f172a",
+                                                                }}
+                                                                formatter={(v) => [`${v ?? 0}/5`, "Rating"]}
+                                                            />
+                                                            <Bar dataKey="rating" radius={[0, 6, 6, 0]} barSize={20} animationDuration={1000}>
+                                                                {sectionData.map((entry, i) => (
+                                                                    <Cell key={i} fill={entry.fill} opacity={0.9} />
+                                                                ))}
+                                                            </Bar>
+                                                        </BarChart>
+                                                    </ResponsiveContainer>
+                                                </div>
                                             </div>
                                         )}
                                     </div>
 
                                     {/* Soft Skills */}
                                     {softSkillData.length > 0 && (
-                                        <div>
-                                            <h4 className="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-3">Soft Skills</h4>
-                                            <ResponsiveContainer width="100%" height={Math.max(140, softSkillData.length * 36)}>
-                                                <BarChart data={softSkillData} layout="vertical" barCategoryGap="25%">
-                                                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" horizontal={false} />
-                                                    <XAxis type="number" domain={[0, 5]} ticks={[0, 1, 2, 3, 4, 5]}
-                                                        tick={{ fontSize: 11, fill: "#6b7280" }} tickLine={false} axisLine={{ stroke: "#e5e7eb" }} />
-                                                    <YAxis type="category" dataKey="name" width={130}
-                                                        tick={{ fontSize: 11, fill: "#374151" }} tickLine={false} axisLine={false} />
-                                                    <Tooltip contentStyle={{ borderRadius: "8px", border: "1px solid #e5e7eb", fontSize: "12px" }}
-                                                        formatter={(v) => [`${v ?? 0}/5`, "Score"]} />
-                                                    <Bar dataKey="score" radius={[0, 6, 6, 0]} barSize={16}>
-                                                        {softSkillData.map((entry, i) => (
-                                                            <Cell key={i} fill={entry.fill} />
-                                                        ))}
-                                                    </Bar>
-                                                </BarChart>
-                                            </ResponsiveContainer>
+                                        <div className="mt-2">
+                                            <h4 className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-4">Soft Skills</h4>
+                                            <div className="bg-slate-50/50 rounded-xl border border-slate-100 p-4">
+                                                <ResponsiveContainer width="100%" height={Math.max(180, softSkillData.length * 45)}>
+                                                    <BarChart data={softSkillData} layout="vertical" barCategoryGap="25%" margin={{ top: 0, right: 20, left: -20, bottom: 0 }}>
+                                                        <CartesianGrid strokeDasharray="4 4" stroke="#f1f5f9" horizontal={false} />
+                                                        <XAxis type="number" domain={[0, 5]} ticks={[0, 1, 2, 3, 4, 5]}
+                                                            tick={{ fontSize: 12, fill: "#64748b" }} tickLine={false} axisLine={false} dy={10} />
+                                                        <YAxis type="category" dataKey="name" width={150}
+                                                            tick={{ fontSize: 12, fill: "#475569", fontWeight: 500 }} tickLine={false} axisLine={false} />
+                                                        <Tooltip
+                                                            cursor={{ fill: "#f8fafc" }}
+                                                            contentStyle={{
+                                                                borderRadius: "12px",
+                                                                border: "1px solid #f1f5f9",
+                                                                backgroundColor: "rgba(255, 255, 255, 0.95)",
+                                                                backdropFilter: "blur(8px)",
+                                                                boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+                                                                fontSize: "13px",
+                                                                fontWeight: 500,
+                                                                color: "#0f172a",
+                                                            }}
+                                                            formatter={(v) => [`${v ?? 0}/5`, "Score"]}
+                                                        />
+                                                        <Bar dataKey="score" radius={[0, 6, 6, 0]} barSize={20} animationDuration={1000}>
+                                                            {softSkillData.map((entry, i) => (
+                                                                <Cell key={i} fill={entry.fill} opacity={0.9} />
+                                                            ))}
+                                                        </Bar>
+                                                    </BarChart>
+                                                </ResponsiveContainer>
+                                            </div>
                                         </div>
                                     )}
 
                                     {/* Feedback */}
                                     {(feedback.strengths || feedback.areas_for_improvement || feedback.overall_impression || feedback.red_flags) && (
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
                                             {feedback.strengths && (
                                                 <FeedbackCard title="Strengths" content={feedback.strengths} color="emerald" />
                                             )}
@@ -309,19 +357,19 @@ export default function PracticeInterviewAnalytics({ reports }: PracticeIntervie
 
 // ── Sub-components ──
 
-const FEEDBACK_COLORS: Record<string, { border: string }> = {
-    emerald: { border: "border-emerald-100" },
-    amber: { border: "border-amber-100" },
-    blue: { border: "border-blue-100" },
-    red: { border: "border-red-100" },
+const FEEDBACK_COLORS: Record<string, { bg: string; border: string; title: string; text: string }> = {
+    emerald: { bg: "bg-emerald-50/50", border: "border-emerald-100", title: "text-emerald-700", text: "text-emerald-800/80" },
+    amber: { bg: "bg-amber-50/50", border: "border-amber-100", title: "text-amber-700", text: "text-amber-800/80" },
+    blue: { bg: "bg-blue-50/50", border: "border-blue-100", title: "text-blue-700", text: "text-blue-800/80" },
+    red: { bg: "bg-red-50/50", border: "border-red-100", title: "text-red-700", text: "text-red-800/80" },
 };
 
 function FeedbackCard({ title, content, color }: { title: string; content: string; color: string }) {
     const c = FEEDBACK_COLORS[color] ?? FEEDBACK_COLORS.blue;
     return (
-        <div className={`border ${c.border} rounded-xl p-3`}>
-            <h4 className="text-xs font-semibold text-gray-700 mb-1">{title}</h4>
-            <p className="text-xs text-gray-600 leading-relaxed">{content}</p>
+        <div className={`border ${c.border} ${c.bg} rounded-xl p-4 transition-colors hover:bg-white`}>
+            <h4 className={`text-[11px] font-bold uppercase tracking-wider mb-2 ${c.title}`}>{title}</h4>
+            <p className={`text-[13px] leading-relaxed font-medium ${c.text}`}>{content}</p>
         </div>
     );
 }

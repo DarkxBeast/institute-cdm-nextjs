@@ -11,6 +11,7 @@ export interface MentorInfo {
     phone: string | null;
     specialization: string[];
     status: string;
+    linkedinUrl?: string;
 
 }
 
@@ -180,6 +181,39 @@ export async function getLearningJourneyForBatch(batchId: string): Promise<{ dat
             sequenceOrder: item.sequence_order ?? 0,
             category: item.cdm_products?.cdm_modules?.category ?? 'General',
             mentors: (() => {
+                // HARDCODED MENTOR for "Sectoral & Role Workshop - Roles in Global Capability Centers (GCCs)"
+                if (item.particulars === 'Sectoral & Role Workshop - Roles in Global Capability Centers (GCCs)') {
+                    return [{
+                        id: 'pratik-ranjan-hardcoded',
+                        fullName: 'Pratik Ranjan',
+                        email: null,
+                        phone: null,
+                        specialization: ['Sectoral & Role Workshop'],
+                        status: 'active',
+                        linkedinUrl: 'https://www.linkedin.com/in/pratik-ranjan?utm_source=share_via&utm_content=profile&utm_medium=member_ios'
+                    }];
+                } else if (item.particulars === 'Sectoral & Role Workshop - E-Commerce & Quick Commerce') {
+                    return [{
+                        id: 'kaustav-das-hardcoded',
+                        fullName: 'Kaustav Das',
+                        email: null,
+                        phone: null,
+                        specialization: ['Sectoral & Role Workshop'],
+                        status: 'active',
+                        linkedinUrl: 'https://www.linkedin.com/in/kaustavdas91?utm_source=share_via&utm_content=profile&utm_medium=member_ios'
+                    }];
+                } else if (item.particulars === 'Sectoral & Role Workshop - BFSI (Banking, Financial Services & Insurance)') {
+                    return [{
+                        id: 'anish-gupta-hardcoded',
+                        fullName: 'Anish Gupta',
+                        email: null,
+                        phone: null,
+                        specialization: ['Sectoral & Role Workshop'],
+                        status: 'active',
+                        linkedinUrl: 'https://www.linkedin.com/in/anishcgupta?utm_source=share_via&utm_content=profile&utm_medium=member_ios'
+                    }];
+                }
+
                 const mentorMap = new Map<string, MentorInfo>();
                 for (const s of (item.cdm_journey_sessions ?? [])) {
                     const m = s.mentors_new;
