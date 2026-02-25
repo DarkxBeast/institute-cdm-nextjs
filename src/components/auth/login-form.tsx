@@ -19,6 +19,8 @@ const ERROR_MESSAGES: Record<string, string> = {
   invalid_credentials: 'Invalid email or password. Please try again.',
   session_expired: 'Your session has expired. Please login again.',
   unauthorized: 'You are not authorized to access this resource.',
+  service_unavailable: 'Login service is temporarily unreachable. Please try again in a moment.',
+  auth_unavailable: 'Unable to complete login right now.\nPlease try again.',
 }
 
 export function LoginForm({
@@ -41,7 +43,7 @@ export function LoginForm({
         </div>
 
         {errorMessage && (
-          <div className="bg-destructive/15 text-destructive text-sm p-3 rounded-md text-center">
+          <div className="bg-destructive/15 text-destructive text-sm p-3 rounded-md text-center whitespace-pre-line">
             {errorMessage}
           </div>
         )}

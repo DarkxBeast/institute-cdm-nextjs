@@ -103,8 +103,105 @@ export async function getTccAnalytics(
         const { data: { user }, error: authError } = await supabase.auth.getUser()
         if (authError || !user) throw new Error('Unauthorized')
 
+        // Get user's institute
+        const { data: pocData } = await supabase
+            .from('cdm_institute_pocs')
+            .select('institute_id')
+            .eq('user_id', user.id)
+            .maybeSingle()
+
+        if (!pocData?.institute_id) {
+            return { data: null, error: 'No institute associated with your account' }
+        }
+        const instituteId = pocData.institute_id
+
+        // Get all batches for this institute
+        const { data: instituteBatches, error: batchesErr } = await supabase
+            .from('cdm_batches')
+            .select('id')
+            .eq('institute_id', instituteId)
+
+        if (batchesErr) throw new Error(batchesErr.message)
+        if (!instituteBatches || instituteBatches.length === 0) {
+            return {
+                data: {
+                    totalFeedbacks: 0, totalSessions: 0, totalMentors: 0, overallAvgRating: 0,
+                    diagnosticInterview: { count: 0, avgExperience: 0, avgClarity: 0, avgHelpfulness: 0, avgConfidence: 0 },
+                    resumeReview: { count: 0, avgExperience: 0, avgConfidence: 0, clarityYesPercent: 0, preparednessYesPercent: 0 },
+                    sectoralWorkshop: { count: 0, avgDelivery: 0, avgHelpfulness: 0, clarityYesPercent: 0, interestYesPercent: 0, byWorkshop: [] },
+                    masterclass: { count: 0, avgContentQuality: 0, avgRelevance: 0 },
+                    mentorPerformance: [],
+                },
+                error: null,
+            }
+        }
+
+        // Determine which batch IDs to scope by
+        const targetBatchIds = batchId
+            ? instituteBatches.filter(b => b.id === batchId).map(b => b.id)
+            : instituteBatches.map(b => b.id)
+
+        // If a specific batchId was requested but doesn't belong to this institute, return empty
+        if (batchId && targetBatchIds.length === 0) {
+            return {
+                data: {
+                    totalFeedbacks: 0, totalSessions: 0, totalMentors: 0, overallAvgRating: 0,
+                    diagnosticInterview: { count: 0, avgExperience: 0, avgClarity: 0, avgHelpfulness: 0, avgConfidence: 0 },
+                    resumeReview: { count: 0, avgExperience: 0, avgConfidence: 0, clarityYesPercent: 0, preparednessYesPercent: 0 },
+                    sectoralWorkshop: { count: 0, avgDelivery: 0, avgHelpfulness: 0, clarityYesPercent: 0, interestYesPercent: 0, byWorkshop: [] },
+                    masterclass: { count: 0, avgContentQuality: 0, avgRelevance: 0 },
+                    mentorPerformance: [],
+                },
+                error: null,
+            }
+        }
+
+        // Get learning journeys for the target batches
+        const { data: journeys } = await supabase
+            .from('cdm_learning_journeys')
+            .select('id')
+            .in('batch_id', targetBatchIds)
+
+        if (!journeys || journeys.length === 0) {
+            return {
+                data: {
+                    totalFeedbacks: 0, totalSessions: 0, totalMentors: 0, overallAvgRating: 0,
+                    diagnosticInterview: { count: 0, avgExperience: 0, avgClarity: 0, avgHelpfulness: 0, avgConfidence: 0 },
+                    resumeReview: { count: 0, avgExperience: 0, avgConfidence: 0, clarityYesPercent: 0, preparednessYesPercent: 0 },
+                    sectoralWorkshop: { count: 0, avgDelivery: 0, avgHelpfulness: 0, clarityYesPercent: 0, interestYesPercent: 0, byWorkshop: [] },
+                    masterclass: { count: 0, avgContentQuality: 0, avgRelevance: 0 },
+                    mentorPerformance: [],
+                },
+                error: null,
+            }
+        }
+
+        // Get journey item IDs scoped to this institute's batches
+        const journeyIds = journeys.map(j => j.id)
+        const { data: journeyItems } = await supabase
+            .from('cdm_learning_journey_items')
+            .select('id')
+            .in('learning_journey_id', journeyIds)
+
+        if (!journeyItems || journeyItems.length === 0) {
+            return {
+                data: {
+                    totalFeedbacks: 0, totalSessions: 0, totalMentors: 0, overallAvgRating: 0,
+                    diagnosticInterview: { count: 0, avgExperience: 0, avgClarity: 0, avgHelpfulness: 0, avgConfidence: 0 },
+                    resumeReview: { count: 0, avgExperience: 0, avgConfidence: 0, clarityYesPercent: 0, preparednessYesPercent: 0 },
+                    sectoralWorkshop: { count: 0, avgDelivery: 0, avgHelpfulness: 0, clarityYesPercent: 0, interestYesPercent: 0, byWorkshop: [] },
+                    masterclass: { count: 0, avgContentQuality: 0, avgRelevance: 0 },
+                    mentorPerformance: [],
+                },
+                error: null,
+            }
+        }
+
+        const instituteItemIds = journeyItems.map(ji => ji.id)
+
         // Build query — fetch all feedbacks with session + mentor + journey item info
-        let query = supabase
+        // Scoped to this institute's journey items only
+        const query = supabase
             .from('cdm_session_attendees')
             .select(`
                 id,
@@ -123,29 +220,7 @@ export async function getTccAnalytics(
                 )
             `)
             .not('feedback_data', 'eq', '{}')
-
-        // If batch filter, join through journey items → journey → batch
-        if (batchId) {
-            // Step 1: Get the learning journey for this batch
-            const { data: journeys } = await supabase
-                .from('cdm_learning_journeys')
-                .select('id')
-                .eq('batch_id', batchId)
-                .limit(1)
-
-            if (journeys && journeys.length > 0) {
-                // Step 2: Get journey item IDs for that journey
-                const { data: journeyItems } = await supabase
-                    .from('cdm_learning_journey_items')
-                    .select('id')
-                    .eq('learning_journey_id', journeys[0].id)
-
-                if (journeyItems && journeyItems.length > 0) {
-                    const itemIds = journeyItems.map(ji => ji.id)
-                    query = query.in('journey_item_id', itemIds)
-                }
-            }
-        }
+            .in('journey_item_id', instituteItemIds)
 
         const { data: attendees, error } = await query
 

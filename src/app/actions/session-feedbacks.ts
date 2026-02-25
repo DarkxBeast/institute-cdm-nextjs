@@ -30,13 +30,48 @@ export async function getJourneyItemsForBatch(
         const { data: { user }, error: authError } = await supabase.auth.getUser()
         if (authError || !user) throw new Error('Unauthorized')
 
-        // Step 1: Get learning journey(s) — for a specific batch or all
+        // Get user's institute
+        const { data: pocData } = await supabase
+            .from('cdm_institute_pocs')
+            .select('institute_id')
+            .eq('user_id', user.id)
+            .maybeSingle()
+
+        if (!pocData?.institute_id) {
+            return { data: [], error: null }
+        }
+        const instituteId = pocData.institute_id
+
+        // Step 1: Get learning journey(s) — scoped to user's institute
         let journeyQuery = supabase
             .from('cdm_learning_journeys')
             .select('id')
 
         if (batchId) {
+            // Verify the batch belongs to this institute
+            const { data: batchData } = await supabase
+                .from('cdm_batches')
+                .select('id')
+                .eq('id', batchId)
+                .eq('institute_id', instituteId)
+                .maybeSingle()
+
+            if (!batchData) {
+                return { data: [], error: null }
+            }
             journeyQuery = journeyQuery.eq('batch_id', batchId).limit(1)
+        } else {
+            // "All Batches" — get batches for this institute only
+            const { data: instituteBatches } = await supabase
+                .from('cdm_batches')
+                .select('id')
+                .eq('institute_id', instituteId)
+
+            if (!instituteBatches || instituteBatches.length === 0) {
+                return { data: [], error: null }
+            }
+            const batchIds = instituteBatches.map(b => b.id)
+            journeyQuery = journeyQuery.in('batch_id', batchIds)
         }
 
         const { data: journeys, error: journeyError } = await journeyQuery
