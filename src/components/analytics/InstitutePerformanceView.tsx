@@ -51,8 +51,11 @@ export default function InstitutePerformanceView() {
             try {
                 const result = await getInstituteAnalytics();
                 if (cancelled) return;
-                if (result.data) setData(result.data);
-                if (result.error) setError(result.error);
+                if (result.data) {
+                    setData(result.data);
+                } else if (result.error) {
+                    setError(result.error);
+                }
             } catch {
                 if (!cancelled) setError("Failed to load institute analytics");
             } finally {

@@ -343,18 +343,25 @@ export async function getInstituteAnalytics(): Promise<{
         // Get all reports via attendees
         let reportsList: any[] = []
         if (allStudentIds.length > 0) {
-            const { data: reports, error: reportsErr } = await supabase
-                .from('cdm_student_reports')
-                .select(`
-                    id, report_type, report_data,
-                    attendee:cdm_session_attendees!cdm_reports_attendee_fkey!inner (
-                        student_id
-                    )
-                `)
-                .in('attendee.student_id', allStudentIds)
+            try {
+                const { data: reports, error: reportsErr } = await supabase
+                    .from('cdm_student_reports')
+                    .select(`
+                        id, report_type, report_data,
+                        attendee:cdm_session_attendees!cdm_reports_attendee_fkey!inner (
+                            student_id
+                        )
+                    `)
+                    .in('attendee.student_id', allStudentIds)
 
-            if (reportsErr) throw new Error(reportsErr.message)
-            reportsList = reports ?? []
+                if (reportsErr) {
+                    console.warn('Reports query returned an error (may be empty):', reportsErr.message)
+                } else {
+                    reportsList = reports ?? []
+                }
+            } catch (e) {
+                console.warn('Reports query failed:', e)
+            }
         }
 
         // student → batch mapping
@@ -393,11 +400,20 @@ export async function getInstituteAnalytics(): Promise<{
         // Engagement — all attendees across the institute
         let allAttendees: any[] = []
         if (allStudentIds.length > 0) {
-            const { data: att } = await supabase
-                .from('cdm_session_attendees')
-                .select('student_id, attendance_status, feedback_data')
-                .in('student_id', allStudentIds)
-            allAttendees = att ?? []
+            try {
+                const { data: att, error: attErr } = await supabase
+                    .from('cdm_session_attendees')
+                    .select('student_id, attendance_status, feedback_data')
+                    .in('student_id', allStudentIds)
+
+                if (attErr) {
+                    console.warn('Attendees query returned an error (may be empty):', attErr.message)
+                } else {
+                    allAttendees = att ?? []
+                }
+            } catch (e) {
+                console.warn('Attendees query failed:', e)
+            }
         }
 
         // Per-batch attendance/feedback
