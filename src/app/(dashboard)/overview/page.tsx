@@ -6,8 +6,8 @@ import BatchDataSection from "./batch-data/BatchDataSection";
 import { MapPin } from "lucide-react";
 
 // Asset paths
-const IMG_INSTITUTE_CAMPUS = "/images/iimk_banner.jpeg";
-const IMG_IIM_LOGO = "/images/iimk_logo.jpeg";
+const IMG_INSTITUTE_CAMPUS = "/images/iimu_banner.jpeg";
+const IMG_IIM_LOGO = "/images/iimu_logo.png";
 
 export default async function OverviewPage() {
     const supabase = await createClient();
