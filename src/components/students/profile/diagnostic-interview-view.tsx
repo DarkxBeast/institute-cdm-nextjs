@@ -80,6 +80,13 @@ function hasMeaningfulContent(text?: string): boolean {
     return t.length > 0 && !["nothing", "none", "n/a", "na", "-", "—"].includes(t);
 }
 
+function formatDate(raw?: string): string {
+    if (!raw) return "—";
+    const d = new Date(raw);
+    if (isNaN(d.getTime())) return raw;
+    return d.toLocaleDateString("en-IN", { year: "numeric", month: "short", day: "numeric" });
+}
+
 export function DiagnosticInterviewView({
     reports,
     instanceLabel,
@@ -126,7 +133,7 @@ export function DiagnosticInterviewView({
                             </h2>
                             <div className="flex items-center gap-2 text-sm text-gray-500">
                                 <Calendar className="h-4 w-4" />
-                                <span>Completed on {completedDate || "—"}</span>
+                                <span>Completed on {formatDate(completedDate)}</span>
                             </div>
                         </div>
                         <Link href={reportUrl}>
@@ -151,7 +158,7 @@ export function DiagnosticInterviewView({
                                 const label = getRatingLabel(meta.overall_rating);
                                 return (
                                     <div className="bg-orange-50 rounded-xl p-4 flex-1 text-center">
-                                        <p className="text-3xl font-bold text-orange-500">{meta.overall_rating}</p>
+                                        <p className="text-3xl font-bold text-orange-500">{meta.overall_rating.toFixed(1)}</p>
                                         <p className={`text-sm font-medium mt-1 ${label.className}`}>{label.text}</p>
                                         <p className="text-xs text-gray-400 mt-0.5">Overall Rating</p>
                                     </div>
@@ -161,7 +168,7 @@ export function DiagnosticInterviewView({
                                 const label = getRatingLabel(meta.alignment_score);
                                 return (
                                     <div className="bg-orange-50 rounded-xl p-4 flex-1 text-center">
-                                        <p className="text-3xl font-bold text-orange-500">{meta.alignment_score}</p>
+                                        <p className="text-3xl font-bold text-orange-500">{meta.alignment_score.toFixed(1)}</p>
                                         <p className={`text-sm font-medium mt-1 ${label.className}`}>{label.text}</p>
                                         <p className="text-xs text-gray-400 mt-0.5">Alignment Score</p>
                                     </div>
@@ -287,7 +294,7 @@ export function DiagnosticInterviewView({
                                                         <div
                                                             className={`${colors.badge} text-white text-xs font-bold rounded-full w-7 h-7 flex items-center justify-center mb-1.5 shadow-sm opacity-90 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300`}
                                                         >
-                                                            {section.rating}
+                                                            {section.rating.toFixed(1)}
                                                         </div>
                                                         <div
                                                             className={`w-full max-w-[72px] rounded-t-lg bg-gradient-to-t ${colors.bg} shadow-sm group-hover:shadow-md group-hover:brightness-110 transition-all duration-500 ease-out cursor-default`}

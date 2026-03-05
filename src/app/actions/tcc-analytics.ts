@@ -290,6 +290,7 @@ export async function getTccAnalytics(
                     if (typeof fb.overall_experience === 'number') { diag.experience.push(fb.overall_experience); allRatings.push(fb.overall_experience) }
                     if (typeof fb.question_clarity === 'number') diag.clarity.push(fb.question_clarity)
                     if (typeof fb.helpfulness_rating === 'number') { diag.helpfulness.push(fb.helpfulness_rating); if (mentor?.id) mentorMap.get(mentor.id)!.ratings.push(fb.helpfulness_rating) }
+                    else if (typeof fb.overall_experience === 'number' && mentor?.id) mentorMap.get(mentor.id)!.ratings.push(fb.overall_experience)
                     if (typeof fb.confidence_level === 'number') diag.confidence.push(fb.confidence_level)
                     break
                 }
@@ -304,10 +305,14 @@ export async function getTccAnalytics(
                 }
                 case 'sectoral': {
                     sectoralCount++
-                    if (typeof fb.delivery_rating === 'number') { sectoral.delivery.push(fb.delivery_rating); allRatings.push(fb.delivery_rating) }
-                    if (typeof fb.helpfulness_rating === 'number') { sectoral.helpfulness.push(fb.helpfulness_rating); if (mentor?.id) mentorMap.get(mentor.id)!.ratings.push(fb.helpfulness_rating) }
+                    const dr = fb.delivery_rating ?? fb.workshop_quality
+                    const hr = fb.helpfulness_rating ?? fb.engagement_level
+                    if (typeof dr === 'number') { sectoral.delivery.push(dr); allRatings.push(dr) }
+                    if (typeof hr === 'number') { sectoral.helpfulness.push(hr); if (mentor?.id) mentorMap.get(mentor.id)!.ratings.push(hr) }
                     if (typeof fb.clarity_rating === 'string') sectoral.clarity.push(fb.clarity_rating)
+                    else if (typeof fb.clarity_of_communication === 'number') sectoral.clarity.push(fb.clarity_of_communication >= 4 ? 'yes' : 'no')
                     if (typeof fb.interest_rating === 'string') sectoral.interest.push(fb.interest_rating)
+                    else if (typeof fb.session_relevance === 'number') sectoral.interest.push(fb.session_relevance >= 4 ? 'yes' : 'no')
 
                     // Per-workshop breakdown
                     const wsName = particulars.replace(/^Sectoral & Role Workshop\s*-?\s*/i, '').trim() || particulars
@@ -315,15 +320,17 @@ export async function getTccAnalytics(
                         sectoral.byWorkshop.set(wsName, { delivery: [], helpfulness: [] })
                     }
                     const ws = sectoral.byWorkshop.get(wsName)!
-                    if (typeof fb.delivery_rating === 'number') ws.delivery.push(fb.delivery_rating)
-                    if (typeof fb.helpfulness_rating === 'number') ws.helpfulness.push(fb.helpfulness_rating)
+                    if (typeof dr === 'number') ws.delivery.push(dr)
+                    if (typeof hr === 'number') ws.helpfulness.push(hr)
                     break
                 }
                 case 'masterclass': {
                     masterCount++
-                    if (typeof fb.content_quality_rating === 'number') { master.contentQuality.push(fb.content_quality_rating); allRatings.push(fb.content_quality_rating) }
-                    if (typeof fb.relevance_rating === 'number') { master.relevance.push(fb.relevance_rating); allRatings.push(fb.relevance_rating) }
-                    if (typeof fb.content_quality_rating === 'number' && mentor?.id) mentorMap.get(mentor.id)!.ratings.push(fb.content_quality_rating)
+                    const cqr = fb.content_quality_rating ?? fb.workshop_quality
+                    const rr = fb.relevance_rating ?? fb.session_relevance
+                    if (typeof cqr === 'number') { master.contentQuality.push(cqr); allRatings.push(cqr) }
+                    if (typeof rr === 'number') { master.relevance.push(rr); allRatings.push(rr) }
+                    if (typeof cqr === 'number' && mentor?.id) mentorMap.get(mentor.id)!.ratings.push(cqr)
                     break
                 }
             }

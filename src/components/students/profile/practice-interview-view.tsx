@@ -67,6 +67,13 @@ function hasMeaningfulContent(text?: string): boolean {
     return trimmed.length > 0 && trimmed !== "nothing" && trimmed !== "none" && trimmed !== "n/a" && trimmed !== "na" && trimmed !== "nothing to highlight";
 }
 
+function formatDate(raw?: string): string {
+    if (!raw) return "—";
+    const d = new Date(raw);
+    if (isNaN(d.getTime())) return raw;
+    return d.toLocaleDateString("en-IN", { year: "numeric", month: "short", day: "numeric" });
+}
+
 // ── Component ──
 
 export function PracticeInterviewView({
@@ -104,7 +111,7 @@ export function PracticeInterviewView({
                             </h2>
                             <div className="flex items-center gap-2 text-sm text-gray-500">
                                 <Calendar className="h-4 w-4" />
-                                <span>Completed on {completedDate || "—"}</span>
+                                <span>Completed on {formatDate(completedDate)}</span>
                             </div>
                         </div>
                         <Link href={reportUrl}>
@@ -126,7 +133,7 @@ export function PracticeInterviewView({
                     <CardContent className="pt-6">
                         <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
                             <div className="bg-orange-50 rounded-xl p-4 flex-1 text-center">
-                                <p className="text-3xl font-bold text-orange-500">{meta.overall_rating}</p>
+                                <p className="text-3xl font-bold text-orange-500">{meta.overall_rating.toFixed(1)}</p>
                                 <p className="text-sm text-gray-600 mt-1">Overall Rating</p>
                             </div>
                         </div>
@@ -202,7 +209,7 @@ export function PracticeInterviewView({
                                                         <div
                                                             className={`${colors.badge} text-white text-xs font-bold rounded-full w-7 h-7 flex items-center justify-center mb-1.5 shadow-sm opacity-90 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300`}
                                                         >
-                                                            {section.rating}
+                                                            {section.rating.toFixed(1)}
                                                         </div>
                                                         <div
                                                             className={`w-full max-w-[72px] rounded-t-lg bg-gradient-to-t ${colors.bg} shadow-sm group-hover:shadow-md group-hover:brightness-110 transition-all duration-500 ease-out cursor-default`}

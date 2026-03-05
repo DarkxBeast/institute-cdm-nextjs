@@ -118,6 +118,13 @@ function parseSoftSkills(data: Record<string, any>): SoftSkill[] {
     return Array.isArray(data.soft_skills) ? data.soft_skills : [];
 }
 
+function formatDate(raw?: string): string {
+    if (!raw) return "—";
+    const d = new Date(raw);
+    if (isNaN(d.getTime())) return raw;
+    return d.toLocaleDateString("en-IN", { year: "numeric", month: "short", day: "numeric" });
+}
+
 // ── Star Rating Component ──
 
 function StarRating({
@@ -370,7 +377,7 @@ export function PracticeInterviewFullReport({
                         </div>
                     </div>
                     <p className="text-xs text-slate-400 mt-3 md:mt-2 ml-8 sm:ml-9">
-                        Generated on {reportDate || "—"}
+                        Generated on {formatDate(reportDate)}
                     </p>
                 </div>
             </div>
@@ -458,7 +465,7 @@ export function PracticeInterviewFullReport({
                                 <div className="flex items-center gap-3 text-sm text-gray-500 pt-1">
                                     <Calendar className="h-5 w-5" />
                                     <span className="font-medium">Assessment Date:</span>
-                                    <span className="text-gray-900">{reportDate || "—"}</span>
+                                    <span className="text-gray-900">{formatDate(reportDate)}</span>
                                 </div>
                             </div>
 
@@ -483,7 +490,7 @@ export function PracticeInterviewFullReport({
                                 Overall Assessment
                             </h2>
                             <p className="text-xl font-bold text-orange-500">
-                                {overallRating}/5.0
+                                {overallRating.toFixed(1)}/5.0
                             </p>
                         </div>
                         <div className="flex flex-col lg:flex-row gap-8 items-center lg:items-start">
@@ -669,7 +676,7 @@ export function PracticeInterviewFullReport({
                                     <div className="flex items-center gap-2">
                                         <StarRating rating={section.rating} variant="light" size="sm" />
                                         <span className="bg-white/20 text-white text-xs font-semibold px-2.5 py-1 rounded-full">
-                                            {section.rating}/5
+                                            {section.rating.toFixed(1)}/5
                                         </span>
                                     </div>
                                 </div>
@@ -751,7 +758,7 @@ export function PracticeInterviewFullReport({
                                                     {skill.name}
                                                 </span>
                                                 <span className="text-sm font-semibold text-gray-600">
-                                                    {skill.score}/{skill.max}
+                                                    {skill.score.toFixed(1)}/{skill.max}
                                                 </span>
                                             </div>
                                             <div className="h-3 bg-gray-100 rounded-full overflow-hidden">

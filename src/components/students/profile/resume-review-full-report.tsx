@@ -63,6 +63,13 @@ function hasMeaningfulContent(text?: string): boolean {
     return t.length > 0 && !["nothing", "none", "n/a", "na", "-", "—"].includes(t);
 }
 
+function formatDate(raw?: string): string {
+    if (!raw) return "—";
+    const d = new Date(raw);
+    if (isNaN(d.getTime())) return raw;
+    return d.toLocaleDateString("en-IN", { year: "numeric", month: "short", day: "numeric" });
+}
+
 // ── Component ──
 
 interface ResumeReviewFullReportProps {
@@ -119,7 +126,7 @@ export function ResumeReviewFullReport({
                         </div>
                     </div>
                     <p className="text-xs text-slate-400 mt-3 md:mt-2 ml-8 sm:ml-9">
-                        Generated on {reportDate || "—"}
+                        Generated on {formatDate(reportDate)}
                     </p>
                 </div>
             </div>
@@ -155,7 +162,7 @@ export function ResumeReviewFullReport({
                                     <div className="flex items-center gap-3 text-sm">
                                         <Briefcase className="h-5 w-5 text-gray-400" />
                                         <span className="text-gray-600 font-medium">Overall Rating:</span>
-                                        <span className="text-gray-900">{meta.overall_rating} / 5</span>
+                                        <span className="text-gray-900">{meta.overall_rating.toFixed(1)} / 5</span>
                                     </div>
                                 )}
 
@@ -204,7 +211,7 @@ export function ResumeReviewFullReport({
                                 <div className="flex items-center gap-2 text-sm text-gray-500">
                                     <Calendar className="h-4 w-4" />
                                     <span className="font-medium">Assessment Date:</span>
-                                    <span className="text-gray-900">{reportDate || "—"}</span>
+                                    <span className="text-gray-900">{formatDate(reportDate)}</span>
                                 </div>
                             </div>
 
@@ -263,7 +270,7 @@ export function ResumeReviewFullReport({
                                             <div className="flex items-center gap-3">
                                                 {section.rating > 0 && (
                                                     <span className="text-sm font-medium text-gray-300">
-                                                        Rating: {section.rating}/5
+                                                        Rating: {section.rating.toFixed(1)}/5
                                                     </span>
                                                 )}
                                                 {commentCount > 0 && (

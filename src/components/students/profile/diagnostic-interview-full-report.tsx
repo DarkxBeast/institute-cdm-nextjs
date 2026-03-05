@@ -66,6 +66,13 @@ function parseFeedback(data: Record<string, any>): FeedbackSummary {
         : {};
 }
 
+function formatDate(raw?: string): string {
+    if (!raw) return "—";
+    const d = new Date(raw);
+    if (isNaN(d.getTime())) return raw;
+    return d.toLocaleDateString("en-IN", { year: "numeric", month: "short", day: "numeric" });
+}
+
 // ── Star Rating Component ──
 
 function StarRating({
@@ -97,7 +104,7 @@ function StarRating({
                 />
             ))}
             <span className={`text-sm font-semibold ml-1.5 ${textColor}`}>
-                {rating}/{max}
+                {typeof rating === 'number' ? rating.toFixed(1) : rating}/{max}
             </span>
         </div>
     );
@@ -172,7 +179,7 @@ export function DiagnosticInterviewFullReport({
                         </div>
                     </div>
                     <p className="text-xs text-slate-400 mt-3 md:mt-2 ml-8 sm:ml-9">
-                        Generated on {reportDate || "—"}
+                        Generated on {formatDate(reportDate)}
                     </p>
                 </div>
             </div>
@@ -207,12 +214,12 @@ export function DiagnosticInterviewFullReport({
                                 <div className="flex items-center gap-2 text-sm">
                                     <Calendar className="h-4 w-4 text-gray-400 shrink-0" />
                                     <span className="text-gray-500 font-medium">Date:</span>
-                                    <span className="text-gray-900">{reportDate || "—"}</span>
+                                    <span className="text-gray-900">{formatDate(reportDate)}</span>
                                 </div>
                                 <div className="flex items-center gap-2 text-sm">
                                     <Briefcase className="h-4 w-4 text-gray-400 shrink-0" />
                                     <span className="text-gray-500 font-medium">Overall Rating:</span>
-                                    <span className="text-gray-900">{meta.overall_rating ?? "—"} / 5</span>
+                                    <span className="text-gray-900">{meta.overall_rating != null ? Number(meta.overall_rating).toFixed(1) : "—"} / 5</span>
                                 </div>
                                 <div className="flex items-start gap-2 text-sm">
                                     <BookOpen className="h-4 w-4 text-gray-400 shrink-0 mt-0.5" />
@@ -258,7 +265,7 @@ export function DiagnosticInterviewFullReport({
                                 <div className="flex items-center gap-2 text-sm text-gray-500 pt-1">
                                     <Calendar className="h-4 w-4" />
                                     <span className="font-medium">Assessment Date:</span>
-                                    <span className="text-gray-900">{reportDate || "—"}</span>
+                                    <span className="text-gray-900">{formatDate(reportDate)}</span>
                                 </div>
                             </div>
 
