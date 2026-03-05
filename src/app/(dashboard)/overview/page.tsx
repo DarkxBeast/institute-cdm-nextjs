@@ -5,9 +5,12 @@ import { getBatchesForUser } from "@/app/actions/batches";
 import BatchDataSection from "./batch-data/BatchDataSection";
 import { MapPin } from "lucide-react";
 
-// Asset paths
-const IMG_INSTITUTE_CAMPUS = "/images/iimu_banner.jpeg";
-const IMG_IIM_LOGO = "/images/iimu_logo.png";
+// Per-institute asset mapping (keyed by institute code)
+const INSTITUTE_ASSETS: Record<string, { banner: string; logo: string }> = {
+    IIMK: { banner: "/images/iimk_banner.jpeg", logo: "/images/iimk_logo.jpeg" },
+    IIMU: { banner: "/images/iimu_banner.jpeg", logo: "/images/iimu_logo.png" },
+};
+const DEFAULT_ASSETS = INSTITUTE_ASSETS.IIMU;
 
 export default async function OverviewPage() {
     const supabase = await createClient();
@@ -23,14 +26,16 @@ export default async function OverviewPage() {
     // Fetch institute data for the logged-in admin/POC
     const { data: pocData } = await supabase
         .from("cdm_institute_pocs")
-        .select("cdm_institutes(name, logo_url, location)")
+        .select("cdm_institutes(name, code, logo_url, location)")
         .eq("user_id", user.id)
         .single();
 
     // Extract institute data safely
     const instituteRaw = pocData?.cdm_institutes as any;
     const instituteName = (Array.isArray(instituteRaw) ? instituteRaw[0]?.name : instituteRaw?.name) || "Institute Name";
-    const instituteLogo = (Array.isArray(instituteRaw) ? instituteRaw[0]?.logo_url : instituteRaw?.logo_url) || IMG_IIM_LOGO;
+    const instituteCode = ((Array.isArray(instituteRaw) ? instituteRaw[0]?.code : instituteRaw?.code) || "").toUpperCase();
+    const assets = INSTITUTE_ASSETS[instituteCode] || DEFAULT_ASSETS;
+    const instituteLogo = (Array.isArray(instituteRaw) ? instituteRaw[0]?.logo_url : instituteRaw?.logo_url) || assets.logo;
     const instituteLocation = (Array.isArray(instituteRaw) ? instituteRaw[0]?.location : instituteRaw?.location) || null;
 
     // Fetch batches for this user's institute
@@ -47,7 +52,7 @@ export default async function OverviewPage() {
                     {/* Header Image Section */}
                     <div className="relative h-[150px] md:h-[200px] w-full bg-gray-200">
                         <Image
-                            src={IMG_INSTITUTE_CAMPUS}
+                            src={assets.banner}
                             alt="Institute Campus"
                             fill
                             className="object-cover"
