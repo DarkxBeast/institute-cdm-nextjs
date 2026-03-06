@@ -109,6 +109,10 @@ export default function FileUploader({ onClose, onImport }: FileUploaderProps) {
         email: values[columnIndices.email!] || "",
         phoneNumber: columnIndices.phoneNumber !== undefined ? values[columnIndices.phoneNumber] || "" : "",
         gender,
+        aboutMe: "",
+        skills: [],
+        sectorsOfInterest: [],
+        domainsOfInterest: [],
       };
 
       // Validate required fields

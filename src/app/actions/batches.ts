@@ -234,6 +234,7 @@ export async function getBatch(batchId: string): Promise<{ data: { batchInfo: Ba
             )
         `)
         .eq('batch_id', batchId)
+        .order('full_name', { ascending: true })
 
     if (studentsError) {
         return { error: studentsError.message, data: null }
@@ -288,6 +289,10 @@ export async function getBatch(batchId: string): Promise<{ data: { batchInfo: Ba
             phoneNumber: s.phone || '',
             gender: s.gender || '',
             overallScore,
+            aboutMe: s.about_me || '',
+            skills: Array.isArray(s.skills) ? s.skills : [],
+            sectorsOfInterest: Array.isArray(s.sectors_of_interest) ? s.sectors_of_interest : [],
+            domainsOfInterest: Array.isArray(s.domains_of_interest) ? s.domains_of_interest : [],
         };
     })
 

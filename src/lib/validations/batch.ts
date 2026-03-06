@@ -19,6 +19,10 @@ export const studentSchema = z.object({
         .optional()
         .default(""),
     overallScore: z.string().optional(),
+    aboutMe: z.string().optional().default(""),
+    skills: z.array(z.string()).optional().default([]),
+    sectorsOfInterest: z.array(z.string()).optional().default([]),
+    domainsOfInterest: z.array(z.string()).optional().default([]),
 });
 
 // Schema for form input (before adding id)

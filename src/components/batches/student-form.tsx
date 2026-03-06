@@ -26,6 +26,10 @@ export default function StudentForm({ initialData, onSubmit, onCancel }: Student
       email: "",
       phoneNumber: "",
       gender: "",
+      aboutMe: "",
+      skills: [],
+      sectorsOfInterest: [],
+      domainsOfInterest: [],
     }
   );
 

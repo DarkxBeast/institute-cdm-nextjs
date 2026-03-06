@@ -64,7 +64,7 @@ export function StudentJourney({ items = [] }: StudentJourneyProps) {
                             let dateStr = "";
                             if (step.startDate) {
                                 try {
-                                    dateStr = new Date(step.startDate).toLocaleDateString(undefined, {
+                                    dateStr = new Date(step.startDate).toLocaleDateString("en-US", {
                                         month: "short",
                                         day: "numeric",
                                         year: "numeric"

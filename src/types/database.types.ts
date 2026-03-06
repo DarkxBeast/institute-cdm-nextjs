@@ -708,6 +708,22 @@ export interface Database {
                     phone: string | null
                     gender: string | null
                     enrollment_id: string | null
+                    about_me: string | null
+                    personal_email: string | null
+                    linkedin_url: string | null
+                    resume_url: string | null
+                    profile_picture_url: string | null
+                    visible_to_recruiters: boolean | null
+                    education: Json | null
+                    work_experience: Json | null
+                    certifications: Json | null
+                    placement_goals: Json | null
+                    sectors_of_interest: Json | null
+                    domains_of_interest: Json | null
+                    skills: Json | null
+                    skills_to_build: Json | null
+                    performance_bottlenecks: Json | null
+                    profile_completed: boolean | null
                 }
                 Insert: {
                     id?: string
@@ -717,6 +733,22 @@ export interface Database {
                     phone?: string | null
                     gender?: string | null
                     enrollment_id?: string | null
+                    about_me?: string | null
+                    personal_email?: string | null
+                    linkedin_url?: string | null
+                    resume_url?: string | null
+                    profile_picture_url?: string | null
+                    visible_to_recruiters?: boolean | null
+                    education?: Json | null
+                    work_experience?: Json | null
+                    certifications?: Json | null
+                    placement_goals?: Json | null
+                    sectors_of_interest?: Json | null
+                    domains_of_interest?: Json | null
+                    skills?: Json | null
+                    skills_to_build?: Json | null
+                    performance_bottlenecks?: Json | null
+                    profile_completed?: boolean | null
                 }
                 Update: {
                     id?: string
@@ -726,6 +758,22 @@ export interface Database {
                     phone?: string | null
                     gender?: string | null
                     enrollment_id?: string | null
+                    about_me?: string | null
+                    personal_email?: string | null
+                    linkedin_url?: string | null
+                    resume_url?: string | null
+                    profile_picture_url?: string | null
+                    visible_to_recruiters?: boolean | null
+                    education?: Json | null
+                    work_experience?: Json | null
+                    certifications?: Json | null
+                    placement_goals?: Json | null
+                    sectors_of_interest?: Json | null
+                    domains_of_interest?: Json | null
+                    skills?: Json | null
+                    skills_to_build?: Json | null
+                    performance_bottlenecks?: Json | null
+                    profile_completed?: boolean | null
                 }
                 Relationships: [
                     {
