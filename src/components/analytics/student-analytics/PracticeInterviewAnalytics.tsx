@@ -141,214 +141,222 @@ export default function PracticeInterviewAnalytics({ reports }: PracticeIntervie
             {/* Render each sub-type independently */}
             {subTypes.map(([name, subReports], idx) => {
                 const accent = ACCENT[idx % ACCENT.length];
-                const report = subReports[subReports.length - 1]; // latest
-                const meta = parseMeta(report.reportData);
-                const sections = parseSections(report.reportData);
-                const skillBreakdown = parseSkillBreakdown(report.reportData);
-                const softSkills = parseSoftSkills(report.reportData);
-                const feedback = parseFeedback(report.reportData);
-
-                const sectionData = sections.map((s) => ({
-                    name: s.title,
-                    rating: s.rating,
-                    fill: ratingColor(s.rating),
-                }));
-
-                const radarData = skillBreakdown.map((s) => ({
-                    subject: s.name.length > 18 ? s.name.slice(0, 16) + "…" : s.name,
-                    fullName: s.name,
-                    value: s.rating,
-                }));
-
-                const softSkillData = softSkills.map((s) => ({
-                    name: s.skill,
-                    score: s.score,
-                    fill: ratingColor(s.score),
-                }));
-
-                const hasData = sectionData.length > 0 || radarData.length > 0 || softSkillData.length > 0 ||
-                    feedback.strengths || feedback.areas_for_improvement || feedback.overall_impression || feedback.red_flags;
 
                 return (
-                    <Card key={name} className="border-gray-200 shadow-sm rounded-2xl">
-                        <CardContent className="p-4 sm:p-5 space-y-5">
-                            {/* Sub-type header */}
-                            <div className="flex items-center gap-3">
-                                <div className={`p-1.5 ${accent.bg} rounded-lg`}>
-                                    <MessageSquare className={`h-4 w-4 ${accent.text}`} />
-                                </div>
-                                <div className="min-w-0">
-                                    <h3 className="text-sm font-bold text-gray-900">{name}</h3>
-                                    <p className="text-xs text-gray-500">{formatDate(report.createdAt)}</p>
-                                </div>
-                                {meta.overall_rating != null && (
-                                    <Badge
-                                        variant="outline"
-                                        className="ml-auto text-sm font-semibold px-3 py-1"
-                                        style={{ borderColor: ratingColor(meta.overall_rating), color: ratingColor(meta.overall_rating) }}
-                                    >
-                                        {meta.overall_rating.toFixed(1)}/5
-                                    </Badge>
-                                )}
-                            </div>
+                    <div key={name} className="space-y-6">
+                        {subReports.map((report, reportIdx) => {
+                            const meta = parseMeta(report.reportData);
+                            const sections = parseSections(report.reportData);
+                            const skillBreakdown = parseSkillBreakdown(report.reportData);
+                            const softSkills = parseSoftSkills(report.reportData);
+                            const feedback = parseFeedback(report.reportData);
 
-                            {!hasData ? (
-                                /* Empty state: report exists but no analyzable data yet */
-                                <div className="flex flex-col items-center justify-center py-12 text-center bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
-                                    <div className="p-3.5 bg-white rounded-full mb-4 shadow-sm border border-slate-100">
-                                        <Clock className="h-5 w-5 text-slate-400" />
-                                    </div>
-                                    <p className="text-sm font-bold text-slate-600 mb-1">Report data not yet available</p>
-                                    <p className="text-[13px] text-slate-400 max-w-xs font-medium">
-                                        This report has been created but detailed analytics haven&apos;t been generated yet.
-                                    </p>
-                                </div>
-                            ) : (
-                                <>
-                                    {/* Charts Row */}
-                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                        {/* Skill Radar */}
-                                        {radarData.length >= 3 && (
-                                            <div>
-                                                <h4 className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-4">Skill Breakdown</h4>
-                                                <div className="bg-slate-50/50 rounded-xl border border-slate-100 p-2">
-                                                    <ResponsiveContainer width="100%" height={260}>
-                                                        <RadarChart data={radarData} cx="50%" cy="50%" outerRadius="65%" margin={{ top: 10, right: 30, bottom: 10, left: 30 }}>
-                                                            <PolarGrid stroke="#e2e8f0" strokeDasharray="3 3" />
-                                                            <PolarAngleAxis
-                                                                dataKey="subject"
-                                                                tick={{ fontSize: 11, fill: "#475569", fontWeight: 500 }}
-                                                                tickSize={12}
-                                                            />
-                                                            <PolarRadiusAxis
-                                                                domain={[0, 5]}
-                                                                tick={{ fontSize: 10, fill: "#94a3b8" }}
-                                                                axisLine={false}
-                                                                tickCount={6}
-                                                            />
-                                                            <Tooltip
-                                                                contentStyle={{
-                                                                    borderRadius: "12px",
-                                                                    border: "1px solid #f1f5f9",
-                                                                    backgroundColor: "rgba(255, 255, 255, 0.95)",
-                                                                    backdropFilter: "blur(8px)",
-                                                                    boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
-                                                                    fontSize: "13px",
-                                                                    fontWeight: 500,
-                                                                    color: "#0f172a",
-                                                                }}
-                                                                formatter={(v) => [`${v ?? 0}/5`, "Rating"]}
-                                                            />
-                                                            <Radar
-                                                                dataKey="value"
-                                                                stroke={accent.stroke}
-                                                                fill={accent.fill}
-                                                                fillOpacity={0.25}
-                                                                strokeWidth={2.5}
-                                                                animationDuration={1500}
-                                                            />
-                                                        </RadarChart>
-                                                    </ResponsiveContainer>
-                                                </div>
+                            const sectionData = sections.map((s) => ({
+                                name: s.title,
+                                rating: s.rating,
+                                fill: ratingColor(s.rating),
+                            }));
+
+                            const radarData = skillBreakdown.map((s) => ({
+                                subject: s.name.length > 18 ? s.name.slice(0, 16) + "…" : s.name,
+                                fullName: s.name,
+                                value: s.rating,
+                            }));
+
+                            const softSkillData = softSkills.map((s) => ({
+                                name: s.skill,
+                                score: s.score,
+                                fill: ratingColor(s.score),
+                            }));
+
+                            const hasData = sectionData.length > 0 || radarData.length > 0 || softSkillData.length > 0 ||
+                                feedback.strengths || feedback.areas_for_improvement || feedback.overall_impression || feedback.red_flags;
+
+                            const sessionLabel = subReports.length > 1 ? `${name} (Session ${reportIdx + 1})` : name;
+
+                            return (
+                                <Card key={report.id} className="border-gray-200 shadow-sm rounded-2xl relative overflow-hidden">
+                                    <CardContent className="p-4 sm:p-5 space-y-5">
+                                        {/* Sub-type header */}
+                                        <div className="flex items-center gap-3">
+                                            <div className={`p-1.5 ${accent.bg} rounded-lg`}>
+                                                <MessageSquare className={`h-4 w-4 ${accent.text}`} />
                                             </div>
-                                        )}
-
-                                        {/* Section Ratings */}
-                                        {sectionData.length > 0 && (
-                                            <div>
-                                                <h4 className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-4">Section Ratings</h4>
-                                                <div className="bg-slate-50/50 rounded-xl border border-slate-100 p-4">
-                                                    <ResponsiveContainer width="100%" height={Math.max(220, sectionData.length * 45)}>
-                                                        <BarChart data={sectionData} layout="vertical" barCategoryGap="25%" margin={{ top: 0, right: 20, left: -20, bottom: 0 }}>
-                                                            <CartesianGrid strokeDasharray="4 4" stroke="#f1f5f9" horizontal={false} />
-                                                            <XAxis type="number" domain={[0, 5]} ticks={[0, 1, 2, 3, 4, 5]}
-                                                                tick={{ fontSize: 12, fill: "#64748b" }} tickLine={false} axisLine={false} dy={10} />
-                                                            <YAxis type="category" dataKey="name" width={150}
-                                                                tick={{ fontSize: 12, fill: "#475569", fontWeight: 500 }} tickLine={false} axisLine={false} />
-                                                            <Tooltip
-                                                                cursor={{ fill: "#f8fafc" }}
-                                                                contentStyle={{
-                                                                    borderRadius: "12px",
-                                                                    border: "1px solid #f1f5f9",
-                                                                    backgroundColor: "rgba(255, 255, 255, 0.95)",
-                                                                    backdropFilter: "blur(8px)",
-                                                                    boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
-                                                                    fontSize: "13px",
-                                                                    fontWeight: 500,
-                                                                    color: "#0f172a",
-                                                                }}
-                                                                formatter={(v) => [`${v ?? 0}/5`, "Rating"]}
-                                                            />
-                                                            <Bar dataKey="rating" radius={[0, 6, 6, 0]} barSize={20} animationDuration={1000}>
-                                                                {sectionData.map((entry, i) => (
-                                                                    <Cell key={i} fill={entry.fill} opacity={0.9} />
-                                                                ))}
-                                                            </Bar>
-                                                        </BarChart>
-                                                    </ResponsiveContainer>
-                                                </div>
+                                            <div className="min-w-0">
+                                                <h3 className="text-sm font-bold text-gray-900">{sessionLabel}</h3>
+                                                <p className="text-xs text-gray-500">{formatDate(report.createdAt)}</p>
                                             </div>
-                                        )}
-                                    </div>
-
-                                    {/* Soft Skills */}
-                                    {softSkillData.length > 0 && (
-                                        <div className="mt-2">
-                                            <h4 className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-4">Soft Skills</h4>
-                                            <div className="bg-slate-50/50 rounded-xl border border-slate-100 p-4">
-                                                <ResponsiveContainer width="100%" height={Math.max(180, softSkillData.length * 45)}>
-                                                    <BarChart data={softSkillData} layout="vertical" barCategoryGap="25%" margin={{ top: 0, right: 20, left: -20, bottom: 0 }}>
-                                                        <CartesianGrid strokeDasharray="4 4" stroke="#f1f5f9" horizontal={false} />
-                                                        <XAxis type="number" domain={[0, 5]} ticks={[0, 1, 2, 3, 4, 5]}
-                                                            tick={{ fontSize: 12, fill: "#64748b" }} tickLine={false} axisLine={false} dy={10} />
-                                                        <YAxis type="category" dataKey="name" width={150}
-                                                            tick={{ fontSize: 12, fill: "#475569", fontWeight: 500 }} tickLine={false} axisLine={false} />
-                                                        <Tooltip
-                                                            cursor={{ fill: "#f8fafc" }}
-                                                            contentStyle={{
-                                                                borderRadius: "12px",
-                                                                border: "1px solid #f1f5f9",
-                                                                backgroundColor: "rgba(255, 255, 255, 0.95)",
-                                                                backdropFilter: "blur(8px)",
-                                                                boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
-                                                                fontSize: "13px",
-                                                                fontWeight: 500,
-                                                                color: "#0f172a",
-                                                            }}
-                                                            formatter={(v) => [`${v ?? 0}/5`, "Score"]}
-                                                        />
-                                                        <Bar dataKey="score" radius={[0, 6, 6, 0]} barSize={20} animationDuration={1000}>
-                                                            {softSkillData.map((entry, i) => (
-                                                                <Cell key={i} fill={entry.fill} opacity={0.9} />
-                                                            ))}
-                                                        </Bar>
-                                                    </BarChart>
-                                                </ResponsiveContainer>
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {/* Feedback */}
-                                    {(feedback.strengths || feedback.areas_for_improvement || feedback.overall_impression || feedback.red_flags) && (
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-                                            {feedback.strengths && (
-                                                <FeedbackCard title="Strengths" content={feedback.strengths} color="emerald" />
-                                            )}
-                                            {feedback.areas_for_improvement && (
-                                                <FeedbackCard title="Areas for Improvement" content={feedback.areas_for_improvement} color="amber" />
-                                            )}
-                                            {feedback.overall_impression && (
-                                                <FeedbackCard title="Overall Impression" content={feedback.overall_impression} color="blue" />
-                                            )}
-                                            {feedback.red_flags && (
-                                                <FeedbackCard title="Red Flags" content={feedback.red_flags} color="red" />
+                                            {meta.overall_rating != null && (
+                                                <Badge
+                                                    variant="outline"
+                                                    className="ml-auto text-sm font-semibold px-3 py-1 bg-white"
+                                                    style={{ borderColor: ratingColor(meta.overall_rating), color: ratingColor(meta.overall_rating) }}
+                                                >
+                                                    {meta.overall_rating.toFixed(1)}/5
+                                                </Badge>
                                             )}
                                         </div>
-                                    )}
-                                </>
-                            )}
-                        </CardContent>
-                    </Card>
+
+                                        {!hasData ? (
+                                            /* Empty state: report exists but no analyzable data yet */
+                                            <div className="flex flex-col items-center justify-center py-12 text-center bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
+                                                <div className="p-3.5 bg-white rounded-full mb-4 shadow-sm border border-slate-100">
+                                                    <Clock className="h-5 w-5 text-slate-400" />
+                                                </div>
+                                                <p className="text-sm font-bold text-slate-600 mb-1">Report data not yet available</p>
+                                                <p className="text-[13px] text-slate-400 max-w-xs font-medium">
+                                                    This report has been created but detailed analytics haven&apos;t been generated yet.
+                                                </p>
+                                            </div>
+                                        ) : (
+                                            <>
+                                                {/* Charts Row */}
+                                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                                    {/* Skill Radar */}
+                                                    {radarData.length >= 3 && (
+                                                        <div>
+                                                            <h4 className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-4">Skill Breakdown</h4>
+                                                            <div className="bg-slate-50/50 rounded-xl border border-slate-100 p-2">
+                                                                <ResponsiveContainer width="100%" height={260}>
+                                                                    <RadarChart data={radarData} cx="50%" cy="50%" outerRadius="65%" margin={{ top: 10, right: 30, bottom: 10, left: 30 }}>
+                                                                        <PolarGrid stroke="#e2e8f0" strokeDasharray="3 3" />
+                                                                        <PolarAngleAxis
+                                                                            dataKey="subject"
+                                                                            tick={{ fontSize: 11, fill: "#475569", fontWeight: 500 }}
+                                                                            tickSize={12}
+                                                                        />
+                                                                        <PolarRadiusAxis
+                                                                            domain={[0, 5]}
+                                                                            tick={{ fontSize: 10, fill: "#94a3b8" }}
+                                                                            axisLine={false}
+                                                                            tickCount={6}
+                                                                        />
+                                                                        <Tooltip
+                                                                            contentStyle={{
+                                                                                borderRadius: "12px",
+                                                                                border: "1px solid #f1f5f9",
+                                                                                backgroundColor: "rgba(255, 255, 255, 0.95)",
+                                                                                backdropFilter: "blur(8px)",
+                                                                                boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+                                                                                fontSize: "13px",
+                                                                                fontWeight: 500,
+                                                                                color: "#0f172a",
+                                                                            }}
+                                                                            formatter={(v) => [`${v ?? 0}/5`, "Rating"]}
+                                                                        />
+                                                                        <Radar
+                                                                            dataKey="value"
+                                                                            stroke={accent.stroke}
+                                                                            fill={accent.fill}
+                                                                            fillOpacity={0.25}
+                                                                            strokeWidth={2.5}
+                                                                            animationDuration={1500}
+                                                                        />
+                                                                    </RadarChart>
+                                                                </ResponsiveContainer>
+                                                            </div>
+                                                        </div>
+                                                    )}
+
+                                                    {/* Section Ratings */}
+                                                    {sectionData.length > 0 && (
+                                                        <div>
+                                                            <h4 className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-4">Section Ratings</h4>
+                                                            <div className="bg-slate-50/50 rounded-xl border border-slate-100 p-4">
+                                                                <ResponsiveContainer width="100%" height={Math.max(220, sectionData.length * 45)}>
+                                                                    <BarChart data={sectionData} layout="vertical" barCategoryGap="25%" margin={{ top: 0, right: 20, left: -20, bottom: 0 }}>
+                                                                        <CartesianGrid strokeDasharray="4 4" stroke="#f1f5f9" horizontal={false} />
+                                                                        <XAxis type="number" domain={[0, 5]} ticks={[0, 1, 2, 3, 4, 5]}
+                                                                            tick={{ fontSize: 12, fill: "#64748b" }} tickLine={false} axisLine={false} dy={10} />
+                                                                        <YAxis type="category" dataKey="name" width={150}
+                                                                            tick={{ fontSize: 12, fill: "#475569", fontWeight: 500 }} tickLine={false} axisLine={false} />
+                                                                        <Tooltip
+                                                                            cursor={{ fill: "#f8fafc" }}
+                                                                            contentStyle={{
+                                                                                borderRadius: "12px",
+                                                                                border: "1px solid #f1f5f9",
+                                                                                backgroundColor: "rgba(255, 255, 255, 0.95)",
+                                                                                backdropFilter: "blur(8px)",
+                                                                                boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+                                                                                fontSize: "13px",
+                                                                                fontWeight: 500,
+                                                                                color: "#0f172a",
+                                                                            }}
+                                                                            formatter={(v) => [`${v ?? 0}/5`, "Rating"]}
+                                                                        />
+                                                                        <Bar dataKey="rating" radius={[0, 6, 6, 0]} barSize={20} animationDuration={1000}>
+                                                                            {sectionData.map((entry, i) => (
+                                                                                <Cell key={i} fill={entry.fill} opacity={0.9} />
+                                                                            ))}
+                                                                        </Bar>
+                                                                    </BarChart>
+                                                                </ResponsiveContainer>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                {/* Soft Skills */}
+                                                {softSkillData.length > 0 && (
+                                                    <div className="mt-2">
+                                                        <h4 className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-4">Soft Skills</h4>
+                                                        <div className="bg-slate-50/50 rounded-xl border border-slate-100 p-4">
+                                                            <ResponsiveContainer width="100%" height={Math.max(180, softSkillData.length * 45)}>
+                                                                <BarChart data={softSkillData} layout="vertical" barCategoryGap="25%" margin={{ top: 0, right: 20, left: -20, bottom: 0 }}>
+                                                                    <CartesianGrid strokeDasharray="4 4" stroke="#f1f5f9" horizontal={false} />
+                                                                    <XAxis type="number" domain={[0, 5]} ticks={[0, 1, 2, 3, 4, 5]}
+                                                                        tick={{ fontSize: 12, fill: "#64748b" }} tickLine={false} axisLine={false} dy={10} />
+                                                                    <YAxis type="category" dataKey="name" width={150}
+                                                                        tick={{ fontSize: 12, fill: "#475569", fontWeight: 500 }} tickLine={false} axisLine={false} />
+                                                                    <Tooltip
+                                                                        cursor={{ fill: "#f8fafc" }}
+                                                                        contentStyle={{
+                                                                            borderRadius: "12px",
+                                                                            border: "1px solid #f1f5f9",
+                                                                            backgroundColor: "rgba(255, 255, 255, 0.95)",
+                                                                            backdropFilter: "blur(8px)",
+                                                                            boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+                                                                            fontSize: "13px",
+                                                                            fontWeight: 500,
+                                                                            color: "#0f172a",
+                                                                        }}
+                                                                        formatter={(v) => [`${v ?? 0}/5`, "Score"]}
+                                                                    />
+                                                                    <Bar dataKey="score" radius={[0, 6, 6, 0]} barSize={20} animationDuration={1000}>
+                                                                        {softSkillData.map((entry, i) => (
+                                                                            <Cell key={i} fill={entry.fill} opacity={0.9} />
+                                                                        ))}
+                                                                    </Bar>
+                                                                </BarChart>
+                                                            </ResponsiveContainer>
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                                {/* Feedback */}
+                                                {(feedback.strengths || feedback.areas_for_improvement || feedback.overall_impression || feedback.red_flags) && (
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+                                                        {feedback.strengths && (
+                                                            <FeedbackCard title="Strengths" content={feedback.strengths} color="emerald" />
+                                                        )}
+                                                        {feedback.areas_for_improvement && (
+                                                            <FeedbackCard title="Areas for Improvement" content={feedback.areas_for_improvement} color="amber" />
+                                                        )}
+                                                        {feedback.overall_impression && (
+                                                            <FeedbackCard title="Overall Impression" content={feedback.overall_impression} color="blue" />
+                                                        )}
+                                                        {feedback.red_flags && (
+                                                            <FeedbackCard title="Red Flags" content={feedback.red_flags} color="red" />
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </>
+                                        )}
+                                    </CardContent>
+                                </Card>
+                            );
+                        })}
+                    </div>
                 );
             })}
         </div>

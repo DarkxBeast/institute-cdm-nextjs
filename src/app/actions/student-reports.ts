@@ -11,6 +11,7 @@ export interface StudentReportSummary {
     journeyItemName: string;
     count: number;
     instanceNumber: number;
+    reportId?: string;
 }
 
 export interface StudentReport {
@@ -51,6 +52,7 @@ export async function getStudentReportTypes(
         const { data: reports, error } = await supabase
             .from('cdm_student_reports')
             .select(`
+                id,
                 report_type,
                 journey_item_id,
                 attendee:cdm_session_attendees!cdm_reports_attendee_fkey!inner (
@@ -80,12 +82,18 @@ export async function getStudentReportTypes(
             sequenceOrder: number;
             journeyItemName: string;
             count: number;
+            reportId?: string;
         }>()
 
         for (const r of reports as any[]) {
             const ji = r.journey_item
             const journeyItemId = r.journey_item_id ?? ji?.id ?? 'unknown'
-            const key = `${r.report_type}::${journeyItemId}`
+
+            // Normalize report type exactly as the frontend does
+            const normalizedType = r.report_type.toLowerCase().replace(/[\s-]/g, "_")
+            const isPracticeInterview = normalizedType.startsWith('practice_interview')
+
+            const key = isPracticeInterview ? `${r.report_type}::${journeyItemId}::${r.id}` : `${r.report_type}::${journeyItemId}`
 
             if (!groupMap.has(key)) {
                 groupMap.set(key, {
@@ -94,6 +102,7 @@ export async function getStudentReportTypes(
                     sequenceOrder: ji?.sequence_order ?? 0,
                     journeyItemName: ji?.particulars ?? r.report_type,
                     count: 0,
+                    reportId: isPracticeInterview ? r.id : undefined,
                 })
             }
             groupMap.get(key)!.count += 1
@@ -138,7 +147,8 @@ export async function getStudentReportTypes(
 export async function getStudentReportsByType(
     studentId: string,
     reportType: string,
-    journeyItemId?: string
+    journeyItemId?: string,
+    reportId?: string
 ): Promise<{ data: StudentReport[]; error: string | null }> {
     const supabase = await createClient()
 
@@ -171,6 +181,9 @@ export async function getStudentReportsByType(
 
         if (journeyItemId) {
             query = query.eq('journey_item_id', journeyItemId)
+        }
+        if (reportId) {
+            query = query.eq('id', reportId)
         }
 
         const { data: reports, error } = await query

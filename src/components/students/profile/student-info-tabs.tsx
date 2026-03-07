@@ -42,7 +42,11 @@ function buildTabLabel(rt: StudentReportSummary, allTypes: StudentReportSummary[
  * Turn a report summary into a unique, safe tab value.
  */
 export function toTabValue(rt: StudentReportSummary): string {
-    return `report_${rt.reportType.toLowerCase().replace(/\s+/g, "_")}_${rt.journeyItemId}`;
+    let val = `report_${rt.reportType.toLowerCase().replace(/\s+/g, "_")}_${rt.journeyItemId}`;
+    if (rt.reportId) {
+        val += `_${rt.reportId}`;
+    }
+    return val;
 }
 
 export function StudentInfoTabs({
@@ -99,6 +103,7 @@ export function StudentInfoTabs({
                                 reportType={rt.reportType}
                                 journeyItemId={rt.journeyItemId}
                                 instanceLabel={buildTabLabel(rt, sortedReportTypes)}
+                                reportId={rt.reportId}
                             />
                         </TabsContent>
                     ))}

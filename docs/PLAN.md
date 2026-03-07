@@ -1,32 +1,30 @@
-# Dynamic Institute Logo Update Plan
+# Implementation Plan: Separate Tabs for Practice Interview Sessions
 
-## Objective
-Update the dashboard overview page to dynamically display the IIMU logo (`/images/iimu_logo.png`) when the logged-in user's institute has the code `iimu`. This process will be executed using the requested Orchestration Protocol.
+## Issue Analysis
+The user requested that instead of stacking multiple sessions of the "Practice Interview (floating credit)" module into a single tab, each session should have its own separate tab (e.g., "Practice Interview - 1", "Practice Interview - 2", "Practice Interview - 3").
 
-## Phase 2: Implementation (Parallel Agents)
+Currently, the `getStudentReportTypes` action groups reports by `journey_item_id`. Since multiple sessions can map to the *same* `journey_item_id` for "practice_interview", they are incorrectly grouped into a single tab.
 
-To satisfy the full orchestration requirement (minimum 3 agents), the following agents will execute the plan concurrently:
+## Proposed Changes
 
-### 1. `backend-specialist` (Data Retrieval Update)
-- **Target:** `src/app/(dashboard)/overview/page.tsx`
-- **Action:** Update the Supabase query in the `OverviewPage` component to fetch the `code` field from `cdm_institutes`.
-  - From: `.select("cdm_institutes(name, logo_url, location)")`
-  - To: `.select("cdm_institutes(name, logo_url, location, code)")`
-  
-### 2. `frontend-specialist` (UI Logic Implementation)
-- **Target:** `src/app/(dashboard)/overview/page.tsx`
-- **Action:** Extract the `instituteCode` from the query result safely.
-- **Action:** Add conditional logic to render the IIMU logo when the code matches.
-  - Define `const IMG_IIMU_LOGO = "/images/iimu_logo.png";`
-  - Determine `instituteLogo` based on whether `instituteCode === "iimu"`, fallback to DB `logo_url`, and finally fallback to default `IMG_IIM_LOGO`.
+### 1. Update `src/app/actions/student-reports.ts`
+- **`StudentReportSummary`**: Add an optional `reportId?: string` field.
+- **`getStudentReportTypes` logic**: Modify the grouping logic so that if the `report_type` is `"practice_interview"`, we group distinct items by `r.id` (report ID) rather than `journey_item_id`. This will yield a separate `StudentReportSummary` for each practice interview session.
+- **`getStudentReportsByType` logic**: Add an optional `reportId?: string` parameter and apply an additional DB filter (`.eq('id', reportId)`) if it's provided.
 
-### 3. `test-engineer` (Verification & Quality Assurance)
-- **Action:** Run the required `lint_runner.py` from `.agent/scripts` to ensure code changes have not introduced any linting or type errors.
-- **Action:** Ensure the build compiles successfully without any TypeScript issues regarding the extracted `code` field.
+### 2. Update `src/components/students/profile/student-info-tabs.tsx`
+- **`toTabValue` function**: Because multiple tabs might share the same `journeyItemId` now, we must append the `reportId` to generate unique tab values (`report_${rt.reportType}_${rt.journeyItemId}_${rt.reportId}`).
+- **`<StudentReportTab>` instantiation**: Pass the newly available `rt.reportId` prop to the child component.
+
+### 3. Update `src/components/students/profile/student-report-tab.tsx`
+- **Props**: Accept the optional `reportId?: string`.
+- **Fetch Logic**: Pass `reportId` into the `getStudentReportsByType` function call so that it fetches *only* the specific session for that tab.
 
 ## Verification Plan
-1. **Automated Verification:**
-   - Execute `python .agent/skills/lint-and-validate/scripts/lint_runner.py .` to ensure zero regressions.
-2. **Manual Verification:**
-   - Log in with a user whose institute is `iimu` and verify the `iimu_logo.png` is displayed.
-   - Log in with a regular user and verify the default logo or their specific DB-provided logo is displayed.
+
+### Manual Verification
+1. Navigate to the profile of a student with multiple sessions for the Practice Interview floating credit module (e.g., "Arunav Mandal").
+2. Validate that the UI now renders multiple, distinct tabs at the top (e.g., "Practice Interview - 1", "Practice Interview - 2", "Practice Interview - 3").
+3. Click on each individual "Practice Interview" tab.
+4. Verify that each tab solely renders the content/report for *that specific session*.
+5. Navigate to the Analytics tab and verify that the metrics continue to calculate/display based on *all* sessions (already updated previously).

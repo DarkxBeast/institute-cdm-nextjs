@@ -14,6 +14,7 @@ interface StudentReportTabProps {
     reportType: string;
     journeyItemId: string;
     instanceLabel?: string;
+    reportId?: string;
 }
 
 function formatDate(dateStr: string | null): string {
@@ -22,7 +23,7 @@ function formatDate(dateStr: string | null): string {
     return isValid(d) ? format(d, "MMM d, yyyy") : "—";
 }
 
-export function StudentReportTab({ studentId, reportType, journeyItemId, instanceLabel }: StudentReportTabProps) {
+export function StudentReportTab({ studentId, reportType, journeyItemId, instanceLabel, reportId }: StudentReportTabProps) {
     const [reports, setReports] = useState<StudentReport[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -32,7 +33,7 @@ export function StudentReportTab({ studentId, reportType, journeyItemId, instanc
         setLoading(true);
         setError(null);
 
-        getStudentReportsByType(studentId, reportType, journeyItemId).then(({ data, error: err }) => {
+        getStudentReportsByType(studentId, reportType, journeyItemId, reportId).then(({ data, error: err }) => {
             if (cancelled) return;
             setReports(data);
             setError(err);
@@ -40,7 +41,7 @@ export function StudentReportTab({ studentId, reportType, journeyItemId, instanc
         });
 
         return () => { cancelled = true; };
-    }, [studentId, reportType, journeyItemId]);
+    }, [studentId, reportType, journeyItemId, reportId]);
 
     if (loading) {
         return (
@@ -81,7 +82,7 @@ export function StudentReportTab({ studentId, reportType, journeyItemId, instanc
     if (normalizedType === "resume_review") {
         return <ResumeReviewView reports={reports} instanceLabel={instanceLabel} />;
     }
-    if (normalizedType === "practice_interview") {
+    if (normalizedType.startsWith("practice_interview")) {
         return <PracticeInterviewView reports={reports} instanceLabel={instanceLabel} />;
     }
 
