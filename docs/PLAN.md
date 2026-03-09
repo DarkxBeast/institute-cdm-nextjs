@@ -1,30 +1,37 @@
-# Implementation Plan: Separate Tabs for Practice Interview Sessions
+# Hide Empty Profile Sections - Implementation Plan
 
-## Issue Analysis
-The user requested that instead of stacking multiple sessions of the "Practice Interview (floating credit)" module into a single tab, each session should have its own separate tab (e.g., "Practice Interview - 1", "Practice Interview - 2", "Practice Interview - 3").
-
-Currently, the `getStudentReportTypes` action groups reports by `journey_item_id`. Since multiple sessions can map to the *same* `journey_item_id` for "practice_interview", they are incorrectly grouped into a single tab.
+## Goal Description
+The user wants to gracefully hide or collapse the following sections on the Student Profile Overview page when they contain no data, instead of displaying an empty state card:
+- Summary about Me
+- Skills
+- Sectors of Interest
+- Domains of Interest
 
 ## Proposed Changes
 
-### 1. Update `src/app/actions/student-reports.ts`
-- **`StudentReportSummary`**: Add an optional `reportId?: string` field.
-- **`getStudentReportTypes` logic**: Modify the grouping logic so that if the `report_type` is `"practice_interview"`, we group distinct items by `r.id` (report ID) rather than `journey_item_id`. This will yield a separate `StudentReportSummary` for each practice interview session.
-- **`getStudentReportsByType` logic**: Add an optional `reportId?: string` parameter and apply an additional DB filter (`.eq('id', reportId)`) if it's provided.
+### Frontend UI Components
 
-### 2. Update `src/components/students/profile/student-info-tabs.tsx`
-- **`toTabValue` function**: Because multiple tabs might share the same `journeyItemId` now, we must append the `reportId` to generate unique tab values (`report_${rt.reportType}_${rt.journeyItemId}_${rt.reportId}`).
-- **`<StudentReportTab>` instantiation**: Pass the newly available `rt.reportId` prop to the child component.
+#### [MODIFY] `src/components/students/profile/overview/student-overview.tsx`(file:///d:/TCC-CDM/institute-cdm-nextjs/src/components/students/profile/overview/student-overview.tsx)
+- Check if `aboutMe` is empty or null.
+- If it is empty, do not render the `Card` for "Summary about Me" at all.
 
-### 3. Update `src/components/students/profile/student-report-tab.tsx`
-- **Props**: Accept the optional `reportId?: string`.
-- **Fetch Logic**: Pass `reportId` into the `getStudentReportsByType` function call so that it fetches *only* the specific session for that tab.
+#### [MODIFY] `src/components/students/profile/overview/student-skills.tsx`(file:///d:/TCC-CDM/institute-cdm-nextjs/src/components/students/profile/overview/student-skills.tsx)
+- At the top of the component, add an early return: `if (!skills || skills.length === 0) return null;`.
+- Remove the empty state fallback UI from the `CardContent`.
+
+#### [MODIFY] `src/components/students/profile/overview/student-interests.tsx`(file:///d:/TCC-CDM/institute-cdm-nextjs/src/components/students/profile/overview/student-interests.tsx)
+- At the top of the component, add an early return: `if (!hasAny) return null;`.
+- Modify the rendering so that the "Sectors of Interest" `Card` is only rendered if `hasSectors` is true.
+- Modify the rendering so that the "Domains of Interest" `Card` is only rendered if `hasDomains` is true.
+- Since they are in a CSS Grid `grid-cols-1 md:grid-cols-2`, if only one card is visible, it will cleanly take up one slot and look fine.
 
 ## Verification Plan
 
+### Automated Tests
+- Pre-deploy automated safety checks logic (lints, format errors) via the orchestrate protocol: `python .agent/scripts/checklist.py .`
+
 ### Manual Verification
-1. Navigate to the profile of a student with multiple sessions for the Practice Interview floating credit module (e.g., "Arunav Mandal").
-2. Validate that the UI now renders multiple, distinct tabs at the top (e.g., "Practice Interview - 1", "Practice Interview - 2", "Practice Interview - 3").
-3. Click on each individual "Practice Interview" tab.
-4. Verify that each tab solely renders the content/report for *that specific session*.
-5. Navigate to the Analytics tab and verify that the metrics continue to calculate/display based on *all* sessions (already updated previously).
+- Start the development server (`npm run dev`).
+- Navigate to the student profile page of a student who is missing this data (e.g., Aakanksha Nikam as seen in the screenshot attached by user).
+- Verify that the "Summary about Me", "Skills", "Sectors of Interest", and "Domains of Interest" cards are completely hidden and the remaining cards slide up to fill the space.
+- Navigate to a student profile that *does* have this data and ensure the cards still render correctly with the tags.

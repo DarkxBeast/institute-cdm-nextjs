@@ -24,20 +24,16 @@ export function StudentOverview({ student, reportTypes = [], allReports = [], on
     return (
         <div className="space-y-6">
             {/* Summary Section */}
-            <Card className="border-gray-200 shadow-sm">
-                <CardHeader className="pb-0">
-                    <CardTitle className="text-xl font-semibold text-gray-900">Summary about Me</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    {aboutMe ? (
+            {aboutMe && (
+                <Card className="border-gray-200 shadow-sm">
+                    <CardHeader className="pb-0">
+                        <CardTitle className="text-xl font-semibold text-gray-900">Summary about Me</CardTitle>
+                    </CardHeader>
+                    <CardContent>
                         <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-line">{aboutMe}</p>
-                    ) : (
-                        <div className="flex flex-col items-center justify-center py-6 text-center">
-                            <p className="text-gray-500 text-sm">No summary is currently available for this student.</p>
-                        </div>
-                    )}
-                </CardContent>
-            </Card>
+                    </CardContent>
+                </Card>
+            )}
 
             {/* Stats Row */}
             <StudentStats allReports={allReports} />

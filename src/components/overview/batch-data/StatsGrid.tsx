@@ -15,7 +15,7 @@ interface StatisticsCardProps {
     bgClassName?: string;
     value: string | number;
     title: string;
-    change: string;
+    change?: string;
     changeType?: "positive" | "neutral" | "negative";
     delay?: number;
 }
@@ -96,8 +96,6 @@ export default function StatsGrid({
                 iconClassName="text-[#FF9E44]"
                 value={totalStudents}
                 title="Total Students"
-                change="12%"
-                changeType="positive"
                 delay={100}
             />
             <StatisticsCard
@@ -106,8 +104,6 @@ export default function StatsGrid({
                 iconClassName="text-[#FF9E44]"
                 value={avgPerformance}
                 title="Avg Performance"
-                change="5%"
-                changeType="positive"
                 delay={200}
             />
             <StatisticsCard
@@ -116,8 +112,6 @@ export default function StatsGrid({
                 iconClassName="text-[#FF9E44]"
                 value={`${completionRate}%`}
                 title="Completion Rate"
-                change="8%"
-                changeType="positive"
                 delay={300}
             />
             <StatisticsCard
@@ -127,8 +121,6 @@ export default function StatsGrid({
                 iconClassName="text-[#FF9E44]"
                 value={activeMentors}
                 title="Active Mentors"
-                change="Active"
-                changeType="neutral"
                 delay={400}
             />
         </div>

@@ -16,17 +16,19 @@ export function StudentInterests({
     const hasDomains = domainsOfInterest.length > 0;
     const hasAny = hasSectors || hasDomains;
 
+    if (!hasAny) return null;
+
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Sectors of Interest */}
-            <Card className="border-gray-200 shadow-sm">
-                <CardHeader className="pb-0">
-                    <CardTitle className="text-lg font-semibold text-gray-900">
-                        Sectors of Interest
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    {hasSectors ? (
+            {hasSectors && (
+                <Card className="border-gray-200 shadow-sm">
+                    <CardHeader className="pb-0">
+                        <CardTitle className="text-lg font-semibold text-gray-900">
+                            Sectors of Interest
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
                         <div className="flex flex-wrap gap-2">
                             {sectorsOfInterest.map((sector, index) => (
                                 <Badge
@@ -38,25 +40,19 @@ export function StudentInterests({
                                 </Badge>
                             ))}
                         </div>
-                    ) : (
-                        <div className="flex flex-col items-center justify-center py-6 text-center">
-                            <p className="text-gray-500 text-sm">
-                                No sectors of interest added yet.
-                            </p>
-                        </div>
-                    )}
-                </CardContent>
-            </Card>
+                    </CardContent>
+                </Card>
+            )}
 
             {/* Domains of Interest */}
-            <Card className="border-gray-200 shadow-sm">
-                <CardHeader className="pb-0">
-                    <CardTitle className="text-lg font-semibold text-gray-900">
-                        Domains of Interest
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    {hasDomains ? (
+            {hasDomains && (
+                <Card className="border-gray-200 shadow-sm">
+                    <CardHeader className="pb-0">
+                        <CardTitle className="text-lg font-semibold text-gray-900">
+                            Domains of Interest
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
                         <div className="flex flex-wrap gap-2">
                             {domainsOfInterest.map((domain, index) => (
                                 <Badge
@@ -68,15 +64,9 @@ export function StudentInterests({
                                 </Badge>
                             ))}
                         </div>
-                    ) : (
-                        <div className="flex flex-col items-center justify-center py-6 text-center">
-                            <p className="text-gray-500 text-sm">
-                                No domains of interest added yet.
-                            </p>
-                        </div>
-                    )}
-                </CardContent>
-            </Card>
+                    </CardContent>
+                </Card>
+            )}
         </div>
     );
 }
