@@ -303,11 +303,13 @@ function RadarChart({
 interface PracticeInterviewFullReportProps {
     report: StudentReport;
     backUrl: string;
+    enrollmentId?: string;
 }
 
 export function PracticeInterviewFullReport({
     report,
     backUrl,
+    enrollmentId,
 }: PracticeInterviewFullReportProps) {
     const data = report.reportData;
     const meta = parseMeta(data);
@@ -402,7 +404,7 @@ export function PracticeInterviewFullReport({
                                         {menteeName}
                                     </h3>
                                     <p className="text-sm text-gray-500">
-                                        ID: {report.session?.id?.slice(0, 10) || "—"}
+                                        ID: {enrollmentId || report.session?.id?.slice(0, 10) || "—"}
                                     </p>
                                 </div>
                             </div>

@@ -134,11 +134,13 @@ function ValueBadge({ value }: { value: boolean }) {
 interface DiagnosticInterviewFullReportProps {
     report: StudentReport;
     backUrl: string;
+    enrollmentId?: string;
 }
 
 export function DiagnosticInterviewFullReport({
     report,
     backUrl,
+    enrollmentId,
 }: DiagnosticInterviewFullReportProps) {
     const data = report.reportData;
     const meta = parseMeta(data);
@@ -204,7 +206,7 @@ export function DiagnosticInterviewFullReport({
                                         {menteeName}
                                     </h3>
                                     <p className="text-sm text-gray-500">
-                                        ID: {report.session?.id?.slice(0, 10) || "—"}
+                                        ID: {enrollmentId || report.session?.id?.slice(0, 10) || "—"}
                                     </p>
                                 </div>
                             </div>

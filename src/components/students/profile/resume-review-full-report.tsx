@@ -12,6 +12,7 @@ import {
     Briefcase,
     ClipboardList,
     Settings2,
+    Star,
 } from "lucide-react";
 import Link from "next/link";
 import type { StudentReport } from "@/app/actions/student-reports";
@@ -70,16 +71,38 @@ function formatDate(raw?: string): string {
     return d.toLocaleDateString("en-IN", { year: "numeric", month: "short", day: "numeric" });
 }
 
+function StarRating({ rating, max = 5 }: { rating: number; max?: number }) {
+    return (
+        <div className="flex items-center gap-0.5">
+            {Array.from({ length: max }, (_, i) => {
+                const filled = i < Math.round(rating);
+                return (
+                    <Star
+                        key={i}
+                        className={`h-4 w-4 ${
+                            filled
+                                ? "text-orange-400 fill-orange-400"
+                                : "text-gray-500"
+                        }`}
+                    />
+                );
+            })}
+        </div>
+    );
+}
+
 // ── Component ──
 
 interface ResumeReviewFullReportProps {
     report: StudentReport;
     backUrl: string;
+    enrollmentId?: string;
 }
 
 export function ResumeReviewFullReport({
     report,
     backUrl,
+    enrollmentId,
 }: ResumeReviewFullReportProps) {
     const data = report.reportData;
     const meta = parseMeta(data);
@@ -150,7 +173,7 @@ export function ResumeReviewFullReport({
                                         {menteeName}
                                     </h3>
                                     <p className="text-sm text-gray-500">
-                                        ID: {report.session?.id?.slice(0, 10) || "—"}
+                                        ID: {enrollmentId || report.session?.id?.slice(0, 10) || "—"}
                                     </p>
                                 </div>
                             </div>
@@ -268,10 +291,13 @@ export function ResumeReviewFullReport({
                                                 {section.title}
                                             </h3>
                                             <div className="flex items-center gap-3">
-                                                {section.rating > 0 && (
-                                                    <span className="text-sm font-medium text-gray-300">
-                                                        Rating: {section.rating.toFixed(1)}/5
-                                                    </span>
+                                                {section.rating >= 0 && (
+                                                    <div className="flex items-center gap-2">
+                                                        <StarRating rating={section.rating} />
+                                                        <span className="text-sm font-medium text-gray-300">
+                                                            {section.rating.toFixed(1)}/5
+                                                        </span>
+                                                    </div>
                                                 )}
                                                 {commentCount > 0 && (
                                                     <span className="bg-orange-50 border border-orange-400 text-orange-500 text-xs font-semibold px-3 py-1 rounded-full">
@@ -320,14 +346,7 @@ export function ResumeReviewFullReport({
                                             </div>
                                         )}
 
-                                        {/* No comments fallback */}
-                                        {commentCount === 0 && (
-                                            <div className="p-6">
-                                                <p className="text-sm text-gray-400 italic">
-                                                    No comments for this section.
-                                                </p>
-                                            </div>
-                                        )}
+
                                     </div>
                                 );
                             })}

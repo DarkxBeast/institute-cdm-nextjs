@@ -45,17 +45,18 @@ export default async function FullReportPage({ params, searchParams }: PageProps
 
     const report = reports[0];
     const backUrl = `/batches/${id}/students/${studentId}`;
+    const enrollmentId = student?.enrollmentId || "";
 
     // Route to the correct full report component
     switch (resolvedType) {
         case "Resume Review":
-            return <ResumeReviewFullReport report={report} backUrl={backUrl} />;
+            return <ResumeReviewFullReport report={report} backUrl={backUrl} enrollmentId={enrollmentId} />;
 
         case "Practice Interview":
-            return <PracticeInterviewFullReport report={report} backUrl={backUrl} />;
+            return <PracticeInterviewFullReport report={report} backUrl={backUrl} enrollmentId={enrollmentId} />;
 
         case "Diagnostic Interview":
         default:
-            return <DiagnosticInterviewFullReport report={report} backUrl={backUrl} />;
+            return <DiagnosticInterviewFullReport report={report} backUrl={backUrl} enrollmentId={enrollmentId} />;
     }
 }
