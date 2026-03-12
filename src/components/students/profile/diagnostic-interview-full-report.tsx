@@ -189,14 +189,14 @@ export function DiagnosticInterviewFullReport({
             {/* ── Content ── */}
             <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-8 space-y-6">
 
-                {/* ── Candidate Details (single card, Figma layout) ── */}
+                {/* ── Candidate & Mentor Details (merged) ── */}
                 <Card className="border-gray-200 shadow-sm">
                     <CardContent className="p-6">
                         <h2 className="text-lg font-semibold text-gray-900 mb-5">
-                            Candidate Details
+                            Report Details
                         </h2>
-                        <div className="flex flex-col md:flex-row gap-6">
-                            {/* Left: Avatar + Name */}
+                        <div className="flex flex-col lg:flex-row gap-8">
+                            {/* Column 1: Candidate */}
                             <div className="flex items-center gap-4 shrink-0">
                                 <div className="h-16 w-16 rounded-full bg-gray-200 flex items-center justify-center shrink-0">
                                     <User className="h-7 w-7 text-gray-400" />
@@ -211,80 +211,31 @@ export function DiagnosticInterviewFullReport({
                                 </div>
                             </div>
 
-                            {/* Right: Metadata rows */}
-                            <div className="flex-1 space-y-3">
+                            {/* Divider */}
+                            <div className="hidden lg:block w-px bg-gray-200" />
+
+                            {/* Column 2: Mentor */}
+                            <div className="space-y-2 lg:pl-2">
+                                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Mentor</p>
+                                <h3 className="text-lg font-semibold text-gray-900">
+                                    {mentorName}
+                                </h3>
+                            </div>
+
+                            {/* Divider */}
+                            <div className="hidden lg:block w-px bg-gray-200" />
+
+                            {/* Column 3: Date & Rating */}
+                            <div className="space-y-3 lg:pl-2">
                                 <div className="flex items-center gap-2 text-sm">
                                     <Calendar className="h-4 w-4 text-gray-400 shrink-0" />
                                     <span className="text-gray-500 font-medium">Date:</span>
                                     <span className="text-gray-900">{formatDate(reportDate)}</span>
                                 </div>
                                 <div className="flex items-center gap-2 text-sm">
-                                    <Briefcase className="h-4 w-4 text-gray-400 shrink-0" />
+                                    <Star className="h-4 w-4 text-gray-400 shrink-0" />
                                     <span className="text-gray-500 font-medium">Overall Rating:</span>
                                     <span className="text-gray-900">{meta.overall_rating != null ? Number(meta.overall_rating).toFixed(1) : "—"} / 5</span>
-                                </div>
-                                <div className="flex items-start gap-2 text-sm">
-                                    <BookOpen className="h-4 w-4 text-gray-400 shrink-0 mt-0.5" />
-                                    <span className="text-gray-500 font-medium shrink-0">Skills Assessed:</span>
-                                    <div className="flex flex-wrap gap-1.5">
-                                        {skills.length > 0
-                                            ? skills.map((skill, i) => (
-                                                <Badge
-                                                    key={i}
-                                                    variant="secondary"
-                                                    className="bg-orange-50 text-orange-700 border border-orange-200 text-xs py-0.5 px-2 font-normal"
-                                                >
-                                                    {skill}
-                                                </Badge>
-                                            ))
-                                            : <span className="text-gray-900">{meta.alignment_score ?? "—"} / 5 alignment</span>
-                                        }
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                {/* ── Mentor Details + Assessment Summary (combined 2-col card) ── */}
-                <Card className="border-gray-200 shadow-sm">
-                    <CardContent className="p-6">
-                        <div className="flex items-center gap-2 mb-5">
-                            <User className="h-5 w-5 text-gray-500" />
-                            <h2 className="text-lg font-semibold text-gray-900">
-                                Mentor Details
-                            </h2>
-                        </div>
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            {/* Left: Mentor info */}
-                            <div className="bg-gray-50 rounded-xl p-5 space-y-3">
-                                <h3 className="text-lg font-semibold text-gray-900">
-                                    {mentorName}
-                                </h3>
-                                <p className="text-sm text-gray-500">
-                                    {report.session?.journeyItemTitle || "Interview Mentor"}
-                                </p>
-                                <div className="flex items-center gap-2 text-sm text-gray-500 pt-1">
-                                    <Calendar className="h-4 w-4" />
-                                    <span className="font-medium">Assessment Date:</span>
-                                    <span className="text-gray-900">{formatDate(reportDate)}</span>
-                                </div>
-                            </div>
-
-                            {/* Right: Assessment summary */}
-                            <div className="bg-gray-50 rounded-xl p-5 space-y-4">
-                                <h3 className="text-base font-semibold text-gray-900">
-                                    Assessment Summary
-                                </h3>
-                                <p className="text-sm text-gray-600 leading-relaxed">
-                                    {feedback.strongest_aspects
-                                        ? feedback.strongest_aspects.slice(0, 200) + (feedback.strongest_aspects.length > 200 ? "..." : "")
-                                        : "No summary available."}
-                                </p>
-                                <div className="bg-emerald-50 rounded-lg px-4 py-3">
-                                    <p className="text-sm text-emerald-800 font-medium">
-                                        Progress: {totalItems}/{totalItems} questions completed
-                                    </p>
                                 </div>
                             </div>
                         </div>

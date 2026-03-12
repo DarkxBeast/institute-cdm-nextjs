@@ -164,16 +164,7 @@ export function DiagnosticInterviewView({
                                     </div>
                                 );
                             })()}
-                            {meta.alignment_score !== undefined && (() => {
-                                const label = getRatingLabel(meta.alignment_score);
-                                return (
-                                    <div className="bg-orange-50 rounded-xl p-4 flex-1 text-center">
-                                        <p className="text-3xl font-bold text-orange-500">{meta.alignment_score.toFixed(1)}</p>
-                                        <p className={`text-sm font-medium mt-1 ${label.className}`}>{label.text}</p>
-                                        <p className="text-xs text-gray-400 mt-0.5">Alignment Score</p>
-                                    </div>
-                                );
-                            })()}
+
                         </div>
                     </CardContent>
                 </Card>

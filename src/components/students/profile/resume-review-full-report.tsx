@@ -156,20 +156,20 @@ export function ResumeReviewFullReport({
 
             {/* ── Main Content ── */}
             <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-                {/* ── Candidate Details ── */}
+                {/* ── Report Details (merged candidate + mentor) ── */}
                 <Card className="border-gray-200 shadow-sm rounded-2xl">
                     <CardContent className="p-6">
                         <h2 className="text-lg font-semibold text-gray-900 mb-5">
-                            Candidate Details
+                            Report Details
                         </h2>
-                        <div className="flex flex-col lg:flex-row gap-8 lg:gap-20">
-                            {/* Avatar + Name */}
+                        <div className="flex flex-col lg:flex-row gap-8">
+                            {/* Column 1: Candidate */}
                             <div className="flex items-center gap-4 shrink-0">
                                 <div className="h-16 w-16 rounded-full bg-gray-200 flex items-center justify-center shrink-0">
                                     <User className="h-7 w-7 text-gray-400" />
                                 </div>
                                 <div>
-                                    <h3 className="text-xl font-bold text-gray-900">
+                                    <h3 className="text-lg font-semibold text-gray-900">
                                         {menteeName}
                                     </h3>
                                     <p className="text-sm text-gray-500">
@@ -178,82 +178,33 @@ export function ResumeReviewFullReport({
                                 </div>
                             </div>
 
-                            {/* Details grid */}
-                            <div className="flex flex-col gap-3 flex-1">
-                                {/* Overall Rating */}
-                                {meta.overall_rating !== undefined && (
-                                    <div className="flex items-center gap-3 text-sm">
-                                        <Briefcase className="h-5 w-5 text-gray-400" />
-                                        <span className="text-gray-600 font-medium">Overall Rating:</span>
-                                        <span className="text-gray-900">{meta.overall_rating.toFixed(1)} / 5</span>
-                                    </div>
-                                )}
+                            {/* Divider */}
+                            <div className="hidden lg:block w-px bg-gray-200" />
 
-                                {/* Skills Assessed */}
-                                {skills.length > 0 && (
-                                    <div className="flex items-start gap-3 text-sm">
-                                        <Settings2 className="h-5 w-5 text-gray-400 shrink-0 mt-0.5" />
-                                        <div className="space-y-2">
-                                            <span className="text-gray-600 font-medium">Skills Assessed:</span>
-                                            <div className="flex flex-wrap gap-2">
-                                                {skills.map((skill, i) => (
-                                                    <span
-                                                        key={i}
-                                                        className="bg-orange-50 text-orange-500 text-xs font-semibold px-3 py-1 rounded-full"
-                                                    >
-                                                        {skill}
-                                                    </span>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                {/* ── Mentor Details ── */}
-                <Card className="border-gray-200 shadow-sm rounded-2xl">
-                    <CardContent className="p-6">
-                        <div className="flex items-center gap-2 mb-5">
-                            <User className="h-5 w-5 text-gray-500" />
-                            <h2 className="text-lg font-semibold text-gray-900">
-                                Mentor Details
-                            </h2>
-                        </div>
-                        <div className="flex flex-col lg:flex-row gap-6">
-                            {/* Left: Mentor info */}
-                            <div className="flex flex-col gap-3 flex-1">
-                                <h3 className="text-lg font-bold text-gray-900">
+                            {/* Column 2: Mentor */}
+                            <div className="space-y-2 lg:pl-2">
+                                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Mentor</p>
+                                <h3 className="text-lg font-semibold text-gray-900">
                                     {mentorName}
                                 </h3>
-                                <p className="text-sm font-medium text-orange-500">
-                                    {report.session?.journeyItemTitle || "Resume Review Mentor"}
-                                </p>
-                                <div className="flex items-center gap-2 text-sm text-gray-500">
-                                    <Calendar className="h-4 w-4" />
-                                    <span className="font-medium">Assessment Date:</span>
-                                    <span className="text-gray-900">{formatDate(reportDate)}</span>
-                                </div>
                             </div>
 
-                            {/* Right: Assessment Summary */}
-                            {(hasMeaningfulContent(feedback.strengths) || hasMeaningfulContent(feedback.resume_alignment)) && (
-                                <div className="bg-gray-50 rounded-xl p-4 flex-1 space-y-2">
-                                    <h4 className="text-base font-semibold text-gray-900">
-                                        Assessment Summary
-                                    </h4>
-                                    <p className="text-sm text-gray-600 leading-relaxed">
-                                        {feedback.resume_alignment
-                                            ? feedback.resume_alignment.slice(0, 200) + (feedback.resume_alignment.length > 200 ? "..." : "")
-                                            : feedback.strengths
-                                                ? feedback.strengths.slice(0, 200) + (feedback.strengths.length > 200 ? "..." : "")
-                                                : "No summary available."
-                                        }
-                                    </p>
+                            {/* Divider */}
+                            <div className="hidden lg:block w-px bg-gray-200" />
+
+                            {/* Column 3: Date & Rating */}
+                            <div className="space-y-3 lg:pl-2">
+                                <div className="flex items-center gap-2 text-sm">
+                                    <Calendar className="h-4 w-4 text-gray-400 shrink-0" />
+                                    <span className="text-gray-500 font-medium">Date:</span>
+                                    <span className="text-gray-900">{formatDate(reportDate)}</span>
                                 </div>
-                            )}
+                                <div className="flex items-center gap-2 text-sm">
+                                    <Star className="h-4 w-4 text-gray-400 shrink-0" />
+                                    <span className="text-gray-500 font-medium">Overall Rating:</span>
+                                    <span className="text-gray-900">{meta.overall_rating != null ? Number(meta.overall_rating).toFixed(1) : "—"} / 5</span>
+                                </div>
+                            </div>
                         </div>
                     </CardContent>
                 </Card>
