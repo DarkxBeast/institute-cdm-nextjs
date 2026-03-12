@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 
 interface StatsGridProps {
     totalStudents: number;
-    avgPerformance: number;
+    avgPerformance: number | string;
     completionRate: number;
     activeMentors: number;
 }

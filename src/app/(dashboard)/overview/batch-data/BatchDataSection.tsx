@@ -63,12 +63,27 @@ export default function BatchDataSection({ batches }: BatchDataSectionProps) {
         fetchBatchData();
     }, [selectedBatchId]);
 
-    // Derive real stats from learning journey data when available
+    // Derive real stats from learning journey data and student data
+    const totalStudents = selectedBatch?.studentCount || 0;
+
+    // Calculate average performance (out of 5) from student overall scores
+    const displayAvgPerformance = batchDetails?.students 
+        ? (() => {
+            let total = 0;
+            let count = 0;
+            batchDetails.students.forEach(s => {
+                if (s.overallScore && s.overallScore !== "-") {
+                    total += parseFloat(s.overallScore);
+                    count++;
+                }
+            });
+            return count > 0 ? `${(total / count).toFixed(1)} / 5.0` : "—";
+        })()
+        : "—";
+
     const stats = {
-        totalStudents: selectedBatch?.studentCount || 0,
-        avgPerformance: learningJourneyData
-            ? Math.round((learningJourneyData.progress.completed / Math.max(learningJourneyData.summary.totalModules, 1)) * 100)
-            : 0,
+        totalStudents: totalStudents,
+        avgPerformance: displayAvgPerformance,
         completionRate: learningJourneyData
             ? learningJourneyData.progress.percentage
             : 0,
