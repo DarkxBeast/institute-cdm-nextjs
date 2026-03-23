@@ -10,6 +10,7 @@ const INSTITUTE_ASSETS: Record<string, { banner: string; logo: string }> = {
     IIMK: { banner: "/images/iimk_banner.jpeg", logo: "/images/iimk_logo.jpeg" },
     IIMU: { banner: "/images/iimu_banner.jpeg", logo: "/images/iimu_logo.png" },
     DIM: { banner: "/images/iimu_banner.jpeg", logo: "/images/dim_logo.png" },
+    VU: { banner: "/images/vu_banner.jpeg", logo: "/images/vu_logo.jpg" },
 };
 const DEFAULT_ASSETS = INSTITUTE_ASSETS.IIMU;
 
