@@ -326,12 +326,20 @@ export async function updateBatch(
     // Since we are updating a batch by ID, we should ensure the user belongs to the institute that owns the batch.
 
     // Get user's institute
-    const { data: pocData } = await supabase.from('cdm_institute_pocs').select('institute_id').eq('user_id', user.id).single()
+    const { data: pocData, error: pocError } = await supabase.from('cdm_institute_pocs').select('institute_id').eq('user_id', user.id).maybeSingle()
+    if (pocError) {
+        console.error('Error finding POC institute:', pocError);
+        return { success: false, error: 'Failed to verify institute properly.' }
+    }
     const userInstituteId = pocData?.institute_id
 
     // Get batch's institute
-    const { data: batchData } = await supabase.from('cdm_batches').select('institute_id').eq('id', batchId).single()
-    const batchInstituteId = batchData?.institute_id
+    const { data: batchData, error: batchError } = await supabase.from('cdm_batches').select('institute_id').eq('id', batchId).maybeSingle()
+    if (batchError || !batchData) {
+        console.error('Error finding batch institute:', batchError);
+        return { success: false, error: 'Batch not found.' }
+    }
+    const batchInstituteId = batchData.institute_id
 
     if (!userInstituteId || !batchInstituteId || userInstituteId !== batchInstituteId) {
         return { success: false, error: 'Unauthorized to update this batch' }
@@ -344,7 +352,7 @@ export async function updateBatch(
                 : 'Tentative'
 
     // 3. Update Batch
-    const { error: updateError } = await supabase
+    const { error: updateError, data: updatedBatch } = await supabase
         .from('cdm_batches')
         .update({
             name: batchInfo.batchName,
@@ -355,8 +363,13 @@ export async function updateBatch(
             department: batchInfo.department,
         })
         .eq('id', batchId)
+        .select()
+        .single()
 
-    if (updateError) return { success: false, error: updateError.message }
+    if (updateError || !updatedBatch) {
+        console.error('Update Batch Error:', updateError);
+        return { success: false, error: updateError?.message || 'Database update failed. Ensure RLS policies allow you to update this batch.' }
+    }
 
     // 4. Update Students
     // 4a. Delete students not in the list
@@ -402,8 +415,12 @@ export async function updateBatch(
         const { error: upsertError } = await supabase
             .from('cdm_students')
             .upsert(upsertData)
+            .select()
 
-        if (upsertError) return { success: false, error: upsertError.message }
+        if (upsertError) {
+            console.error('Upsert Students Error:', upsertError);
+            return { success: false, error: upsertError.message || 'Failed to update student records. RLS might be blocking.' }
+        }
     }
 
     // 5. Invalidate Cache

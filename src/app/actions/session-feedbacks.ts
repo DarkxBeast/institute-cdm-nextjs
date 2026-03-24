@@ -150,7 +150,12 @@ export async function getSessionFeedbacks(
                 batch_name,
                 session_name,
                 attendance_status,
-                feedback_data
+                feedback_data,
+                cdm_students (
+                    cdm_batches (
+                        name
+                    )
+                )
             `)
             .eq('journey_item_id', journeyItemId)
             .not('feedback_data', 'eq', '{}')
@@ -158,14 +163,17 @@ export async function getSessionFeedbacks(
 
         if (error) throw new Error(error.message)
 
-        const rows: StudentFeedbackRow[] = (attendees || []).map((att: any) => ({
-            attendeeId: att.id,
-            studentName: att.student_name || 'Unknown Student',
-            batchName: att.batch_name || '—',
-            sessionName: att.session_name || '—',
-            attendanceStatus: att.attendance_status || 'Unknown',
-            feedbackData: att.feedback_data || {},
-        }))
+        const rows: StudentFeedbackRow[] = (attendees || []).map((att: any) => {
+            const dynamicBatchName = att.cdm_students?.cdm_batches?.name;
+            return {
+                attendeeId: att.id,
+                studentName: att.student_name || 'Unknown Student',
+                batchName: dynamicBatchName || att.batch_name || '—',
+                sessionName: att.session_name || '—',
+                attendanceStatus: att.attendance_status || 'Unknown',
+                feedbackData: att.feedback_data || {},
+            };
+        })
 
         return { data: rows, error: null }
     } catch (err: any) {

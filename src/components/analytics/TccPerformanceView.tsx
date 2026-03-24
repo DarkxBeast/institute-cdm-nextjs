@@ -50,7 +50,7 @@ export default function TccPerformanceView() {
         async function loadBatches() {
             const result = await getBatchesForUser();
             if (result.data) {
-                setBatches(result.data.map((b: any) => ({ id: b.id, name: b.name })));
+                setBatches(result.data.map((b: any) => ({ id: b.id, name: b.title })));
             }
         }
         loadBatches();
