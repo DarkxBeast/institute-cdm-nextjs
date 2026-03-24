@@ -147,7 +147,6 @@ export async function getSessionFeedbacks(
             .select(`
                 id,
                 student_name,
-                batch_name,
                 session_name,
                 attendance_status,
                 feedback_data,
