@@ -83,13 +83,14 @@ function normalizeFeedback(fd: any): any {
     return { ...fd }
 }
 
-function classifyType(particulars: string): 'diagnostic' | 'resume' | 'sectoral' | 'masterclass' | 'unknown' {
+function classifyType(particulars: string): 'diagnostic' | 'resume' | 'sectoral' | 'masterclass' | 'practice_interview' | 'workshop' {
     const p = (particulars ?? '').toLowerCase()
     if (p.startsWith('diagnostic')) return 'diagnostic'
     if (p.startsWith('resume review')) return 'resume'
     if (p.includes('sectoral') || p.includes('role workshop')) return 'sectoral'
     if (p.startsWith('masterclass')) return 'masterclass'
-    return 'unknown'
+    if (p.includes('mock interview')) return 'practice_interview'
+    return 'workshop'
 }
 
 // ── Main Action ──
@@ -258,7 +259,7 @@ export async function getTccAnalytics(
         const sessionIds = new Set<string>()
         const mentorMap = new Map<string, { name: string; ratings: number[]; feedbackCount: number; sessions: Set<string> }>()
 
-        let diagCount = 0, resumeCount = 0, sectoralCount = 0, masterCount = 0
+        let diagCount = 0, resumeCount = 0, sectoralCount = 0, masterCount = 0, practiceInterviewCount = 0, workshopCount = 0
 
         for (const att of attendees as any[]) {
             const fd = att.feedback_data
@@ -298,8 +299,16 @@ export async function getTccAnalytics(
                     resumeCount++
                     if (typeof fb.overall_experience === 'number') { resume.experience.push(fb.overall_experience); allRatings.push(fb.overall_experience) }
                     if (typeof fb.confidence_level === 'number') resume.confidence.push(fb.confidence_level)
-                    if (typeof fb.feedback_clarity === 'string') resume.clarity.push(fb.feedback_clarity)
-                    if (typeof fb.interview_preparedness === 'string') resume.preparedness.push(fb.interview_preparedness)
+                    // feedback_clarity: could be string "yes"/"no" or numeric 1-5
+                    if (typeof fb.feedback_clarity === 'string') {
+                        resume.clarity.push(fb.feedback_clarity)
+                    } else if (typeof fb.feedback_clarity === 'number') {
+                        resume.clarity.push(fb.feedback_clarity >= 4 ? 'yes' : 'no')
+                    }
+                    // interview_preparedness: could be string "yes"/"no" or empty
+                    if (typeof fb.interview_preparedness === 'string' && fb.interview_preparedness.trim().length > 0) {
+                        resume.preparedness.push(fb.interview_preparedness)
+                    }
                     if (typeof fb.overall_experience === 'number' && mentor?.id) mentorMap.get(mentor.id)!.ratings.push(fb.overall_experience)
                     break
                 }
@@ -309,13 +318,17 @@ export async function getTccAnalytics(
                     const hr = fb.helpfulness_rating ?? fb.engagement_level
                     if (typeof dr === 'number') { sectoral.delivery.push(dr); allRatings.push(dr) }
                     if (typeof hr === 'number') { sectoral.helpfulness.push(hr); if (mentor?.id) mentorMap.get(mentor.id)!.ratings.push(hr) }
+                    // clarity: string "yes"/"no" OR numeric (clarity_of_communication / communication_clarity)
                     if (typeof fb.clarity_rating === 'string') sectoral.clarity.push(fb.clarity_rating)
                     else if (typeof fb.clarity_of_communication === 'number') sectoral.clarity.push(fb.clarity_of_communication >= 4 ? 'yes' : 'no')
+                    else if (typeof fb.communication_clarity === 'number') sectoral.clarity.push(fb.communication_clarity >= 4 ? 'yes' : 'no')
+                    // interest: string "yes"/"no" OR numeric (session_relevance / career_relevance)
                     if (typeof fb.interest_rating === 'string') sectoral.interest.push(fb.interest_rating)
                     else if (typeof fb.session_relevance === 'number') sectoral.interest.push(fb.session_relevance >= 4 ? 'yes' : 'no')
+                    else if (typeof fb.career_relevance === 'number') sectoral.interest.push(fb.career_relevance >= 4 ? 'yes' : 'no')
 
                     // Per-workshop breakdown
-                    const wsName = particulars.replace(/^Sectoral & Role Workshop\s*-?\s*/i, '').trim() || particulars
+                    const wsName = particulars.replace(/^Sectoral (& Role )?Workshop\s*[:\-]?\s*/i, '').trim() || particulars
                     if (!sectoral.byWorkshop.has(wsName)) {
                         sectoral.byWorkshop.set(wsName, { delivery: [], helpfulness: [] })
                     }
@@ -327,10 +340,26 @@ export async function getTccAnalytics(
                 case 'masterclass': {
                     masterCount++
                     const cqr = fb.content_quality_rating ?? fb.workshop_quality
-                    const rr = fb.relevance_rating ?? fb.session_relevance
+                    let rr = fb.relevance_rating ?? fb.session_relevance
+                    // career_relevance uses a 1-10 scale; normalize to 1-5
+                    if (rr == null && typeof fb.career_relevance === 'number') {
+                        rr = fb.career_relevance / 2
+                    }
                     if (typeof cqr === 'number') { master.contentQuality.push(cqr); allRatings.push(cqr) }
                     if (typeof rr === 'number') { master.relevance.push(rr); allRatings.push(rr) }
                     if (typeof cqr === 'number' && mentor?.id) mentorMap.get(mentor.id)!.ratings.push(cqr)
+                    break
+                }
+                case 'practice_interview': {
+                    practiceInterviewCount++
+                    const rating = fb.overall_experience ?? fb.session_quality
+                    if (typeof rating === 'number') { allRatings.push(rating); if (mentor?.id) mentorMap.get(mentor.id)!.ratings.push(rating) }
+                    break
+                }
+                case 'workshop': {
+                    workshopCount++
+                    const rating = fb.session_quality ?? fb.workshop_quality ?? fb.engagement_level
+                    if (typeof rating === 'number') { allRatings.push(rating); if (mentor?.id) mentorMap.get(mentor.id)!.ratings.push(rating) }
                     break
                 }
             }
@@ -348,7 +377,7 @@ export async function getTccAnalytics(
             .sort((a, b) => b.avgRating - a.avgRating)
 
         const result: TccAnalyticsData = {
-            totalFeedbacks: diagCount + resumeCount + sectoralCount + masterCount,
+            totalFeedbacks: diagCount + resumeCount + sectoralCount + masterCount + practiceInterviewCount + workshopCount,
             totalSessions: sessionIds.size,
             totalMentors: mentorMap.size,
             overallAvgRating: allRatings.length > 0 ? Math.round(avg(allRatings) * 10) / 10 : 0,

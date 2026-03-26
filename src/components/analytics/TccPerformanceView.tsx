@@ -184,10 +184,10 @@ export default function TccPerformanceView() {
                                 </div>
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <MiniCircularStat label="Avg Experience" value={data.diagnosticInterview.avgExperience} max={5} color="#6366f1" />
-                                <MiniCircularStat label="Avg Clarity" value={data.diagnosticInterview.avgClarity} max={5} color="#3b82f6" />
-                                <MiniCircularStat label="Avg Helpfulness" value={data.diagnosticInterview.avgHelpfulness} max={5} color="#10b981" />
-                                <MiniCircularStat label="Avg Confidence" value={data.diagnosticInterview.avgConfidence} max={5} color="#f59e0b" />
+                                {data.diagnosticInterview.avgExperience > 0 && <MiniCircularStat label="Avg Experience" value={data.diagnosticInterview.avgExperience} max={5} color="#6366f1" />}
+                                {data.diagnosticInterview.avgClarity > 0 && <MiniCircularStat label="Avg Clarity" value={data.diagnosticInterview.avgClarity} max={5} color="#3b82f6" />}
+                                {data.diagnosticInterview.avgHelpfulness > 0 && <MiniCircularStat label="Avg Helpfulness" value={data.diagnosticInterview.avgHelpfulness} max={5} color="#10b981" />}
+                                {data.diagnosticInterview.avgConfidence > 0 && <MiniCircularStat label="Avg Confidence" value={data.diagnosticInterview.avgConfidence} max={5} color="#f59e0b" />}
                             </div>
                         </CardContent>
                     </Card>
@@ -213,10 +213,10 @@ export default function TccPerformanceView() {
                                 </div>
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <MiniCircularStat label="Avg Experience" value={data.resumeReview.avgExperience} max={5} color="#f59e0b" />
-                                <MiniCircularStat label="Avg Confidence" value={data.resumeReview.avgConfidence} max={5} color="#10b981" />
-                                <MiniCircularStat label="Clarity (Yes)" value={data.resumeReview.clarityYesPercent} max={100} color="#3b82f6" suffix="%" />
-                                <MiniCircularStat label="Preparedness (Yes)" value={data.resumeReview.preparednessYesPercent} max={100} color="#8b5cf6" suffix="%" />
+                                {data.resumeReview.avgExperience > 0 && <MiniCircularStat label="Avg Experience" value={data.resumeReview.avgExperience} max={5} color="#f59e0b" />}
+                                {data.resumeReview.avgConfidence > 0 && <MiniCircularStat label="Avg Confidence" value={data.resumeReview.avgConfidence} max={5} color="#10b981" />}
+                                {data.resumeReview.clarityYesPercent > 0 && <MiniCircularStat label="Clarity (Yes)" value={data.resumeReview.clarityYesPercent} max={100} color="#3b82f6" suffix="%" />}
+                                {data.resumeReview.preparednessYesPercent > 0 && <MiniCircularStat label="Preparedness (Yes)" value={data.resumeReview.preparednessYesPercent} max={100} color="#8b5cf6" suffix="%" />}
                             </div>
                         </CardContent>
                     </Card>
@@ -242,8 +242,8 @@ export default function TccPerformanceView() {
                                 </div>
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <MiniCircularStat label="Content Quality" value={data.masterclass.avgContentQuality} max={5} color="#f59e0b" />
-                                <MiniCircularStat label="Relevance" value={data.masterclass.avgRelevance} max={5} color="#10b981" />
+                                {data.masterclass.avgContentQuality > 0 && <MiniCircularStat label="Content Quality" value={data.masterclass.avgContentQuality} max={5} color="#f59e0b" />}
+                                {data.masterclass.avgRelevance > 0 && <MiniCircularStat label="Relevance" value={data.masterclass.avgRelevance} max={5} color="#10b981" />}
                             </div>
                         </CardContent>
                     </Card>
@@ -269,10 +269,10 @@ export default function TccPerformanceView() {
                                 </div>
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <MiniCircularStat label="Avg Delivery" value={data.sectoralWorkshop.avgDelivery} max={5} color="#f59e0b" />
-                                <MiniCircularStat label="Avg Helpfulness" value={data.sectoralWorkshop.avgHelpfulness} max={5} color="#3b82f6" />
-                                <MiniCircularStat label="Clarity (Yes)" value={data.sectoralWorkshop.clarityYesPercent} max={100} color="#10b981" suffix="%" />
-                                <MiniCircularStat label="Interest (Yes)" value={data.sectoralWorkshop.interestYesPercent} max={100} color="#8b5cf6" suffix="%" />
+                                {data.sectoralWorkshop.avgDelivery > 0 && <MiniCircularStat label="Avg Delivery" value={data.sectoralWorkshop.avgDelivery} max={5} color="#f59e0b" />}
+                                {data.sectoralWorkshop.avgHelpfulness > 0 && <MiniCircularStat label="Avg Helpfulness" value={data.sectoralWorkshop.avgHelpfulness} max={5} color="#3b82f6" />}
+                                {data.sectoralWorkshop.clarityYesPercent > 0 && <MiniCircularStat label="Clarity (Yes)" value={data.sectoralWorkshop.clarityYesPercent} max={100} color="#10b981" suffix="%" />}
+                                {data.sectoralWorkshop.interestYesPercent > 0 && <MiniCircularStat label="Interest (Yes)" value={data.sectoralWorkshop.interestYesPercent} max={100} color="#8b5cf6" suffix="%" />}
                             </div>
                         </CardContent>
                     </Card>

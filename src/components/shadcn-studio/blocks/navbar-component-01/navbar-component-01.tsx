@@ -22,16 +22,19 @@ type NavItem = {
   href: string
   icon: React.ElementType
   hasNotification?: boolean
+  hidden?: boolean
 }
 
 const navItems: NavItem[] = [
   { title: "Overview", href: "/overview", icon: LayoutDashboard },
   { title: "Batches", href: "/batches", icon: Users },
-  { title: "Proposals", href: "/proposals", icon: FileText },
+  { title: "Proposals", href: "/proposals", icon: FileText, hidden: true },
   { title: "Analytics", href: "/analytics", icon: BarChart3 },
-  { title: "Audit Log", href: "/audit-log", icon: Shield },
-  { title: "Institute Profile", href: "/institute-profile", icon: Building2 },
+  { title: "Audit Log", href: "/audit-log", icon: Shield, hidden: true },
+  { title: "Institute Profile", href: "/institute-profile", icon: Building2, hidden: true },
 ];
+
+const visibleNavItems = navItems.filter((item) => !item.hidden);
 
 const Navbar = () => {
   const pathname = usePathname();
@@ -63,7 +66,7 @@ const Navbar = () => {
 
         {/* Desktop navigation */}
         <div className="hidden md:flex items-center gap-1 mx-auto">
-          {navItems.map((item) => {
+          {visibleNavItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
 
@@ -104,7 +107,7 @@ const Navbar = () => {
       {isMobileMenuOpen && (
         <div className="md:hidden border-t border-[#2a2a2a] bg-[#0a0a0a]">
           <div className="flex flex-col p-4 gap-2">
-            {navItems.map((item) => {
+            {visibleNavItems.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.href;
 

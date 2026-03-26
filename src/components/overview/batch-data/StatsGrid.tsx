@@ -103,7 +103,7 @@ export default function StatsGrid({
                 bgClassName="bg-[#FF9E44]/10"
                 iconClassName="text-[#FF9E44]"
                 value={avgPerformance}
-                title="Avg Performance"
+                title="Avg Performance of Students"
                 delay={200}
             />
             <StatisticsCard
@@ -120,7 +120,7 @@ export default function StatsGrid({
                 bgClassName="bg-[#FF9E44]/10"
                 iconClassName="text-[#FF9E44]"
                 value={activeMentors}
-                title="Active Mentors"
+                title="Mentors Engaged"
                 delay={400}
             />
         </div>
